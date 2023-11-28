@@ -1,0 +1,172 @@
+def_start
+event CurtainOpenRqt
+event CurtainsOpened
+event RefuseRequest
+event InformUser
+event DressingStarted
+event CloseCurtains
+measure userUnderDressed: boolean
+measure medicalEmergency:boolean
+measure userDistressed : scale(low, medium, high)
+measure roomDark:boolean
+measure notVisible:boolean
+measure userAssent:boolean
+measure consentGrantedwithinXmonths:boolean //X needs to be defined. In the language within is not allowed for measures.
+event EmotionRecognitionDetected
+measure competentIndicatorRequired: boolean
+measure competentToGrantConsent:boolean
+measure dressPreferenceTypeA:boolean
+measure genderTypeB:boolean
+event DressinginClotingX
+measure userAdvices:boolean
+measure clothingItemNotFound:boolean
+event InteractionStarted
+event InformUserThisIsAgentnotHuman
+measure userConfused:boolean
+measure buildingFloor:scale(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10) //the building has max 10 floors.
+measure theUserHasBeenInformed:boolean
+event UserRequestInfo
+event ProvideInfo
+measure informationAvailable:boolean
+event InformUserandandReferToHumanCarer
+measure informationDisclosureNotPermitted:boolean
+event ObtainAssent
+measure admininisteringMedication:boolean
+measure userCompetenceIndicator:numeric
+constant N= 5 //this needs to be defined
+event CheckForandObtainProxy
+measure withholdingActivityPhysicalHarm:scale(wlow,wmoderate,wsevere)
+measure consentGranted:boolean
+measure consentIndicatorRequired:boolean
+event StopActivity
+measure consentIndicatorisWithdrawn:boolean
+measure consentIndicatorisRevoked:boolean
+event CollectionStarted
+event StoreMinInfo
+//second version
+event DressingSuccessful
+event FallAssessed
+	measure userUndressed : boolean
+	measure userUnresponsive : boolean
+	event OpenCurtainsRequested
+	event HealthChecked
+	
+//third version
+	measure roomTemperature: numeric
+	event DressingComplete
+	constant MAX_RESPONSE_TIME = 60
+	event UserFallen
+	measure assentToSupportCalls:boolean
+	event SupportCalled
+	measure emergency : boolean
+	event DressingAbandoned
+	event RetryAgreed
+
+def_end
+
+rule_start
+//
+//	Rule1 when CurtainOpenRqt then CurtainsOpened
+//		       unless userUnderDressed then RefuseRequest
+//		       unless userDistressed > smedium then CurtainsOpened // irrelevant
+		       
+	Rule2 when DressingStarted then CloseCurtains //within 5 seconds //5 seconds can be specified for immediate action
+			   unless medicalEmergency
+			   unless buildingFloor >=f5
+			   unless roomDark and notVisible
+			   unless not userAssent  // irrelevant
+	//new relevance: relevant
+			   
+	Rule3 when EmotionRecognitionDetected and userDistressed>medium then InformUser 
+		       unless consentGrantedwithinXmonths
+			   unless not competentIndicatorRequired or not  competentToGrantConsent // irrelevant
+	//new relevance: irrelevant		   
+			   
+	Rule4 when DressingStarted and dressPreferenceTypeA and genderTypeB then DressinginClotingX
+			   unless userAdvices
+			   unless medicalEmergency
+			   unless clothingItemNotFound then InformUser // irrelevant
+	//new relevance: relevant ?
+			   
+	Rule5 	when InteractionStarted then InformUserThisIsAgentnotHuman
+			unless medicalEmergency
+			unless not userConfused
+			//there is no temporal information in the language. at any time is representable.
+			unless theUserHasBeenInformed // irrelevant
+	//new relevance: irrelevant	
+
+    Rule6 when UserRequestInfo then ProvideInfo
+    		//unless not informationAvailable then InformUser and ReferToHumanCarer. The language does not allow the response with two events
+			unless not informationAvailable then InformUserandandReferToHumanCarer
+			unless informationDisclosureNotPermitted then InformUserandandReferToHumanCarer // irrelevant
+    //new relevance: irrelevant	
+    
+	 //obtain consent/assent before dressing/administering medication
+	 Rule7  when DressingStarted and admininisteringMedication then ObtainAssent //within 5 seconds //5 seconds can be specified for immediate action
+			unless userCompetenceIndicator = N then CheckForandObtainProxy
+			unless medicalEmergency
+			unless withholdingActivityPhysicalHarm >=wmoderate
+			unless consentGranted
+			unless not consentIndicatorRequired
+			unless consentIndicatorisWithdrawn or consentIndicatorisRevoked then StopActivity // irrelevant
+	//new relevance: relevant ?
+
+	Rule8 	when CollectionStarted then StoreMinInfo // irrelevant
+	//new relevance: irrelevant	
+	
+	//second version
+	
+		//empathetic, ethical. & IMPLICATION: promotes and supports user well-being 
+	Rule12 when DressingStarted and userUnderDressed then DressingComplete  within 2 minutes  
+		  	   unless roomTemperature < 19 then DressingComplete within 90 seconds
+		       unless roomTemperature < 17 then DressingComplete within 60 seconds  //relevant
+	//new relevance: relevant ?
+	
+	//cultural, empathetic. & IMPLICATION: respect for privacy and cultural sensivity
+	Rule22 when CurtainOpenRqt then CurtainsOpened within 60 seconds
+		       unless userUnderDressed then RefuseRequest within 30 seconds
+		       unless userDistressed > medium then CurtainsOpened within MAX_RESPONSE_TIME seconds  //relevant
+   	//new relevance: relevant ?
+   	
+   	//legal, ethical, social. & IMPLICATION: respect for autonomy and preventing harm
+   	Rule32 when UserFallen then SupportCalled within 1 minutes
+   	           unless not assentToSupportCalls
+   	           unless emergency //irrelevant
+   	//new relevance: relevant ?
+   	 
+    //legal, ethical. & IMPLICATION: promoting user beneficence and respecting autonomy
+    Rule42 when DressingAbandoned then RetryAgreed within 3 minutes
+		       otherwise {SupportCalled 
+		  	      unless not assentToSupportCalls //relevant
+		       }
+	 	//new relevance: relevant
+  Rule52 when DressingStarted and roomTemperature >= 19 then DressingComplete  within 2 minutes //relevant
+  //new relevance: relevant
+ 
+ //third version
+  Rule13 when DressingStarted then DressingSuccessful //irrelevant
+    //new relevance: relevant
+  
+	Rule23 when FallAssessed and userUnresponsive then SupportCalled //irrelevant
+	  //new relevance: irrelevant
+	
+//	Rule33 when OpenCurtainsRequested and userUndressed then not CurtainsOpened within 60 seconds //irrelevant
+//	Rule43 when UserFallen then SupportCalled //relevant
+//	Rule53 when UserFallen then SupportCalled within 1 minutes //relevant
+	Rule63 when UserFallen then HealthChecked within 30 seconds //irrelevant
+		otherwise SupportCalled within MAX_RESPONSE_TIME seconds
+	  //new relevance: relevant
+		
+	Rule73 when OpenCurtainsRequested then CurtainsOpened within 60 seconds //both relevant and //irrelevant
+	//new relevant: irrelevant
+	
+//	Rule83 when OpenCurtainsRequested then CurtainsOpened within 60 seconds //both relevant and //irrelevant
+//		unless userUndressed then RefuseRequest within 30 seconds 
+//		unless userDistressed > smedium then CurtainsOpened within 60 seconds //both relevant and //irrelevant
+//	
+	
+rule_end
+
+
+
+

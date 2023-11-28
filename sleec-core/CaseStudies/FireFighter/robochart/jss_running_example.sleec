@@ -1,0 +1,46 @@
+def_start
+	event BatteryCritical
+	event CameraStart
+	event SoundAlarm
+	event GoHome
+	measure personNearby : boolean
+	measure temperature : numeric
+	measure windSpeed : scale ( light , moderate , strong )
+	constant ALARMDEADLINE = 30
+def_end
+
+rule_start
+	//legal, social
+	Rule1 when CameraStart and personNearby
+		then SoundAlarm
+	//legal, ethical
+	Rule2 when CameraStart and personNearby
+		then SoundAlarm within 2 seconds
+	//legal
+	Rule3 when SoundAlarm
+		then not GoHome within 5 minutes
+	//emphatatic
+	Rule4 when CameraStart then SoundAlarm
+		unless personNearby then GoHome
+		unless temperature > 35	
+		
+	Rule2_a when CameraStart and personNearby 
+          then SoundAlarm within 2 seconds 
+          otherwise GoHome		
+          
+    Rule4_a when CameraStart then SoundAlarm 
+          unless personNearby then GoHome
+    
+    RuleA when BatteryCritical and temperature < 25 
+        then GoHome within 1 minutes
+        
+    RuleC when BatteryCritical 
+        then CameraStart
+        unless personNearby then GoHome 
+        unless temperature > 35 then SoundAlarm
+
+  	RuleD when BatteryCritical
+        then CameraStart
+        unless personNearby then SoundAlarm 
+        unless temperature > 35 then GoHome
+rule_end

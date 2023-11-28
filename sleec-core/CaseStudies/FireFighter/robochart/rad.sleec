@@ -1,0 +1,69 @@
+def_start
+	event BatteryCritical
+	event FireAlarmSounding
+	event GoHome
+	event CurtainOpenRequested
+	event CurtainsOpened
+	event RefuseRequest
+	event CameraStart
+	event SoundAlarm
+	event SoundWarning
+	event DressingStarted
+	event DressingComplete
+	event DressingSuccessful
+	
+	measure personNearby : boolean
+	measure userUndressed : boolean
+	measure userUnderDressed : boolean
+	measure userDistressed : scale(low,medium,high)
+	measure temperature : numeric
+	
+	measure roomTemperature : numeric
+def_end
+
+rule_start
+	RuleADD when BatteryCritical then GoHome
+rule_end
+//
+//rule_start
+//	// why isn't temperature a cross-reference?s
+//	RuleA when BatteryCritical and temperature < 25 then GoHome within 1 seconds
+//	RuleB when FireAlarmSounding then not GoHome within 5 seconds
+//	
+//	//
+//	Rule5 when CameraStart then SoundWarning
+//	Rule6 when CameraStart then SoundWarning within 2 seconds
+//	
+//	Rule3 when CurtainOpenRequested then CurtainsOpened
+//			unless userUnderDressed then RefuseRequest
+//			unless userDistressed > medium then CurtainsOpened
+//			
+////	Rule2 when CurtainOpenRequested and userUnderDressed then
+////			not CurtainsOpened within 60 seconds
+//			
+//	Rule1 when CurtainOpenRequested then CurtainsOpened within 6 seconds
+//			unless userUnderDressed then RefuseRequest within 3 seconds
+//			unless userDistressed > medium then CurtainsOpened within 6 seconds
+//			
+//	Rule83 when CurtainOpenRequested then CurtainsOpened within 6 seconds
+//		unless userUndressed then RefuseRequest within 3 seconds
+//		unless userDistressed > medium then CurtainsOpened within 6 seconds
+//		
+//	Rule12 when DressingStarted and userUnderDressed then DressingComplete within 2 minutes
+//		unless roomTemperature < 19 then DressingComplete within 9 seconds
+//		unless roomTemperature < 17 then DressingComplete within 6 seconds
+//		
+//	Rule13 when DressingStarted then DressingSuccessful within 1 minutes
+//		otherwise RefuseRequest within 2 minutes
+//		
+//	Rule52 when DressingStarted and roomTemperature >= 19 then
+//		DressingComplete within 2 minutes
+//		
+//	RuleC when BatteryCritical then CameraStart
+//		unless personNearby then GoHome
+//		unless temperature>35 then SoundAlarm
+//		
+//	RuleD when BatteryCritical then CameraStart
+//		unless temperature>35 then SoundAlarm
+//		unless personNearby then GoHome   
+//rule_end     

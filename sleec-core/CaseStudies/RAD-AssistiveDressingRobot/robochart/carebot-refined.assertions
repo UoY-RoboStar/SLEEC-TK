@@ -1,5 +1,6 @@
 package SystemAssertions
-timed csp Instantiations associated to system::Module csp-begin
+import common::*
+timed csp Instantiations associated to system::Module csp-begin 
 
 -- OPERATION BOUNDS
 

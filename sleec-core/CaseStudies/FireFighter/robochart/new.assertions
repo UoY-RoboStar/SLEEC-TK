@@ -1,0 +1,79 @@
+package SLEECAssertions 
+import System 
+   
+//sleec assertion A1 : UAV conforms to RuleA with constant x of UAV set to   1       
+
+timed csp Instantiations associated to UAV csp-begin
+
+-- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+-- generate nat
+nametype core_nat = { 0..2}
+-- generate int
+nametype core_int = { -2..36}
+-- generate string
+nametype core_string = LSeq(Char,2)
+-- generate boolean
+nametype core_boolean = Bool
+-- generate real
+nametype core_real = union({ -2..2},TemperatureRange) 
+
+-- Change the value below if needed.
+nametype TemperatureRange = { -2..36}
+-- VECTOR TYPES AND OPERATIONS
+ 
+
+-- CLOCKS
+-- generate core_clock_type
+nametype core_clock_type = {0..301}
+
+-- generate const_UAV_poll
+const_UAV_poll = 1
+
+-- generate const_UAV_goHomeDelay
+const_UAV_goHomeDelay = 2
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+
+-- generate const_UAV_init
+const_UAV_init = 1
+
+-- BASIC FUNCTIONS			
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+
+-- generate vt
+vt(x__,Time_seconds) = x__
+vt(x__,Time_minutes) = x__*60
+csp-end
+            
+sleec assertion RCheck1 : UAV conforms to Rule1 
+sleec assertion RCheck2 : UAV conforms to Rule2 
+sleec assertion RCheck3 : UAV conforms to Rule3 
+sleec assertion RCheck4 : UAV conforms to Rule4                    
