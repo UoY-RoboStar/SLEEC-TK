@@ -4,6 +4,7 @@ import System
 //timed assertion Check1 : RC refines Spec1 in the traces model 
 //timed assertion Check2 : RC refines Spec2 in the traces model 
 //timed assertion Check3 : RC refines Spec3 in the traces model 
+  
 
 timed csp Instantiations associated to UAV csp-begin
 

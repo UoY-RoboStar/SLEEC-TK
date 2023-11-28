@@ -1,0 +1,14 @@
+def_start
+	event BatteryCritical
+	event FireAlarmSounding
+	event GoHome
+	event CameraStart
+	event SoundAlarm
+	event SoundWarning
+	measure personNearby : boolean
+def_end
+
+rule_start
+	Rule5 when CameraStart then SoundWarning
+	Rule6 when CameraStart then SoundWarning within 2 seconds
+rule_end 
