@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="circus.robocalc.sleec.assertions.feature"
+      id="circus.robocalc.sleec.assertions.csp.feature"
       label="SLEEC CSP Conformance Generator"
       version="1.0.0.qualifier"
       provider-name="RoboStar">
