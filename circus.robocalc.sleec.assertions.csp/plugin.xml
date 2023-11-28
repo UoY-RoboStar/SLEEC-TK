@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension point="robochart.assertions.sleec.scopeprovider">
+   	<client class="circus.robocalc.sleec.assertions.csp.ExecutableExtensionFactory:circus.robocalc.sleec.assertions.csp.AssertionsScoping">
+   	</client>
+   </extension>
+   <extension point="robochart.assertions.validator">
+   	<client class="circus.robocalc.sleec.assertions.csp.ExecutableExtensionFactory:circus.robocalc.sleec.assertions.csp.AssertionsValidator">
+   	</client>
+   </extension>
+   <extension point="sleec.assertions.csp">
+   	<client class="circus.robocalc.sleec.assertions.csp.ExecutableExtensionFactory:circus.robocalc.sleec.assertions.csp.AssertionsGenerator">
+   	</client>
+   </extension>
+   <!--<extension point="robochart.generator">
+    <client class="circus.robocalc.sleec.assertions.csp.ExecutableExtensionFactory:circus.robocalc.sleec.assertions.csp.AssertionsGenerator">
+    </client>
+   </extension>-->
+</plugin>
