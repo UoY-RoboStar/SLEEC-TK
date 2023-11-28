@@ -1,0 +1,41 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 31-08-2023 19:18:10
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "file_rad_defs.csp"
+include "OpenCurtains.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate OP_OpenCurtains
+P_OP_OpenCurtains = let
+	id__ = 0
+	
+	param_underDressed = true
+	param_distress = Distress_low
+	
+	
+	
+within
+	OP_OpenCurtains::O__(id__,
+				param_underDressed,
+				param_distress)
+assert P_OP_OpenCurtains :[deadlock-free]	
+assert P_OP_OpenCurtains;RUN({r__}) :[deadlock-free]
+assert P_OP_OpenCurtains :[deterministic]
+assert P_OP_OpenCurtains :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_OpenCurtains[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_OpenCurtains

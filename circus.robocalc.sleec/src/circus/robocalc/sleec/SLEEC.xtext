@@ -1,0 +1,122 @@
+grammar circus.robocalc.sleec.SLEEC with org.eclipse.xtext.common.Terminals
+
+generate sLEEC "http://www.robocalc.circus/sleec/SLEEC"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Specification:
+	defBlock=Defblock ruleBlock=RuleBlock
+;
+
+Defblock:
+	'def_start' definitions+=Definition+ 'def_end'
+;
+
+Definition:
+	{Event} 'event' name=EventID | {Measure} 'measure' name=MeasureID ':' type=Type | {Constant} 'constant' name=ConstID '=' value=Value
+;
+
+Value:
+	value=INT | constant=[Constant]
+;
+
+BoolValue:
+	value=BOOL_VALUE
+;
+
+Type:
+	{Boolean} 'boolean' | {Numeric} 'numeric' | {Scale} 'scale' '(' scaleParams += ScaleParam (',' scaleParams+=ScaleParam)* ')'
+;
+
+RuleBlock:
+	'rule_start' rules+=Rule+ 'rule_end'	
+;
+
+Rule:
+	name=RuleID 'when' trigger=Trigger 'then' response=Response//(Response {Rule.response=current} defeaters+=Defeater*)
+;
+
+Trigger:
+	event=[Event] ('and' expr=MBoolExpr)?
+;
+
+// Allow operator precedence for boolean expressions, the order of operations is implemented in the following order (form highest to lowest):
+// 1: < > <> <= >= =
+// 2: not
+// 3: and, or
+MBoolExpr:
+	BoolComp
+;
+
+BoolComp returns MBoolExpr:
+	Not ({BoolComp.left=current} op=BoolOp right=Not)*
+;
+
+Not returns MBoolExpr:
+	{Not} op='not' expr=RelComp | RelComp
+;
+
+RelComp returns MBoolExpr:
+	Atom ({RelComp.left=current} op=RelOp right=Atom)*
+;
+
+Atom returns MBoolExpr:
+	// Avoid using cross reference here as ScaleParam will never be matched as it is the same as Measure
+	// ->measure=[Measure] | '(' MBoolExpr ')' | ->value=Value | ->scaleParam=[ScaleParam]
+	{Atom} measureID=ID | Value | '(' MBoolExpr ')' | BoolValue
+;
+
+Response returns Response:
+	constraint=Constraint (defeater+=Defeater*)? 
+	| '{' constraint=Constraint (defeater+=Defeater*)? '}' 
+;
+
+InnerResponse returns Response:
+	constraint=Constraint | '{' constraint=Constraint (defeater+=Defeater*) '}' 
+;
+
+Constraint:
+	event=[Event] ('within' value=Value unit=TimeUnit ('otherwise' response=InnerResponse)?)? |
+	 not?='not' event=[Event] 'within' value=Value unit=TimeUnit
+;
+
+
+Defeater:
+	 'unless' expr=MBoolExpr ('then' response=InnerResponse)? //| '{' response=Response '}'
+;
+
+enum RelOp:
+	LESS_THAN='<' | GREATER_THAN='>' | NOT_EQUAL='<>' | LESS_EQUAL='<=' | GREATER_EQUAL='>=' | EQUAL='='
+;
+
+enum BoolOp:
+	AND='and' | OR='or'
+;
+
+enum TimeUnit:
+	SECONDS='seconds' | MINUTES='minutes' | HOURS='hours' | DAYS='days'
+;
+
+EventID:
+	ID
+;
+
+MeasureID:
+	ID
+;
+
+ConstID:
+	ID
+;
+
+ScaleParam:
+	name = ID
+;
+
+RuleID:
+	ID
+;
+
+terminal BOOL_VALUE returns ecore::EBoolean:
+	'true' | 'false'
+;

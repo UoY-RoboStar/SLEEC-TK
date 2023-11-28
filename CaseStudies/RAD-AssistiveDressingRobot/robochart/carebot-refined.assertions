@@ -1,0 +1,1696 @@
+package SystemAssertions
+timed csp Instantiations associated to system::Module csp-begin
+
+-- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+-- generate nat
+nametype core_nat = { 0..2}
+-- generate int
+nametype core_int = union({0},{ 5..25})
+-- generate string
+nametype core_string = LSeq(Char,2)
+-- generate boolean
+nametype core_boolean = Bool
+-- generate real
+nametype core_real = { -2..2} 
+
+-- VECTOR TYPES AND OPERATIONS
+
+
+-- CLOCKS
+-- generate core_clock_type
+nametype core_clock_type = {0..1801}
+
+-- BASIC FUNCTIONS			
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+
+-- generate gt
+gt(Distress_high,x__) = true
+gt(Distress_medium,Distress_low) = true
+-- generate vt
+vt(x__,Time_seconds) = x__
+vt(x__,Time_minutes) = x__*60
+
+-- Additional tock-CSP operators not defined built-in by RoboTool:
+et(_) = 0
+
+Timed(et) {
+-- Strict timed interrupt
+channel finishedp__, finishedq__, timeout__
+
+-- Behaves as P__ until it either terminates, or, after exactly
+-- d__ time units behaves as Q__.
+TTimedInterrupt(P__,d__,Q__) =
+  ((((P__; EDeadline(finishedp__,0))
+    /\ timeout__ -> (RUN(diff(Events,{finishedp__,finishedq__,timeout__}))
+                   /\ finishedq__ -> SKIP)
+   )
+     [| Events |]
+   TRT__(d__,Q__)) \ {finishedp__, finishedq__, timeout__}); SKIP
+}
+
+-- Auxiliary counter for TTimedInterrupt definition above.
+TRT__(d__,Q__) =
+	if d__ > 0
+        then RUN(diff(Events,{finishedp__, finishedq__, timeout__, tock}))
+		  	 /\ (finishedp__ -> SKIP [] tock -> TRT__(d__-1,Q__))
+	    else timeout__ -> Q__; finishedq__ -> SKIP
+	    
+TimedInterruptSeq(e__,d__,Q__) =
+	let
+		TT(n__) = if n__ < d__ then TimeOut_1(e__ -> SKIP,TT(n__ + 1)) else Q__
+	within
+		TT(0)
+
+Rename(P__) = 
+	P__[[	system::Module::DressingStarted.in<-DressingStarted,
+			system::Module::DressingComplete.out<-DressingComplete,
+			system::Module::DressingAbandoned.in<-DressingAbandoned,
+			system::Module::CurtainOpenRqt.in<-CurtainOpenRqt,
+			system::Module::CurtainsOpened.out<-CurtainsOpened,
+			system::Module::refuseRequest.out<-RefuseRequest,
+			system::Module::UserFallen.in<-UserFallen,
+			system::Module::userUnderDressed.in<-userUnderDressed,
+			system::Module::roomTemperature.in<-roomTemperature,
+			system::Module::assentToSupportCalls1.in<-assentToSupportCalls,
+			system::Module::assentToSupportCalls2.in<-assentToSupportCalls,
+			system::Module::supportCalled1.in<-SupportCalled,
+			system::Module::supportCalled2.in<-SupportCalled,
+			system::Module::retryAgreed.out<-RetryAgreed,
+			system::Module::userDistressed.in.STuserDistressed2RC(x__)<-userDistressed.x__ | x__ <- STuserDistressed
+	]]
+
+STuserDistressed2RC(slow) = Distress_low
+STuserDistressed2RC(smedium) = Distress_medium
+STuserDistressed2RC(shigh) = Distress_high
+
+-- Every event the SUV could engage in, including beyond the capabilities of
+-- a SLEEC spec.
+SUVEvents = union(Capabilities,{|system::Module::CallSupportCall|})
+
+-- For the measures, we can define an environment that holds
+-- the value of each measure.
+
+datatype Measure = 
+	m_userUnderDressed |
+	m_medicalEmergency |
+	m_userDistressed |
+	m_roomDark |
+	m_notVisible |
+	m_userAssent |
+	m_consentGrantedwithinXmonths |
+	m_competentIndicatorRequired |
+	m_competentToGrantConsent |
+	m_dressPreferenceTypeA |
+	m_genderTypeB |
+	m_userAdvices |
+	m_clothingItemNotFound |
+	m_userConfused |
+	m_buildingFloor |
+	m_theUserHasBeenInformed |
+	m_informationAvailable |
+	m_informationDisclosureNotPermitted |
+	m_admininisteringMedication |
+	m_userCompetenceIndicator |
+	m_withholdingActivityPhysicalHarm |
+	m_consentGranted |
+	m_consentIndicatorRequired |
+	m_consentIndicatorisWithdrawn |
+	m_consentIndicatorisRevoked |
+ 	m_userUndressed |
+	m_userUnresponsive |
+	m_roomTemperature |
+	m_assentToSupportCalls |
+	m_emergency
+
+m2in(m_userUnderDressed) = {|userUnderDressed|}
+m2in(m_medicalEmergency) = {|medicalEmergency|}
+m2in(m_userDistressed) = {|userDistressed|}
+m2in(m_roomDark) = {|roomDark|}
+m2in(m_notVisible) = {|notVisible|}
+m2in(m_userAssent) = {|userAssent|}
+m2in(m_consentGrantedwithinXmonths) = {|consentGrantedwithinXmonths|}
+m2in(m_competentIndicatorRequired) = {|competentIndicatorRequired|}
+m2in(m_competentToGrantConsent) = {|competentToGrantConsent|}
+m2in(m_dressPreferenceTypeA) = {|dressPreferenceTypeA|}
+m2in(m_genderTypeB) = {|genderTypeB|}
+m2in(m_userAdvices) = {|userAdvices|}
+m2in(m_clothingItemNotFound) = {|clothingItemNotFound|}
+m2in(m_userConfused) = {|userConfused|}
+m2in(m_buildingFloor) = {|buildingFloor|}
+m2in(m_theUserHasBeenInformed) = {|theUserHasBeenInformed|}
+m2in(m_informationAvailable) = {|informationAvailable|}
+m2in(m_informationDisclosureNotPermitted) = {|informationDisclosureNotPermitted|}
+m2in(m_admininisteringMedication) = {|admininisteringMedication|}
+m2in(m_userCompetenceIndicator) = {|userCompetenceIndicator|}
+m2in(m_withholdingActivityPhysicalHarm) = {|withholdingActivityPhysicalHarm|}
+m2in(m_consentGranted) = {|consentGranted|}
+m2in(m_consentIndicatorRequired) = {|consentIndicatorRequired|}
+m2in(m_consentIndicatorisWithdrawn) = {|consentIndicatorisWithdrawn|}
+m2in(m_consentIndicatorisRevoked) = {|consentIndicatorisRevoked|}
+m2in(m_userUndressed) = {|userUndressed|}
+m2in(m_userUnresponsive) = {|userUnresponsive|}
+m2in(m_roomTemperature) = {|roomTemperature|}
+m2in(m_assentToSupportCalls) = {|assentToSupportCalls|}
+m2in(m_emergency) = {|emergency|}
+
+GMemory(m__,i__,o__) =
+	let
+        Mem = m__?x__ -> (Provide(x__) /\ tock -> Mem)
+        Provide(x__) = RUN(union({|i__.x__|},o__))
+    within
+        Mem
+
+GMem(m_userUnderDressed,o__) = GMemory(userUnderDressed,i_userUnderDressed,o__)
+GMem(m_medicalEmergency,o__) = GMemory(medicalEmergency,i_medicalEmergency,o__)
+GMem(m_userDistressed,o__) = GMemory(userDistressed,i_userDistressed,o__)
+GMem(m_roomDark,o__) = GMemory(roomDark,i_roomDark,o__)
+GMem(m_notVisible,o__) = GMemory(notVisible,i_notVisible,o__)
+GMem(m_userAssent,o__) = GMemory(userAssent,i_userAssent,o__)
+GMem(m_consentGrantedwithinXmonths,o__) = GMemory(consentGrantedwithinXmonths,i_consentGrantedwithinXmonths,o__)
+GMem(m_competentIndicatorRequired,o__) = GMemory(competentIndicatorRequired,i_competentIndicatorRequired,o__)
+GMem(m_competentToGrantConsent,o__) = GMemory(competentToGrantConsent,i_competentToGrantConsent,o__)
+GMem(m_dressPreferenceTypeA,o__) = GMemory(dressPreferenceTypeA,i_dressPreferenceTypeA,o__)
+GMem(m_genderTypeB,o__) = GMemory(genderTypeB,i_genderTypeB,o__)
+GMem(m_userAdvices,o__) = GMemory(userAdvices,i_userAdvices,o__)
+GMem(m_clothingItemNotFound,o__) = GMemory(clothingItemNotFound,i_clothingItemNotFound,o__)
+GMem(m_userConfused,o__) = GMemory(userConfused,i_userConfused,o__)
+GMem(m_buildingFloor,o__) = GMemory(buildingFloor,i_buildingFloor,o__)
+GMem(m_theUserHasBeenInformed,o__) = GMemory(theUserHasBeenInformed,i_theUserHasBeenInformed,o__)
+GMem(m_informationAvailable,o__) = GMemory(informationAvailable,i_informationAvailable,o__)
+GMem(m_informationDisclosureNotPermitted,o__) = GMemory(informationDisclosureNotPermitted,i_informationDisclosureNotPermitted,o__)
+GMem(m_admininisteringMedication,o__) = GMemory(admininisteringMedication,i_admininisteringMedication,o__)
+GMem(m_userCompetenceIndicator,o__) = GMemory(userCompetenceIndicator,i_userCompetenceIndicator,o__)
+GMem(m_withholdingActivityPhysicalHarm,o__) = GMemory(withholdingActivityPhysicalHarm,i_withholdingActivityPhysicalHarm,o__)
+GMem(m_consentGranted,o__) = GMemory(consentGranted,i_consentGranted,o__)
+GMem(m_consentIndicatorRequired,o__) = GMemory(consentIndicatorRequired,i_consentIndicatorRequired,o__)
+GMem(m_consentIndicatorisWithdrawn,o__) = GMemory(consentIndicatorisWithdrawn,i_consentIndicatorisWithdrawn,o__)
+GMem(m_consentIndicatorisRevoked,o__) = GMemory(consentIndicatorisRevoked,i_consentIndicatorisRevoked,o__)
+GMem(m_userUndressed,o__) = GMemory(userUndressed,i_userUndressed,o__)
+GMem(m_userUnresponsive,o__) = GMemory(userUnresponsive,i_userUnresponsive,o__)
+GMem(m_roomTemperature,o__) = GMemory(roomTemperature,i_roomTemperature,o__)
+GMem(m_assentToSupportCalls,o__) = GMemory(assentToSupportCalls,i_assentToSupportCalls,o__)
+GMem(m_emergency,o__) = GMemory(emergency,i_emergency,o__)
+
+GMemExternal(m_userUnderDressed) = {|userUnderDressed|}
+GMemExternal(m_medicalEmergency) = {|medicalEmergency|}
+GMemExternal(m_userDistressed) = {|userDistressed|}
+GMemExternal(m_roomDark) = {|roomDark|}
+GMemExternal(m_notVisible) = {|notVisible|}
+GMemExternal(m_userAssent) = {|userAssent|}
+GMemExternal(m_consentGrantedwithinXmonths) = {|consentGrantedwithinXmonths|}
+GMemExternal(m_competentIndicatorRequired) = {|competentIndicatorRequired|}
+GMemExternal(m_competentToGrantConsent) = {|competentToGrantConsent|}
+GMemExternal(m_dressPreferenceTypeA) = {|dressPreferenceTypeA|}
+GMemExternal(m_genderTypeB) = {|genderTypeB|}
+GMemExternal(m_userAdvices) = {|userAdvices|}
+GMemExternal(m_clothingItemNotFound) = {|clothingItemNotFound|}
+GMemExternal(m_userConfused) = {|userConfused|}
+GMemExternal(m_buildingFloor) = {|buildingFloor|}
+GMemExternal(m_theUserHasBeenInformed) = {|theUserHasBeenInformed|}
+GMemExternal(m_informationAvailable) = {|informationAvailable|}
+GMemExternal(m_informationDisclosureNotPermitted) = {|informationDisclosureNotPermitted|}
+GMemExternal(m_admininisteringMedication) = {|admininisteringMedication|}
+GMemExternal(m_userCompetenceIndicator) = {|userCompetenceIndicator|}
+GMemExternal(m_withholdingActivityPhysicalHarm) = {|withholdingActivityPhysicalHarm|}
+GMemExternal(m_consentGranted) = {|consentGranted|}
+GMemExternal(m_consentIndicatorRequired) = {|consentIndicatorRequired|}
+GMemExternal(m_consentIndicatorisWithdrawn) = {|consentIndicatorisWithdrawn|}
+GMemExternal(m_consentIndicatorisRevoked) = {|consentIndicatorisRevoked|}
+GMemExternal(m_userUndressed) = {|userUndressed|}
+GMemExternal(m_userUnresponsive) = {|userUnresponsive|}
+GMemExternal(m_roomTemperature) = {|roomTemperature|}
+GMemExternal(m_assentToSupportCalls) = {|assentToSupportCalls|}
+GMemExternal(m_emergency) = {|emergency|}
+
+GMemInternal(m_userUnderDressed) = {|i_userUnderDressed|}
+GMemInternal(m_medicalEmergency) = {|i_medicalEmergency|}
+GMemInternal(m_userDistressed) = {|i_userDistressed|}
+GMemInternal(m_roomDark) = {|i_roomDark|}
+GMemInternal(m_notVisible) = {|i_notVisible|}
+GMemInternal(m_userAssent) = {|i_userAssent|}
+GMemInternal(m_consentGrantedwithinXmonths) = {|i_consentGrantedwithinXmonths|}
+GMemInternal(m_competentIndicatorRequired) = {|i_competentIndicatorRequired|}
+GMemInternal(m_competentToGrantConsent) = {|i_competentToGrantConsent|}
+GMemInternal(m_dressPreferenceTypeA) = {|i_dressPreferenceTypeA|}
+GMemInternal(m_genderTypeB) = {|i_genderTypeB|}
+GMemInternal(m_userAdvices) = {|i_userAdvices|}
+GMemInternal(m_clothingItemNotFound) = {|i_clothingItemNotFound|}
+GMemInternal(m_userConfused) = {|i_userConfused|}
+GMemInternal(m_buildingFloor) = {|i_buildingFloor|}
+GMemInternal(m_theUserHasBeenInformed) = {|i_theUserHasBeenInformed|}
+GMemInternal(m_informationAvailable) = {|i_informationAvailable|}
+GMemInternal(m_informationDisclosureNotPermitted) = {|i_informationDisclosureNotPermitted|}
+GMemInternal(m_admininisteringMedication) = {|i_admininisteringMedication|}
+GMemInternal(m_userCompetenceIndicator) = {|i_userCompetenceIndicator|}
+GMemInternal(m_withholdingActivityPhysicalHarm) = {|i_withholdingActivityPhysicalHarm|}
+GMemInternal(m_consentGranted) = {|i_consentGranted|}
+GMemInternal(m_consentIndicatorRequired) = {|i_consentIndicatorRequired|}
+GMemInternal(m_consentIndicatorisWithdrawn) = {|i_consentIndicatorisWithdrawn|}
+GMemInternal(m_consentIndicatorisRevoked) = {|i_consentIndicatorisRevoked|}
+GMemInternal(m_userUndressed) = {|i_userUndressed|}
+GMemInternal(m_userUnresponsive) = {|i_userUnresponsive|}
+GMemInternal(m_roomTemperature) = {|i_roomTemperature|}
+GMemInternal(m_assentToSupportCalls) = {|i_assentToSupportCalls|}
+GMemInternal(m_emergency) = {|i_emergency|}
+
+GMemHide(P__,m_userUnderDressed) = P__[[userUnderDressed <- i_userUnderDressed]]
+GMemHide(P__,m_medicalEmergency) = P__[[medicalEmergency <- i_medicalEmergency]]
+GMemHide(P__,m_userDistressed) = P__[[userDistressed <- i_userDistressed]]
+GMemHide(P__,m_roomDark) = P__[[roomDark <- i_roomDark]]
+GMemHide(P__,m_notVisible) = P__[[notVisible <- i_notVisible]]
+GMemHide(P__,m_userAssent) = P__[[userAssent <- i_userAssent]]
+GMemHide(P__,m_consentGrantedwithinXmonths) = P__[[consentGrantedwithinXmonths <- i_consentGrantedwithinXmonths]]
+GMemHide(P__,m_competentIndicatorRequired) = P__[[competentIndicatorRequired <- i_competentIndicatorRequired]]
+GMemHide(P__,m_competentToGrantConsent) = P__[[competentToGrantConsent <- i_competentToGrantConsent]]
+GMemHide(P__,m_dressPreferenceTypeA) = P__[[dressPreferenceTypeA <- i_dressPreferenceTypeA]]
+GMemHide(P__,m_genderTypeB) = P__[[genderTypeB <- i_genderTypeB]]
+GMemHide(P__,m_userAdvices) = P__[[userAdvices <- i_userAdvices]]
+GMemHide(P__,m_clothingItemNotFound) = P__[[clothingItemNotFound <- i_clothingItemNotFound]]
+GMemHide(P__,m_userConfused) = P__[[userConfused <- i_userConfused]]
+GMemHide(P__,m_buildingFloor) = P__[[buildingFloor <- i_buildingFloor]]
+GMemHide(P__,m_theUserHasBeenInformed) = P__[[theUserHasBeenInformed <- i_theUserHasBeenInformed]]
+GMemHide(P__,m_informationAvailable) = P__[[informationAvailable <- i_informationAvailable]]
+GMemHide(P__,m_informationDisclosureNotPermitted) = P__[[informationDisclosureNotPermitted <- i_informationDisclosureNotPermitted]]
+GMemHide(P__,m_admininisteringMedication) = P__[[admininisteringMedication <- i_admininisteringMedication]]
+GMemHide(P__,m_userCompetenceIndicator) = P__[[userCompetenceIndicator <- i_userCompetenceIndicator]]
+GMemHide(P__,m_withholdingActivityPhysicalHarm) = P__[[withholdingActivityPhysicalHarm <- i_withholdingActivityPhysicalHarm]]
+GMemHide(P__,m_consentGranted) = P__[[consentGranted <- i_consentGranted]]
+GMemHide(P__,m_consentIndicatorRequired) = P__[[consentIndicatorRequired <- i_consentIndicatorRequired]]
+GMemHide(P__,m_consentIndicatorisWithdrawn) = P__[[consentIndicatorisWithdrawn <- i_consentIndicatorisWithdrawn]]
+GMemHide(P__,m_consentIndicatorisRevoked) = P__[[consentIndicatorisRevoked <- i_consentIndicatorisRevoked]]
+GMemHide(P__,m_userUndressed) = P__[[userUndressed <- i_userUndressed]]
+GMemHide(P__,m_userUnresponsive) = P__[[userUnresponsive <- i_userUnresponsive]]
+GMemHide(P__,m_roomTemperature) = P__[[roomTemperature <- i_roomTemperature]]
+GMemHide(P__,m_assentToSupportCalls) = P__[[assentToSupportCalls <- i_assentToSupportCalls]]
+GMemHide(P__,m_emergency) = P__[[emergency <- i_emergency]]
+
+GMemorySet(s__,o__) = if s__== {} then CRUN(o__) else [| union({tock},o__) |] e__ : s__ @ GMem(e__,o__)
+GMemoryRenameSet(P__,s__) = GMemoryRenameSeq(P__,seq(s__))
+GMemoryRenameSeq(P__,<>) = P__
+GMemoryRenameSeq(P__,<s__>^ms) = GMemHide(GMemoryRenameSeq(P__,ms),s__)
+
+GMemoryInternalEvents(s__) = { e__ | m__ <- s__, e__ <- GMemInternal(m__) }
+GMemoryExternalEvents(s__) = { e__ | m__ <- s__, e__ <- GMemExternal(m__) }
+
+ARuleToGMeasureSet(alpha) = { m__ | m__ <- Measure, inter(m2in(m__),alpha) == m2in(m__) }
+
+
+-- Original SLEEC formulation below 
+channel CurtainOpenRqt
+channel CurtainsOpened
+channel RefuseRequest
+channel InformUser
+channel DressingStarted
+channel CloseCurtains
+channel userUnderDressed, i_userUnderDressed : Bool
+Mem_userUnderDressed(o__) =
+	let
+		Mem =  userUnderDressed?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userUnderDressed.x__|},o__))
+	within
+		Mem
+channel medicalEmergency, i_medicalEmergency : Bool
+Mem_medicalEmergency(o__) =
+	let
+		Mem =  medicalEmergency?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_medicalEmergency.x__|},o__))
+	within
+		Mem
+channel userDistressed, i_userDistressed : STuserDistressed
+
+datatype STuserDistressed = slow | smedium | shigh
+
+STleuserDistressed(v1userDistressed, v2userDistressed) =
+	if v1userDistressed == slow then true
+	else (if v1userDistressed == smedium then not member(v2userDistressed,{slow})
+	else v2userDistressed == shigh)
+	
+STequserDistressed(v1userDistressed, v2userDistressed) =
+	v1userDistressed == v2userDistressed
+	
+STltuserDistressed(v1userDistressed, v2userDistressed) =
+	STleuserDistressed(v1userDistressed, v2userDistressed) and STneuserDistressed(v1userDistressed, v2userDistressed)
+	
+STgtuserDistressed(v1userDistressed, v2userDistressed) =
+	STltuserDistressed(v2userDistressed, v1userDistressed)
+	
+STneuserDistressed(v1userDistressed, v2userDistressed) =
+	not STequserDistressed(v1userDistressed, v2userDistressed)
+	
+STgeuserDistressed(v1userDistressed, v2userDistressed) =
+	STltuserDistressed(v2userDistressed, v1userDistressed)
+
+Mem_userDistressed(o__) =
+	let
+		Mem =  userDistressed?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userDistressed.x__|},o__))
+	within
+		Mem
+channel roomDark, i_roomDark : Bool
+Mem_roomDark(o__) =
+	let
+		Mem =  roomDark?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_roomDark.x__|},o__))
+	within
+		Mem
+channel notVisible, i_notVisible : Bool
+Mem_notVisible(o__) =
+	let
+		Mem =  notVisible?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_notVisible.x__|},o__))
+	within
+		Mem
+channel userAssent, i_userAssent : Bool
+Mem_userAssent(o__) =
+	let
+		Mem =  userAssent?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userAssent.x__|},o__))
+	within
+		Mem
+channel consentGrantedwithinXmonths, i_consentGrantedwithinXmonths : Bool
+Mem_consentGrantedwithinXmonths(o__) =
+	let
+		Mem =  consentGrantedwithinXmonths?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_consentGrantedwithinXmonths.x__|},o__))
+	within
+		Mem
+channel EmotionRecognitionDetected
+channel competentIndicatorRequired, i_competentIndicatorRequired : Bool
+Mem_competentIndicatorRequired(o__) =
+	let
+		Mem =  competentIndicatorRequired?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_competentIndicatorRequired.x__|},o__))
+	within
+		Mem
+channel competentToGrantConsent, i_competentToGrantConsent : Bool
+Mem_competentToGrantConsent(o__) =
+	let
+		Mem =  competentToGrantConsent?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_competentToGrantConsent.x__|},o__))
+	within
+		Mem
+channel dressPreferenceTypeA, i_dressPreferenceTypeA : Bool
+Mem_dressPreferenceTypeA(o__) =
+	let
+		Mem =  dressPreferenceTypeA?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_dressPreferenceTypeA.x__|},o__))
+	within
+		Mem
+channel genderTypeB, i_genderTypeB : Bool
+Mem_genderTypeB(o__) =
+	let
+		Mem =  genderTypeB?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_genderTypeB.x__|},o__))
+	within
+		Mem
+channel DressinginClotingX
+channel userAdvices, i_userAdvices : Bool
+Mem_userAdvices(o__) =
+	let
+		Mem =  userAdvices?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userAdvices.x__|},o__))
+	within
+		Mem
+channel clothingItemNotFound, i_clothingItemNotFound : Bool
+Mem_clothingItemNotFound(o__) =
+	let
+		Mem =  clothingItemNotFound?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_clothingItemNotFound.x__|},o__))
+	within
+		Mem
+channel InteractionStarted
+channel InformUserThisIsAgentnotHuman
+channel userConfused, i_userConfused : Bool
+Mem_userConfused(o__) =
+	let
+		Mem =  userConfused?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userConfused.x__|},o__))
+	within
+		Mem
+channel buildingFloor, i_buildingFloor : STbuildingFloor
+
+datatype STbuildingFloor = f1 | f2 | f3 | f4 | f5 | f6 | f7 | f8 | f9 | f10
+
+STlebuildingFloor(v1buildingFloor, v2buildingFloor) =
+	if v1buildingFloor == f1 then true
+	else (if v1buildingFloor == f2 then not member(v2buildingFloor,{f1})
+	else (if v1buildingFloor == f3 then not member(v2buildingFloor,{f1, f2})
+	else (if v1buildingFloor == f4 then not member(v2buildingFloor,{f1, f2, f3})
+	else (if v1buildingFloor == f5 then not member(v2buildingFloor,{f1, f2, f3, f4})
+	else (if v1buildingFloor == f6 then not member(v2buildingFloor,{f1, f2, f3, f4, f5})
+	else (if v1buildingFloor == f7 then not member(v2buildingFloor,{f1, f2, f3, f4, f5, f6})
+	else (if v1buildingFloor == f8 then not member(v2buildingFloor,{f1, f2, f3, f4, f5, f6, f7})
+	else (if v1buildingFloor == f9 then not member(v2buildingFloor,{f1, f2, f3, f4, f5, f6, f7, f8})
+	else v2buildingFloor == f10))))))))
+	
+STeqbuildingFloor(v1buildingFloor, v2buildingFloor) =
+	v1buildingFloor == v2buildingFloor
+	
+STltbuildingFloor(v1buildingFloor, v2buildingFloor) =
+	STlebuildingFloor(v1buildingFloor, v2buildingFloor) and STnebuildingFloor(v1buildingFloor, v2buildingFloor)
+	
+STgtbuildingFloor(v1buildingFloor, v2buildingFloor) =
+	STltbuildingFloor(v2buildingFloor, v1buildingFloor)
+	
+STnebuildingFloor(v1buildingFloor, v2buildingFloor) =
+	not STeqbuildingFloor(v1buildingFloor, v2buildingFloor)
+	
+STgebuildingFloor(v1buildingFloor, v2buildingFloor) =
+	STltbuildingFloor(v2buildingFloor, v1buildingFloor)
+
+Mem_buildingFloor(o__) =
+	let
+		Mem =  buildingFloor?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_buildingFloor.x__|},o__))
+	within
+		Mem
+channel theUserHasBeenInformed, i_theUserHasBeenInformed : Bool
+Mem_theUserHasBeenInformed(o__) =
+	let
+		Mem =  theUserHasBeenInformed?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_theUserHasBeenInformed.x__|},o__))
+	within
+		Mem
+channel UserRequestInfo
+channel ProvideInfo
+channel informationAvailable, i_informationAvailable : Bool
+Mem_informationAvailable(o__) =
+	let
+		Mem =  informationAvailable?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_informationAvailable.x__|},o__))
+	within
+		Mem
+channel InformUserandandReferToHumanCarer
+channel informationDisclosureNotPermitted, i_informationDisclosureNotPermitted : Bool
+Mem_informationDisclosureNotPermitted(o__) =
+	let
+		Mem =  informationDisclosureNotPermitted?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_informationDisclosureNotPermitted.x__|},o__))
+	within
+		Mem
+channel ObtainAssent
+channel admininisteringMedication, i_admininisteringMedication : Bool
+Mem_admininisteringMedication(o__) =
+	let
+		Mem =  admininisteringMedication?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_admininisteringMedication.x__|},o__))
+	within
+		Mem
+channel userCompetenceIndicator, i_userCompetenceIndicator : {0..5}
+Mem_userCompetenceIndicator(o__) =
+	let
+		Mem =  userCompetenceIndicator?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userCompetenceIndicator.x__|},o__))
+	within
+		Mem
+N = 5
+channel CheckForandObtainProxy
+channel withholdingActivityPhysicalHarm, i_withholdingActivityPhysicalHarm : STwithholdingActivityPhysicalHarm
+
+datatype STwithholdingActivityPhysicalHarm = low | moderate | severe
+
+STlewithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) =
+	if v1withholdingActivityPhysicalHarm == low then true
+	else (if v1withholdingActivityPhysicalHarm == moderate then not member(v2withholdingActivityPhysicalHarm,{low})
+	else v2withholdingActivityPhysicalHarm == severe)
+	
+STeqwithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) =
+	v1withholdingActivityPhysicalHarm == v2withholdingActivityPhysicalHarm
+	
+STltwithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) =
+	STlewithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) and STnewithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm)
+	
+STgtwithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) =
+	STltwithholdingActivityPhysicalHarm(v2withholdingActivityPhysicalHarm, v1withholdingActivityPhysicalHarm)
+	
+STnewithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) =
+	not STeqwithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm)
+	
+STgewithholdingActivityPhysicalHarm(v1withholdingActivityPhysicalHarm, v2withholdingActivityPhysicalHarm) =
+	STltwithholdingActivityPhysicalHarm(v2withholdingActivityPhysicalHarm, v1withholdingActivityPhysicalHarm)
+
+Mem_withholdingActivityPhysicalHarm(o__) =
+	let
+		Mem =  withholdingActivityPhysicalHarm?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_withholdingActivityPhysicalHarm.x__|},o__))
+	within
+		Mem
+channel consentGranted, i_consentGranted : Bool
+Mem_consentGranted(o__) =
+	let
+		Mem =  consentGranted?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_consentGranted.x__|},o__))
+	within
+		Mem
+channel consentIndicatorRequired, i_consentIndicatorRequired : Bool
+Mem_consentIndicatorRequired(o__) =
+	let
+		Mem =  consentIndicatorRequired?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_consentIndicatorRequired.x__|},o__))
+	within
+		Mem
+channel StopActivity
+channel consentIndicatorisWithdrawn, i_consentIndicatorisWithdrawn : Bool
+Mem_consentIndicatorisWithdrawn(o__) =
+	let
+		Mem =  consentIndicatorisWithdrawn?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_consentIndicatorisWithdrawn.x__|},o__))
+	within
+		Mem
+channel consentIndicatorisRevoked, i_consentIndicatorisRevoked : Bool
+Mem_consentIndicatorisRevoked(o__) =
+	let
+		Mem =  consentIndicatorisRevoked?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_consentIndicatorisRevoked.x__|},o__))
+	within
+		Mem
+channel CollectionStarted
+channel StoreMinInfo
+channel DressingSuccessful
+channel FallAssessed
+channel userUndressed, i_userUndressed : Bool
+Mem_userUndressed(o__) =
+	let
+		Mem =  userUndressed?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userUndressed.x__|},o__))
+	within
+		Mem
+channel userUnresponsive, i_userUnresponsive : Bool
+Mem_userUnresponsive(o__) =
+	let
+		Mem =  userUnresponsive?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_userUnresponsive.x__|},o__))
+	within
+		Mem
+channel OpenCurtainsRequested
+channel HealthChecked
+channel roomTemperature, i_roomTemperature : {0..25}
+Mem_roomTemperature(o__) =
+	let
+		Mem =  roomTemperature?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_roomTemperature.x__|},o__))
+	within
+		Mem
+channel DressingComplete
+MAX_RESPONSE_TIME = 60
+channel UserFallen
+channel assentToSupportCalls, i_assentToSupportCalls : Bool
+Mem_assentToSupportCalls(o__) =
+	let
+		Mem =  assentToSupportCalls?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_assentToSupportCalls.x__|},o__))
+	within
+		Mem
+channel SupportCalled
+channel emergency, i_emergency : Bool
+Mem_emergency(o__) =
+	let
+		Mem =  emergency?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_emergency.x__|},o__))
+	within
+		Mem
+channel DressingAbandoned
+channel RetryAgreed
+	
+Capabilities = 
+  {| CurtainOpenRqt,
+     CurtainsOpened,
+     RefuseRequest,
+     InformUser,
+     DressingStarted,
+     CloseCurtains,
+     EmotionRecognitionDetected,
+     DressinginClotingX,
+     InteractionStarted,
+     InformUserThisIsAgentnotHuman,
+     UserRequestInfo,
+     ProvideInfo,
+     InformUserandandReferToHumanCarer,
+     ObtainAssent,
+     CheckForandObtainProxy,
+     StopActivity,
+     CollectionStarted,
+     StoreMinInfo,
+     DressingSuccessful,
+     FallAssessed,
+     OpenCurtainsRequested,
+     HealthChecked,
+     DressingComplete,
+     UserFallen,
+     SupportCalled,
+     DressingAbandoned,
+     RetryAgreed,
+  	 userUnderDressed,
+  	 medicalEmergency,
+  	 userDistressed,
+  	 roomDark,
+  	 notVisible,
+  	 userAssent,
+  	 consentGrantedwithinXmonths,
+  	 competentIndicatorRequired,
+  	 competentToGrantConsent,
+  	 dressPreferenceTypeA,
+  	 genderTypeB,
+  	 userAdvices,
+  	 clothingItemNotFound,
+  	 userConfused,
+  	 buildingFloor,
+  	 theUserHasBeenInformed,
+  	 informationAvailable,
+  	 informationDisclosureNotPermitted,
+  	 admininisteringMedication,
+  	 userCompetenceIndicator,
+  	 withholdingActivityPhysicalHarm,
+  	 consentGranted,
+  	 consentIndicatorRequired,
+  	 consentIndicatorisWithdrawn,
+  	 consentIndicatorisRevoked,
+  	 userUndressed,
+  	 userUnresponsive,
+  	 roomTemperature,
+  	 assentToSupportCalls,
+  	 emergency
+  |}
+Measures =
+  {| userUnderDressed,
+     medicalEmergency,
+     userDistressed,
+     roomDark,
+     notVisible,
+     userAssent,
+     consentGrantedwithinXmonths,
+     competentIndicatorRequired,
+     competentToGrantConsent,
+     dressPreferenceTypeA,
+     genderTypeB,
+     userAdvices,
+     clothingItemNotFound,
+     userConfused,
+     buildingFloor,
+     theUserHasBeenInformed,
+     informationAvailable,
+     informationDisclosureNotPermitted,
+     admininisteringMedication,
+     userCompetenceIndicator,
+     withholdingActivityPhysicalHarm,
+     consentGranted,
+     consentIndicatorRequired,
+     consentIndicatorisWithdrawn,
+     consentIndicatorisRevoked,
+     userUndressed,
+     userUnresponsive,
+     roomTemperature,
+     assentToSupportCalls,
+     emergency
+  |}
+	
+Timed(et) {
+
+-- Rule2 when DressingStarted then CloseCurtains 
+-- unless (medicalEmergency)
+-- unless ((buildingFloor) >= (f5))
+-- unless ((roomDark) and (notVisible))
+-- unless (not (userAssent))
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = DressingStarted -> SKIP	[] CloseCurtains -> TriggerRule2
+
+
+MonitoringRule2 = let
+	Monitoring1 = CloseCurtains -> SKIP
+	Monitoring2 = SKIP
+	Monitoring3 = SKIP
+	Monitoring4 = SKIP
+	Monitoring5 = SKIP
+within StartBy(medicalEmergency?vmedicalEmergency ->
+	StartBy(buildingFloor?vbuildingFloor ->
+		StartBy(roomDark?vroomDark ->
+			StartBy(notVisible?vnotVisible ->
+				StartBy(userAssent?vuserAssent ->
+					if (not (vuserAssent)) then Monitoring5
+					else (if ((vroomDark) and (vnotVisible)) then Monitoring4
+					else (if (STgebuildingFloor(vbuildingFloor, f5)) then Monitoring3
+					else (if (vmedicalEmergency) then Monitoring2
+					else (Monitoring1))))
+				,0)
+			,0)
+		,0)
+	,0)
+,0)
+
+-- alphabet for Rule2 
+ARule2 = {|roomDark, notVisible, userAssent, DressingStarted, CloseCurtains, medicalEmergency, buildingFloor|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when EmotionRecognitionDetected and ((userDistressed) > (smedium)) then InformUser 
+-- unless (consentGrantedwithinXmonths)
+-- unless ((not (competentIndicatorRequired)) or (not (competentToGrantConsent)))
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = let
+	MTrigger = StartBy(userDistressed?vuserDistressed ->
+		if (STgtuserDistressed(vuserDistressed, smedium)) then SKIP else TriggerRule3
+	,0)
+within EmotionRecognitionDetected -> MTrigger 
+	[] InformUser -> TriggerRule3
+
+MonitoringRule3 = let
+	Monitoring1 = InformUser -> SKIP
+	Monitoring2 = SKIP
+	Monitoring3 = SKIP
+within StartBy(consentGrantedwithinXmonths?vconsentGrantedwithinXmonths ->
+	StartBy(competentIndicatorRequired?vcompetentIndicatorRequired ->
+		StartBy(competentToGrantConsent?vcompetentToGrantConsent ->
+			if ((not (vcompetentIndicatorRequired)) or (not (vcompetentToGrantConsent))) then Monitoring3
+			else (if (vconsentGrantedwithinXmonths) then Monitoring2
+			else (Monitoring1))
+		,0)
+	,0)
+,0)
+
+-- alphabet for Rule3 
+ARule3 = {|InformUser, userDistressed, competentIndicatorRequired, competentToGrantConsent, consentGrantedwithinXmonths, EmotionRecognitionDetected|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+-- Rule4 when DressingStarted and ((dressPreferenceTypeA) and (genderTypeB)) then DressinginClotingX 
+-- unless (userAdvices)
+-- unless (medicalEmergency)
+-- unless (clothingItemNotFound) then InformUser
+
+Rule4 = TriggerRule4; MonitoringRule4; Rule4
+
+TriggerRule4 = let
+	MTrigger = StartBy(dressPreferenceTypeA?vdressPreferenceTypeA ->
+		StartBy(genderTypeB?vgenderTypeB ->
+			if ((vdressPreferenceTypeA) and (vgenderTypeB)) then SKIP else TriggerRule4
+		,0)
+	,0)
+within DressingStarted -> MTrigger 
+	[] DressinginClotingX -> TriggerRule4
+	[] InformUser -> TriggerRule4
+
+MonitoringRule4 = let
+	Monitoring1 = DressinginClotingX -> SKIP
+	Monitoring2 = SKIP
+	Monitoring3 = SKIP
+	Monitoring4 = InformUser -> SKIP
+within StartBy(userAdvices?vuserAdvices ->
+	StartBy(medicalEmergency?vmedicalEmergency ->
+		StartBy(clothingItemNotFound?vclothingItemNotFound ->
+			if (vclothingItemNotFound) then Monitoring4
+			else (if (vmedicalEmergency) then Monitoring3
+			else (if (vuserAdvices) then Monitoring2
+			else (Monitoring1)))
+		,0)
+	,0)
+,0)
+
+-- alphabet for Rule4 
+ARule4 = {|InformUser, dressPreferenceTypeA, clothingItemNotFound, userAdvices, genderTypeB, DressinginClotingX, DressingStarted, medicalEmergency|}
+SLEECRule4 = timed_priority(Rule4)
+
+
+-- Rule5 when InteractionStarted then InformUserThisIsAgentnotHuman 
+-- unless (medicalEmergency)
+-- unless (not (userConfused))
+-- unless (theUserHasBeenInformed)
+
+Rule5 = TriggerRule5; MonitoringRule5; Rule5
+
+TriggerRule5 = InteractionStarted -> SKIP	[] InformUserThisIsAgentnotHuman -> TriggerRule5
+
+
+MonitoringRule5 = let
+	Monitoring1 = InformUserThisIsAgentnotHuman -> SKIP
+	Monitoring2 = SKIP
+	Monitoring3 = SKIP
+	Monitoring4 = SKIP
+within StartBy(medicalEmergency?vmedicalEmergency ->
+	StartBy(userConfused?vuserConfused ->
+		StartBy(theUserHasBeenInformed?vtheUserHasBeenInformed ->
+			if (vtheUserHasBeenInformed) then Monitoring4
+			else (if (not (vuserConfused)) then Monitoring3
+			else (if (vmedicalEmergency) then Monitoring2
+			else (Monitoring1)))
+		,0)
+	,0)
+,0)
+
+-- alphabet for Rule5 
+ARule5 = {|InteractionStarted, InformUserThisIsAgentnotHuman, theUserHasBeenInformed, userConfused, medicalEmergency|}
+SLEECRule5 = timed_priority(Rule5)
+
+
+-- Rule6 when UserRequestInfo then ProvideInfo 
+-- unless (not (informationAvailable)) then InformUserandandReferToHumanCarer
+-- unless (informationDisclosureNotPermitted) then InformUserandandReferToHumanCarer
+
+Rule6 = TriggerRule6; MonitoringRule6; Rule6
+
+TriggerRule6 = UserRequestInfo -> SKIP	[] ProvideInfo -> TriggerRule6
+	[] InformUserandandReferToHumanCarer -> TriggerRule6
+	[] InformUserandandReferToHumanCarer -> TriggerRule6
+
+
+MonitoringRule6 = let
+	Monitoring1 = ProvideInfo -> SKIP
+	Monitoring2 = InformUserandandReferToHumanCarer -> SKIP
+	Monitoring3 = InformUserandandReferToHumanCarer -> SKIP
+within StartBy(informationAvailable?vinformationAvailable ->
+	StartBy(informationDisclosureNotPermitted?vinformationDisclosureNotPermitted ->
+		if (vinformationDisclosureNotPermitted) then Monitoring3
+		else (if (not (vinformationAvailable)) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule6 
+ARule6 = {|ProvideInfo, UserRequestInfo, InformUserandandReferToHumanCarer, informationDisclosureNotPermitted, informationAvailable|}
+SLEECRule6 = timed_priority(Rule6)
+
+
+-- Rule7 when DressingStarted and (admininisteringMedication) then ObtainAssent 
+-- unless ((userCompetenceIndicator) == (N)) then CheckForandObtainProxy
+-- unless (medicalEmergency)
+-- unless ((withholdingActivityPhysicalHarm) >= (moderate))
+-- unless (consentGranted)
+-- unless (not (consentIndicatorRequired))
+-- unless ((consentIndicatorisWithdrawn) or (consentIndicatorisRevoked)) then StopActivity
+
+Rule7 = TriggerRule7; MonitoringRule7; Rule7
+
+TriggerRule7 = let
+	MTrigger = StartBy(admininisteringMedication?vadmininisteringMedication ->
+		if (vadmininisteringMedication) then SKIP else TriggerRule7
+	,0)
+within DressingStarted -> MTrigger 
+	[] ObtainAssent -> TriggerRule7
+	[] CheckForandObtainProxy -> TriggerRule7
+	[] StopActivity -> TriggerRule7
+
+MonitoringRule7 = let
+	Monitoring1 = ObtainAssent -> SKIP
+	Monitoring2 = CheckForandObtainProxy -> SKIP
+	Monitoring3 = SKIP
+	Monitoring4 = SKIP
+	Monitoring5 = SKIP
+	Monitoring6 = SKIP
+	Monitoring7 = StopActivity -> SKIP
+within StartBy(userCompetenceIndicator?vuserCompetenceIndicator ->
+	StartBy(medicalEmergency?vmedicalEmergency ->
+		StartBy(withholdingActivityPhysicalHarm?vwithholdingActivityPhysicalHarm ->
+			StartBy(consentGranted?vconsentGranted ->
+				StartBy(consentIndicatorRequired?vconsentIndicatorRequired ->
+					StartBy(consentIndicatorisWithdrawn?vconsentIndicatorisWithdrawn ->
+						StartBy(consentIndicatorisRevoked?vconsentIndicatorisRevoked ->
+							if ((vconsentIndicatorisWithdrawn) or (vconsentIndicatorisRevoked)) then Monitoring7
+							else (if (not (vconsentIndicatorRequired)) then Monitoring6
+							else (if (vconsentGranted) then Monitoring5
+							else (if (STgewithholdingActivityPhysicalHarm(vwithholdingActivityPhysicalHarm, moderate)) then Monitoring4
+							else (if (vmedicalEmergency) then Monitoring3
+							else (if ((vuserCompetenceIndicator) == (N)) then Monitoring2
+							else (Monitoring1))))))
+						,0)
+					,0)
+				,0)
+			,0)
+		,0)
+	,0)
+,0)
+
+-- alphabet for Rule7 
+ARule7 = {|consentIndicatorisWithdrawn, consentIndicatorRequired, medicalEmergency, consentIndicatorisRevoked, CheckForandObtainProxy, userCompetenceIndicator, StopActivity, withholdingActivityPhysicalHarm, consentGranted, DressingStarted, ObtainAssent, admininisteringMedication|}
+SLEECRule7 = timed_priority(Rule7)
+
+
+-- Rule8 when CollectionStarted then StoreMinInfo 
+
+Rule8 = TriggerRule8; MonitoringRule8; Rule8
+
+TriggerRule8 = CollectionStarted -> SKIP	[] StoreMinInfo -> TriggerRule8
+
+
+MonitoringRule8 = StoreMinInfo -> SKIP
+
+-- alphabet for Rule8 
+ARule8 = {|StoreMinInfo, CollectionStarted|}
+SLEECRule8 = timed_priority(Rule8)
+
+
+-- Rule12 when DressingStarted and (userUnderDressed) then DressingComplete within 2 minutes 
+-- unless ((roomTemperature) < (19)) then DressingComplete within 90 seconds
+-- unless ((roomTemperature) < (17)) then DressingComplete within 60 seconds
+
+Rule12 = TriggerRule12; MonitoringRule12; Rule12
+
+TriggerRule12 = let
+	MTrigger = StartBy(userUnderDressed?vuserUnderDressed ->
+		if (vuserUnderDressed) then SKIP else TriggerRule12
+	,0)
+within DressingStarted -> MTrigger 
+	[] DressingComplete -> TriggerRule12
+	[] DressingComplete -> TriggerRule12
+	[] DressingComplete -> TriggerRule12
+
+MonitoringRule12 = let
+	Monitoring1 = StartBy(DressingComplete -> SKIP,(2 * 60))
+	Monitoring2 = StartBy(DressingComplete -> SKIP,(90 * 1))
+	Monitoring3 = StartBy(DressingComplete -> SKIP,(60 * 1))
+within StartBy(roomTemperature?vroomTemperature ->
+	StartBy(roomTemperature?vroomTemperature ->
+		if ((vroomTemperature) < (17)) then Monitoring3
+		else (if ((vroomTemperature) < (19)) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule12 
+ARule12 = {|roomTemperature, DressingComplete, userUnderDressed, DressingStarted|}
+SLEECRule12 = timed_priority(Rule12)
+
+
+-- Rule22 when CurtainOpenRqt then CurtainsOpened within 60 seconds 
+-- unless (userUnderDressed) then RefuseRequest within 30 seconds
+-- unless ((userDistressed) > (smedium)) then CurtainsOpened within 60 seconds
+
+Rule22 = TriggerRule22; MonitoringRule22; Rule22
+
+TriggerRule22 = CurtainOpenRqt -> SKIP	[] CurtainsOpened -> TriggerRule22
+	[] RefuseRequest -> TriggerRule22
+	[] CurtainsOpened -> TriggerRule22
+
+
+MonitoringRule22 = let
+	Monitoring1 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+	Monitoring2 = StartBy(RefuseRequest -> SKIP,(30 * 1))
+	Monitoring3 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+within StartBy(userUnderDressed?vuserUnderDressed ->
+	StartBy(userDistressed?vuserDistressed ->
+		if (STgtuserDistressed(vuserDistressed, smedium)) then Monitoring3
+		else (if (vuserUnderDressed) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule22 
+ARule22 = {|RefuseRequest, userDistressed, CurtainOpenRqt, userUnderDressed, CurtainsOpened|}
+SLEECRule22 = timed_priority(Rule22)
+
+
+-- Rule32 when UserFallen then SupportCalled within 1 minutes 
+-- unless (not (assentToSupportCalls))
+-- unless (emergency)
+
+Rule32 = TriggerRule32; MonitoringRule32; Rule32
+
+TriggerRule32 = UserFallen -> SKIP	[] SupportCalled -> TriggerRule32
+
+
+MonitoringRule32 = let
+	Monitoring1 = StartBy(SupportCalled -> SKIP,(1 * 60))
+	Monitoring2 = SKIP
+	Monitoring3 = SKIP
+within StartBy(assentToSupportCalls?vassentToSupportCalls ->
+	StartBy(emergency?vemergency ->
+		if (vemergency) then Monitoring3
+		else (if (not (vassentToSupportCalls)) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule32 
+ARule32 = {|SupportCalled, UserFallen, assentToSupportCalls, emergency|}
+SLEECRule32 = timed_priority(Rule32)
+
+
+-- Rule42 when DressingAbandoned then RetryAgreed within 3 minutes
+-- otherwise SupportCalled 
+
+Rule42 = TriggerRule42; MonitoringRule42; Rule42
+
+TriggerRule42 = DressingAbandoned -> SKIP	[] RetryAgreed -> TriggerRule42
+	[] SupportCalled -> TriggerRule42
+
+
+MonitoringRule42 = TimedInterruptSeq(RetryAgreed,(3 * 60),let
+	Monitoring1 = SupportCalled -> SKIP
+	Monitoring2 = SKIP
+within StartBy(assentToSupportCalls?vassentToSupportCalls ->
+	if (not (vassentToSupportCalls)) then Monitoring2
+	else (Monitoring1)
+,0)
+)
+
+-- alphabet for Rule42 
+ARule42 = {|RetryAgreed, SupportCalled, DressingAbandoned, assentToSupportCalls|}
+SLEECRule42 = timed_priority(Rule42)
+
+
+-- Rule52 when DressingStarted and ((roomTemperature) >= (19)) then DressingComplete within 2 minutes 
+
+Rule52 = TriggerRule52; MonitoringRule52; Rule52
+
+TriggerRule52 = let
+	MTrigger = StartBy(roomTemperature?vroomTemperature ->
+		if ((vroomTemperature) >= (19)) then SKIP else TriggerRule52
+	,0)
+within DressingStarted -> MTrigger 
+	[] DressingComplete -> TriggerRule52
+
+MonitoringRule52 = StartBy(DressingComplete -> SKIP,(2 * 60))
+
+-- alphabet for Rule52 
+ARule52 = {|roomTemperature, DressingComplete, DressingStarted|}
+SLEECRule52 = timed_priority(Rule52)
+
+
+-- Rule13 when DressingStarted then DressingSuccessful 
+
+Rule13 = TriggerRule13; MonitoringRule13; Rule13
+
+TriggerRule13 = DressingStarted -> SKIP	[] DressingSuccessful -> TriggerRule13
+
+
+MonitoringRule13 = DressingSuccessful -> SKIP
+
+-- alphabet for Rule13 
+ARule13 = {|DressingSuccessful, DressingStarted|}
+SLEECRule13 = timed_priority(Rule13)
+
+
+-- Rule23 when FallAssessed and (userUnresponsive) then SupportCalled 
+
+Rule23 = TriggerRule23; MonitoringRule23; Rule23
+
+TriggerRule23 = let
+	MTrigger = StartBy(userUnresponsive?vuserUnresponsive ->
+		if (vuserUnresponsive) then SKIP else TriggerRule23
+	,0)
+within FallAssessed -> MTrigger 
+	[] SupportCalled -> TriggerRule23
+
+MonitoringRule23 = SupportCalled -> SKIP
+
+-- alphabet for Rule23 
+ARule23 = {|userUnresponsive, SupportCalled, FallAssessed|}
+SLEECRule23 = timed_priority(Rule23)
+
+
+-- Rule63 when UserFallen then HealthChecked within 30 seconds
+-- otherwise SupportCalled within 60 seconds 
+
+Rule63 = TriggerRule63; MonitoringRule63; Rule63
+
+TriggerRule63 = UserFallen -> SKIP	[] HealthChecked -> TriggerRule63
+	[] SupportCalled -> TriggerRule63
+
+
+MonitoringRule63 = TimedInterruptSeq(HealthChecked,(30 * 1),StartBy(SupportCalled -> SKIP,(60 * 1)))
+
+-- alphabet for Rule63 
+ARule63 = {|SupportCalled, UserFallen, HealthChecked|}
+SLEECRule63 = timed_priority(Rule63)
+
+
+-- Rule73 when OpenCurtainsRequested then CurtainsOpened within 60 seconds 
+
+Rule73 = TriggerRule73; MonitoringRule73; Rule73
+
+TriggerRule73 = OpenCurtainsRequested -> SKIP	[] CurtainsOpened -> TriggerRule73
+
+
+MonitoringRule73 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+
+-- alphabet for Rule73 
+ARule73 = {|OpenCurtainsRequested, CurtainsOpened|}
+SLEECRule73 = timed_priority(Rule73)
+}
+
+csp-end
+
+timed csp RCSpec2 associated to Dressing csp-begin
+Timed(et) {
+	RCSpec2 = timed_priority(
+			let
+				AlphaRule = ARule2
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule2 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC2 csp-begin
+Timed(et) {
+	RC2 = timed_priority(
+		let
+			AlphaRule = ARule2
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec3 csp-begin
+Timed(et) {
+	RCSpec3 = timed_priority(
+			let
+				AlphaRule = ARule3
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule3 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC3 csp-begin
+Timed(et) {
+	RC3 = timed_priority(
+		let
+			AlphaRule = ARule3
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec4 csp-begin
+Timed(et) {
+	RCSpec4 = timed_priority(
+			let
+				AlphaRule = ARule4
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule4 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC4 csp-begin
+Timed(et) {
+	RC4 = timed_priority(
+		let
+			AlphaRule = ARule4
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec5 csp-begin
+Timed(et) {
+	RCSpec5 = timed_priority(
+			let
+				AlphaRule = ARule5
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule5 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC5 csp-begin
+Timed(et) {
+	RC5 = timed_priority(
+		let
+			AlphaRule = ARule5
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec6 csp-begin
+Timed(et) {
+	RCSpec6 = timed_priority(
+			let
+				AlphaRule = ARule6
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule6 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC6 csp-begin
+Timed(et) {
+	RC6 = timed_priority(
+		let
+			AlphaRule = ARule6
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec7 csp-begin
+Timed(et) {
+	RCSpec7 = timed_priority(
+			let
+				AlphaRule = ARule7
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule7 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC7 csp-begin
+Timed(et) {
+	RC7 = timed_priority(
+		let
+			AlphaRule = ARule7
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec8 csp-begin
+Timed(et) {
+	RCSpec8 = timed_priority(
+			let
+				AlphaRule = ARule8
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule8 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC8 csp-begin
+Timed(et) {
+	RC8 = timed_priority(
+		let
+			AlphaRule = ARule8
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec12 csp-begin
+Timed(et) {
+	RCSpec12 = timed_priority(
+			let
+				AlphaRule = ARule12
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule12 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC12 csp-begin
+Timed(et) {
+	RC12 = timed_priority(
+		let
+			AlphaRule = ARule12
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec22 csp-begin
+Timed(et) {
+	RCSpec22 = timed_priority(
+			let
+				AlphaRule = ARule22
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule22 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC22 csp-begin
+Timed(et) {
+	RC22 = timed_priority(
+		let
+			AlphaRule = ARule22
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec32 csp-begin
+Timed(et) {
+	RCSpec32 = timed_priority(
+			let
+				AlphaRule = ARule32
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule32 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC32 csp-begin
+Timed(et) {
+	RC32 = timed_priority(
+		let
+			AlphaRule = ARule32
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+
+timed csp RCSpec42 csp-begin
+Timed(et) {
+	RCSpec42 = timed_priority(
+			let
+				AlphaRule = ARule42
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule42 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC42 csp-begin
+Timed(et) {
+	RC42 = timed_priority(
+		let
+			AlphaRule = ARule42
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec52 csp-begin
+Timed(et) {
+	RCSpec52 = timed_priority(
+			let
+				AlphaRule = ARule52
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule52 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC52 csp-begin
+Timed(et) {
+	RC52 = timed_priority(
+		let
+			AlphaRule = ARule52
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec13 csp-begin
+Timed(et) {
+	RCSpec13 = timed_priority(
+			let
+				AlphaRule = ARule13
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule13 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC13 csp-begin
+Timed(et) {
+	RC13 = timed_priority(
+		let
+			AlphaRule = ARule13
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec23 csp-begin
+Timed(et) {
+	RCSpec23 = timed_priority(
+			let
+				AlphaRule = ARule23
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule23 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC23 csp-begin
+Timed(et) {
+	RC23 = timed_priority(
+		let
+			AlphaRule = ARule23
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec63 csp-begin
+Timed(et) {
+	RCSpec63 = timed_priority(
+			let
+				AlphaRule = ARule63
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule63 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC63 csp-begin
+Timed(et) {
+	RC63 = timed_priority(
+		let
+			AlphaRule = ARule63
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RCSpec73 csp-begin
+Timed(et) {
+	RCSpec73 = timed_priority(
+			let
+				AlphaRule = ARule73
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule73 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+
+timed csp RC73 csp-begin
+Timed(et) {
+	RC73 = timed_priority(
+		let
+			AlphaRule = ARule73
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+csp-end
+ 
+//timed assertion Check1 : RC refines Spec1 in the traces model
+
+//timed assertion Check1 : RC1 refines RCSpec1 in the traces model
+//timed assertion Check2 : RC2 refines RCSpec2 in the traces model
+// irrelevant: timed assertion Check3 : RC3 refines RCSpec3 in the traces model
+//timed assertion Check4 : RC4 refines RCSpec4 in the traces model
+// irrelevant: timed assertion Check5 : RC5 refines RCSpec5 in the traces model
+// irrelevant: timed assertion Check6 : RC6 refines RCSpec6 in the traces model
+//timed assertion Check7 : RC7 refines RCSpec7 in the traces model
+// irrelevant: timed assertion Check8 : RC8 refines RCSpec8 in the traces model
+timed assertion Check12 : RC12 refines RCSpec12 in the traces model
+timed assertion Check22 : RC22 refines RCSpec22 in the traces model
+timed assertion Check32 : RC32 refines RCSpec32 in the traces model
+timed assertion Check42 : RC42 refines RCSpec42 in the traces model
+timed assertion Check52 : RC52 refines RCSpec52 in the traces model
+//timed assertion Check13 : RC13 refines RCSpec13 in the traces model
+// irrelevant: timed assertion Check23 : RC23 refines RCSpec23 in the traces model
+//timed assertion Check33 : RC33 refines RCSpec33 in the traces model
+//timed assertion Check43 : RC43 refines RCSpec43 in the traces model
+//timed assertion Check53 : RC53 refines RCSpec53 in the traces model
+// irrelevant: timed assertion Check63 : RC63 refines RCSpec63 in the traces model
+// irrelevant: timed assertion Check73 : RC73 refines RCSpec73 in the traces model
+//timed assertion Check83 : RC83 refines RCSpec83 in the traces model

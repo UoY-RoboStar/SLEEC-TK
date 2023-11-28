@@ -1,0 +1,15 @@
+def_start
+	measure m0 : scale(s0, s1, s2)
+	event E0
+	event E1
+def_end
+rule_start
+	// comparison operators with scale type arguments
+	Rule1 when E0 and m0 < s1 then E1
+	Rule2 when E0 and m0 = s1 then E1
+	Rule3 when E0 and m0 > s1 then E1
+	Rule4 when E0 and m0 <> s0 then E1
+	Rule5 when E0 and m0 <= s0 then E1
+	Rule6 when E0 and m0 >= s0 then E1
+	Rule7 when E0 and s2 >= m0 then E1 
+rule_end

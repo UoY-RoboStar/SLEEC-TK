@@ -1,0 +1,22 @@
+[
+{ "name": "timed RC12 refines RCSpec12 (Check12) [traces model]",
+  "type": "refines",
+  "negated": false 
+},
+{ "name": "timed RC22 refines RCSpec22 (Check22) [traces model]",
+  "type": "refines",
+  "negated": false 
+},
+{ "name": "timed RC32 refines RCSpec32 (Check32) [traces model]",
+  "type": "refines",
+  "negated": false 
+},
+{ "name": "timed RC42 refines RCSpec42 (Check42) [traces model]",
+  "type": "refines",
+  "negated": false 
+},
+{ "name": "timed RC52 refines RCSpec52 (Check52) [traces model]",
+  "type": "refines",
+  "negated": false 
+}
+			]

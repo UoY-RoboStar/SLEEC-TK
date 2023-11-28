@@ -1,0 +1,31 @@
+// dressing robot case study
+
+def_start
+	event DressingStarted
+	event DressingSuccessful
+	event FallAssessed
+	event SupportCalled
+	event OpenCurtainsRequested
+	event CurtainsOpened
+	event UserFallen
+	event HealthChecked
+	event RefuseRequest
+	measure userUndressed : boolean
+	measure userUnresponsive : boolean
+	measure userDistressed : scale(low, medium, high)
+	constant MAX_RESPONSE_TIME = 60
+def_end
+
+rule_start
+	Rule1 when DressingStarted then DressingSuccessful
+	Rule2 when FallAssessed and userUnresponsive then SupportCalled
+	Rule3 when OpenCurtainsRequested and userUndressed then not CurtainsOpened within 60 seconds
+	Rule4 when UserFallen then SupportCalled
+	Rule5 when UserFallen then SupportCalled within 1 minutes
+	Rule6 when UserFallen then HealthChecked within 30 seconds
+		otherwise SupportCalled within MAX_RESPONSE_TIME seconds
+	Rule7 when OpenCurtainsRequested then CurtainsOpened within 60 seconds
+	Rule8 when OpenCurtainsRequested then CurtainsOpened within 60 seconds
+		unless userUndressed then RefuseRequest within 30 seconds 
+		unless userDistressed > medium then CurtainsOpened within 60 seconds
+rule_end

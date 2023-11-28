@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+	<feature id="circus.robocalc.sleec.feature" version="0.0.0">
+		<category name="main"/>
+	</feature>
+	<feature id="circus.robocalc.sleec.feature.source" version="0.0.0">
+		<category name="main.source"/>
+	</feature>
+	<category-def name="main" label="SLEEC"/>
+	<category-def name="main.source" label="SLEEC (Sources)"/>
+</site>

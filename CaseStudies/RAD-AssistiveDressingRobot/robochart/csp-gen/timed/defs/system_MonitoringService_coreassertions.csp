@@ -1,0 +1,38 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:20:40
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "system_defs.csp"
+include "core_timed_defs.csp"
+include "system_MonitoringService.csp"
+include "core_defs.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate system_MonitoringService
+P_system_MonitoringService = let
+	id__ = 0
+	
+	
+	
+within
+	system_MonitoringService::O__(
+		id__
+	)
+assert P_system_MonitoringService :[deadlock-free]	
+assert P_system_MonitoringService;RUN({r__}) :[deadlock-free]
+assert P_system_MonitoringService :[deterministic]
+assert P_system_MonitoringService :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_system_MonitoringService[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_system_MonitoringService

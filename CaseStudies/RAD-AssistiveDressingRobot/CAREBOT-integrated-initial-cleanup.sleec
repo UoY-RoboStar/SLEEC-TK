@@ -1,0 +1,141 @@
+def_start
+event CurtainOpenRqt
+event CurtainsOpened
+event RefuseRequest
+event InformUser
+event DressingStarted
+event CloseCurtains
+measure userUnderDressed: boolean
+measure medicalEmergency:boolean
+measure userDistressed : scale(slow, smedium, shigh)
+measure roomDark:boolean
+measure notVisible:boolean
+measure userAssent:boolean
+measure consentGrantedwithinXmonths:boolean //X needs to be defined. In the language within is not allowed for measures.
+event EmotionRecognitionDetected
+measure competentIndicatorRequired: boolean
+measure competentToGrantConsent:boolean
+measure dressPreferenceTypeA:boolean
+measure genderTypeB:boolean
+event DressinginClotingX
+measure userAdvices:boolean
+measure clothingItemNotFound:boolean
+event InteractionStarted
+event InformUserThisIsAgentnotHuman
+measure userConfused:boolean
+measure buildingFloor:scale(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10) //the building has max 10 floors.
+measure theUserHasBeenInformed:boolean
+event UserRequestInfo
+event ProvideInfo
+measure informationAvailable:boolean
+event InformUserandandReferToHumanCarer
+measure informationDisclosureNotPermitted:boolean
+event ObtainAssent
+measure admininisteringMedication:boolean
+measure userCompetenceIndicator:numeric
+constant N= 5 //this needs to be defined
+event CheckForandObtainProxy
+measure withholdingActivityPhysicalHarm:scale(low,moderate,severe)
+measure consentGranted:boolean
+measure consentIndicatorRequired:boolean
+event StopActivity
+measure consentIndicatorisWithdrawn:boolean
+measure consentIndicatorisRevoked:boolean
+event CollectionStarted
+event StoreMinInfo
+//second version
+event DressingSuccessful
+event FallAssessed
+	measure userUndressed : boolean
+	measure userUnresponsive : boolean
+	event OpenCurtainsRequested
+	event HealthChecked
+	
+//third version
+	measure roomTemperature: numeric
+	event DressingComplete
+	constant MAX_RESPONSE_TIME = 60
+	event UserFallen
+	measure assentToSupportCalls:boolean
+	event SupportCalled
+	measure emergency : boolean
+	event DressingAbandoned
+	event RetryAgreed
+
+def_end
+
+rule_start
+
+	Rule1 when CurtainOpenRqt then CurtainsOpened
+		       unless userUnderDressed then RefuseRequest
+		       unless userDistressed > smedium then CurtainsOpened
+		       
+	Rule2 when DressingStarted then CloseCurtains
+			   unless medicalEmergency
+			   unless buildingFloor >=f5
+			   unless roomDark and notVisible
+			   unless not userAssent  
+			   
+	Rule3 when EmotionRecognitionDetected and userDistressed>smedium then InformUser 
+		       unless consentGrantedwithinXmonths
+			   unless not competentIndicatorRequired or not  competentToGrantConsent
+			   
+	Rule4 when DressingStarted and dressPreferenceTypeA and genderTypeB then DressinginClotingX
+			   unless userAdvices
+			   unless medicalEmergency
+			   unless clothingItemNotFound then InformUser 
+			   
+	Rule5 	when InteractionStarted then InformUserThisIsAgentnotHuman
+			unless medicalEmergency
+			unless not userConfused
+			unless theUserHasBeenInformed
+
+
+    Rule6 when UserRequestInfo then ProvideInfo
+			unless not informationAvailable then InformUserandandReferToHumanCarer
+			unless informationDisclosureNotPermitted then InformUserandandReferToHumanCarer // irrelevant
+    
+	 Rule7  when DressingStarted and admininisteringMedication then ObtainAssent //within 5 seconds //5 seconds can be specified for immediate action
+			unless userCompetenceIndicator = N then CheckForandObtainProxy
+			unless medicalEmergency
+			unless withholdingActivityPhysicalHarm >=moderate
+			unless consentGranted
+			unless not consentIndicatorRequired
+			unless consentIndicatorisWithdrawn or consentIndicatorisRevoked then StopActivity // irrelevant
+
+	Rule8 	when CollectionStarted then StoreMinInfo
+
+	Rule9 when DressingStarted and userUnderDressed then DressingComplete  within 2 minutes  
+		  	   unless roomTemperature < 19 then DressingComplete within 90 seconds
+		       unless roomTemperature < 17 then DressingComplete within 60 seconds 
+	
+	Rule10 when CurtainOpenRqt then CurtainsOpened within 60 seconds
+		       unless userUnderDressed then RefuseRequest within 30 seconds
+		       unless userDistressed > smedium then CurtainsOpened within MAX_RESPONSE_TIME seconds 
+   	
+   	Rule11 when UserFallen then SupportCalled within 1 minutes
+   	           unless not assentToSupportCalls
+   	           unless emergency 
+   	 
+    Rule12 when DressingAbandoned then RetryAgreed within 3 minutes
+		       otherwise {SupportCalled 
+		  	      unless not assentToSupportCalls 
+		       }
+  Rule13 when DressingStarted and roomTemperature >= 19 then DressingComplete  within 2 minutes 
+ 
+  Rule14 when DressingStarted then DressingSuccessful 
+	Rule15 when FallAssessed and userUnresponsive then SupportCalled 
+	Rule16 when OpenCurtainsRequested and userUndressed then not CurtainsOpened within 60 seconds 
+	Rule17 when UserFallen then SupportCalled //relevant
+	Rule18 when UserFallen then SupportCalled within 1 minutes 
+	Rule19 when UserFallen then HealthChecked within 30 seconds
+		otherwise SupportCalled within MAX_RESPONSE_TIME seconds
+		
+	Rule20 when OpenCurtainsRequested then CurtainsOpened within 60 seconds 
+	Rule21 when OpenCurtainsRequested then CurtainsOpened within 60 seconds
+		unless userUndressed then RefuseRequest within 30 seconds 
+		unless userDistressed > smedium then CurtainsOpened within 60 seconds 
+	
+	
+rule_end
+

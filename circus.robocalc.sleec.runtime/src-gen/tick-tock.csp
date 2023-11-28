@@ -1,0 +1,164 @@
+---------------------------------------------------------------------------
+	-- Below, we have the encoding of the tock-CSP semantics ------------------
+	---------------------------------------------------------------------------
+	
+	---------------------------------------------------------------------------
+	-- Pedro Ribeiro <pedro.ribeiro@york.ac.uk>
+	-- Department of Computer Science
+	-- University of York
+	-- York, YO10 5GH
+	-- UK
+	---------------------------------------------------------------------------
+	
+	
+	---------------------------------------------------------------------------
+	-- SUMMARY AND ACKNOWLEDGMENTS
+	---------------------------------------------------------------------------
+	--
+	-- This file contains an encoding of 'tick-tock'-CSP, as well as encodings
+	-- for the Refusal Testing model. This work is based on a tailoring (and
+	-- an extension to cater for termination) of a technique by David Mestel,
+	-- originally available at:
+	
+	-- http://www.cs.ox.ac.uk/people/david.mestel/model-shifting.csp
+	--
+	-- That work referred to the strategy outlined in the following paper:
+	--
+	-- Mestel, D. and Roscoe, A.W., 2016. Reducing complex CSP models
+	-- to traces via priority. Electronic Notes in Theoretical Computer
+	-- Science, 325, pp.237-252.
+	--
+	-- The current file extends that work to 'tick-tock'-CSP, whose details
+	-- can be found in the paper:
+	--
+	-- Baxter, J. and Ribeiro, P. and Cavalcanti, A. Reasoning with tock-CSP
+	-- with FDR.
+	--
+	-- We observe that in that paper a refusal of an event e is encoded as e',
+	-- whereas here a refusal e is encoded as ref.e. This is a technicality
+	-- that enables the declaration of a parametric channel based solely on a
+	-- set of regular events. Furthermore we take advantage of FDR's Modules
+	-- to encapsulate the encoding within a MS(x) module where x is a set of
+	-- events. It exports two parametric processes, C3(P) corresponding to the
+	-- encoding of tick-tock, and CRT(P), corresponding to refusal-testing.
+	--
+	---------------------------------------------------------------------------
+	
+	---------------------------------------------------------------------------
+	-- USAGE
+	---------------------------------------------------------------------------
+	--
+	-- Modelling:
+	--
+	-- Processes in 'tick-tock' are modelled within a Timed Section, declared as
+	-- Timed(et) { ... }. Untimed operators USTOP and Int(P,Q) (untimed interrupt)
+	-- are defined below for convenience.
+	--
+	-- Instantiating the encoding:
+	--
+	-- Given a set of events of interest {a,b,c}, the encoding can be instantiated as:
+	-- instance M = MS({a,b,c}).
+	--
+	-- Refinement checking:
+	--
+	-- To check that P is refined by Q in the tick-tock model the following
+	-- assertion should be written:
+	--
+	-- assert M::C3(P) [T= M::C3(Q)
+	--
+	---------------------------------------------------------------------------
+	
+	---------------------------------------------------------------------------
+	-- DEFINITIONS
+	---------------------------------------------------------------------------
+	
+	---------------------------------------------------------------------------
+	-- Auxiliary definitions for tick-tock-CSP modelling
+	---------------------------------------------------------------------------
+	
+	channel tock
+	
+	USTOP = STOP
+	et(_) = 0
+	
+	UInt(P,Q) = P /\ Q
+	
+	Timed(et) {
+		TSTOP = STOP
+		EndBy(P,d) = P /\ (WAIT(d) ; USTOP)
+		StartBy(P,d) = P [] (WAIT(d) ; USTOP)
+	    Deadline(c,d) = StartBy(c -> SKIP,d)
+	
+	    channel finishedp, finishedq, timeout
+		TimedInterrupt(P,d,Q) =
+	      ((((P; Deadline(finishedp,0))
+	        /\ timeout -> (RUN(diff(Events,{finishedp,finishedq,timeout}))
+	                       /\ finishedq -> SKIP)
+	       )
+	         [| Events |]
+	       RT(d,Q)) \ {finishedp, finishedq, timeout}); SKIP
+	
+	}
+	
+	
+	RT(d,Q) = if d > 0
+	          then RUN(diff(Events,{finishedp, finishedq, timeout, tock})) /\ (finishedp -> SKIP [] tock -> RT(d-1,Q))
+		      else timeout -> Q; finishedq -> SKIP
+	
+	---------------------------------------------------------------------------
+	-- Semantic encoding
+	---------------------------------------------------------------------------
+	
+	external prioritisepo
+	
+	module MS(Sigma)
+	
+	-- Note that for the purposes of encoding refusals/acceptances in this model
+	-- ref.x, rather than x' is used, unlike that discussed in the paper. This
+	-- is a technicality as it makes it easier to defined a parametrised channel.
+	
+	channel ref:union(Sigma,{tock,tick})
+	channel acc:union(Sigma,{tock,tick})
+	
+	channel stab
+	channel tick
+	
+	-- The partial order gives each event 'x' priority over 'ref.x'
+	order = {(x,ref.x) | x:union(Sigma,{tock,tick})}
+	
+	---------------------------------------------------------------------------
+	-- Context C1
+	---------------------------------------------------------------------------
+	
+	-- This is the first context, whereby in interleaving with P we have the
+	-- process that can perform ref or stab, and is prioritised according to
+	-- 'order', whereby 'Sigma' have same priority as 'tau' and 'tick'.
+	--
+	-- This is effectively an implementation of the RT-model, because after each
+	-- normal trace (ie, with events drawn from Sigma) we have the possibility
+	-- to also observe in the trace refusal information, at that point.
+	
+	C1(P) = prioritisepo(P ||| RUN({|ref,stab|}), union(Sigma,{|ref,tock,tick|}), order, union(Sigma,{tock,tick}))
+	
+	---------------------------------------------------------------------------
+	-- Encoding of 'tick-tock'-CSP model
+	---------------------------------------------------------------------------
+	
+	C2(P) = C1(P) [| union(Sigma,{|ref,stab,tock,tick|}) |] Sem
+	
+	Sem = ([] x : union(Sigma,{tock,tick}) @ x -> Sem)
+	      [] (ref?x -> Ref)
+	      [] (stab -> Ref)
+	
+	Ref = (ref?x -> Ref) [] (stab -> Ref) [] tock -> Sem
+	
+	exports
+	
+	-- Refusal-testing (via refusals)
+	CRT(P) = C1(P ; tick -> SKIP)
+	
+	-- tick-tock (via refusals)
+	C3(P) = C2(P ; tick -> SKIP)
+	
+	endmodule
+	---------------------------------------------------------------------------

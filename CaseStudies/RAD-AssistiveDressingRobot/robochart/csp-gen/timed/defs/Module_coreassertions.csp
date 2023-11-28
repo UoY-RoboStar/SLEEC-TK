@@ -1,0 +1,59 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 31-08-2023 19:18:10
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "file_rad_defs.csp"
+include "Module.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate Module
+P_Module = let
+	id__ = 0
+	
+	
+	
+		
+	
+within
+	Module::O__(id__)
+assert P_Module :[deadlock-free]	
+assert P_Module;RUN({r__}) :[deadlock-free]
+assert P_Module :[deterministic]
+assert P_Module :[divergence-free]
+
+-- generate Module_ctrl_ref0
+P_Module_ctrl_ref0 = let
+	id__ = 0
+	
+	
+	
+		
+within
+	Module::ctrl_ref0::O__(id__)
+
+assert P_Module_ctrl_ref0 :[deadlock-free]	
+assert P_Module_ctrl_ref0;RUN({r__}) :[deadlock-free]
+assert P_Module_ctrl_ref0 :[deterministic]
+assert P_Module_ctrl_ref0 :[divergence-free]
+
+-- timed deadlock free
+assert prioritise(P_Module_ctrl_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_Module_ctrl_ref0
+-- timed deadlock free
+assert prioritise(P_Module[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_Module

@@ -1,0 +1,101 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel E2
+channel m0 : Bool
+	
+Capabilities = 
+  {| E0,
+     E1,
+     E2,
+  	 m0
+  |}
+Measures =
+  {| m0
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when E0 then E1 within 1 seconds
+-- otherwise E2 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = E0 -> SKIP
+
+MonitoringRule1 = TimedInterrupt(E1 -> SKIP,(1 * 1),E2 -> SKIP)
+
+-- alphabet for Rule1 
+ARule1 = {|E0, E2|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when E0 then E1 within 1 seconds
+-- otherwise E2 within 0 seconds 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = E0 -> SKIP
+
+MonitoringRule2 = TimedInterrupt(E1 -> SKIP,(1 * 1),StartBy(E2 -> SKIP,(0 * 1)))
+
+-- alphabet for Rule2 
+ARule2 = {|E0, E2|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when E0 then E1 within 0 seconds
+-- otherwise E2 within 2 seconds 
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = E0 -> SKIP
+
+MonitoringRule3 = TimedInterrupt(E1 -> SKIP,(0 * 1),StartBy(E2 -> SKIP,(2 * 1)))
+
+-- alphabet for Rule3 
+ARule3 = {|E0, E2|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking Rule1 with Rule2:
+
+intersectionRule1Rule2 = Rule1[|inter({|E0, E2|}, {|E0, E2|})|]Rule2
+SLEECRule1Rule2 = timed_priority(intersectionRule1Rule2)
+
+assert SLEECRule1Rule2:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule2) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule2)
+
+
+-- Checking Rule1 with Rule3:
+
+intersectionRule1Rule3 = Rule1[|inter({|E0, E2|}, {|E0, E2|})|]Rule3
+SLEECRule1Rule3 = timed_priority(intersectionRule1Rule3)
+
+assert SLEECRule1Rule3:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule3) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule3)
+
+
+-- Checking Rule2 with Rule3:
+
+intersectionRule2Rule3 = Rule2[|inter({|E0, E2|}, {|E0, E2|})|]Rule3
+SLEECRule2Rule3 = timed_priority(intersectionRule2Rule3)
+
+assert SLEECRule2Rule3:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule3) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule3)
+
+
+
+}

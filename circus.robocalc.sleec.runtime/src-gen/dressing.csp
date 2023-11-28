@@ -1,0 +1,292 @@
+include "tick-tock.csp"
+
+
+channel DressingStarted
+channel DressingSuccessful
+channel FallAssessed
+channel SupportCalled
+channel OpenCurtainsRequested
+channel CurtainsOpened
+channel UserFallen
+channel HealthChecked
+channel RefuseRequest
+channel userUndressed : Bool
+channel userUnresponsive : Bool
+channel userDistressed : STuserDistressed
+
+datatype STuserDistressed = low | medium | high
+
+STleuserDistressed(v1userDistressed, v2userDistressed) =
+	if v1userDistressed == low then true
+	else (if v1userDistressed == medium then not member(v2userDistressed,{low})
+	else v2userDistressed == high)
+	
+STequserDistressed(v1userDistressed, v2userDistressed) =
+	v1userDistressed == v2userDistressed
+	
+STltuserDistressed(v1userDistressed, v2userDistressed) =
+	STleuserDistressed(v1userDistressed, v2userDistressed) and STneuserDistressed(v1userDistressed, v2userDistressed)
+	
+STgtuserDistressed(v1userDistressed, v2userDistressed) =
+	STleuserDistressed(v2userDistressed, v1userDistressed)
+	
+STneuserDistressed(v1userDistressed, v2userDistressed) =
+	not STequserDistressed(v1userDistressed, v2userDistressed)
+	
+STgeuserDistressed(v1userDistressed, v2userDistressed) =
+	STltuserDistressed(v2userDistressed, v1userDistressed)
+
+MAX_RESPONSE_TIME = 60
+	
+Capabilities = 
+  {| DressingStarted,
+     DressingSuccessful,
+     FallAssessed,
+     SupportCalled,
+     OpenCurtainsRequested,
+     CurtainsOpened,
+     UserFallen,
+     HealthChecked,
+     RefuseRequest,
+  	 userUndressed,
+  	 userUnresponsive,
+  	 userDistressed
+  |}
+Measures =
+  {| userUndressed,
+     userUnresponsive,
+     userDistressed
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when DressingStarted then DressingSuccessful 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = DressingStarted -> SKIP
+
+MonitoringRule1 = DressingSuccessful -> SKIP
+
+-- alphabet for Rule1 
+ARule1 = {|DressingSuccessful, DressingStarted|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when FallAssessed and (userUnresponsive) then SupportCalled 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = let
+	MTrigger = StartBy(userUnresponsive?vuserUnresponsive ->
+		if (vuserUnresponsive) then SKIP else TriggerRule2
+	,0)
+within FallAssessed -> MTrigger
+
+MonitoringRule2 = SupportCalled -> SKIP
+
+-- alphabet for Rule2 
+ARule2 = {|userUnresponsive, SupportCalled, FallAssessed|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when OpenCurtainsRequested and (userUndressed) then not CurtainsOpened within 60 seconds 
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = let
+	MTrigger = StartBy(userUndressed?vuserUndressed ->
+		if (vuserUndressed) then SKIP else TriggerRule3
+	,0)
+within OpenCurtainsRequested -> MTrigger
+
+MonitoringRule3 = WAIT((60 * 1))
+
+-- alphabet for Rule3 
+ARule3 = {|OpenCurtainsRequested, userUndressed, CurtainsOpened|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+-- Rule4 when UserFallen then SupportCalled 
+
+Rule4 = TriggerRule4; MonitoringRule4; Rule4
+
+TriggerRule4 = UserFallen -> SKIP
+
+MonitoringRule4 = SupportCalled -> SKIP
+
+-- alphabet for Rule4 
+ARule4 = {|SupportCalled, UserFallen|}
+SLEECRule4 = timed_priority(Rule4)
+
+
+-- Rule5 when UserFallen then SupportCalled within 1 minutes 
+
+Rule5 = TriggerRule5; MonitoringRule5; Rule5
+
+TriggerRule5 = UserFallen -> SKIP
+
+MonitoringRule5 = StartBy(SupportCalled -> SKIP,(1 * 60))
+
+-- alphabet for Rule5 
+ARule5 = {|SupportCalled, UserFallen|}
+SLEECRule5 = timed_priority(Rule5)
+
+
+-- Rule6 when UserFallen then HealthChecked within 30 seconds
+-- otherwise SupportCalled within 60 seconds 
+
+Rule6 = TriggerRule6; MonitoringRule6; Rule6
+
+TriggerRule6 = UserFallen -> SKIP
+
+MonitoringRule6 = TimedInterrupt(HealthChecked -> SKIP,(30 * 1),StartBy(SupportCalled -> SKIP,(60 * 1)))
+
+-- alphabet for Rule6 
+ARule6 = {|SupportCalled, UserFallen|}
+SLEECRule6 = timed_priority(Rule6)
+
+
+-- Rule7 when OpenCurtainsRequested then CurtainsOpened within 60 seconds 
+
+Rule7 = TriggerRule7; MonitoringRule7; Rule7
+
+TriggerRule7 = OpenCurtainsRequested -> SKIP
+
+MonitoringRule7 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+
+-- alphabet for Rule7 
+ARule7 = {|OpenCurtainsRequested, CurtainsOpened|}
+SLEECRule7 = timed_priority(Rule7)
+
+
+-- Rule8 when OpenCurtainsRequested then CurtainsOpened within 60 seconds 
+-- unless (userUndressed) then RefuseRequest within 30 seconds
+-- unless ((userDistressed) > (medium)) then CurtainsOpened within 60 seconds
+
+Rule8 = TriggerRule8; MonitoringRule8; Rule8
+
+TriggerRule8 = OpenCurtainsRequested -> SKIP
+
+MonitoringRule8 = let
+	Monitoring1 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+	Monitoring2 = StartBy(RefuseRequest -> SKIP,(30 * 1))
+	Monitoring3 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+within StartBy(userUndressed?vuserUndressed ->
+	StartBy(userDistressed?vuserDistressed ->
+		if (vuserUndressed) then Monitoring3
+		else (if (STgtuserDistressed(vuserDistressed, medium)) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule8 
+ARule8 = {|userDistressed, OpenCurtainsRequested, userUndressed, CurtainsOpened|}
+SLEECRule8 = timed_priority(Rule8)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking Rule2 with Rule4:
+
+intersectionRule2Rule4 = Rule2[|inter({|userUnresponsive, SupportCalled, FallAssessed|}, {|SupportCalled, UserFallen|})|]Rule4
+SLEECRule2Rule4 = timed_priority(intersectionRule2Rule4)
+
+assert SLEECRule2Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule4) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule4)
+
+
+-- Checking Rule2 with Rule5:
+
+intersectionRule2Rule5 = Rule2[|inter({|userUnresponsive, SupportCalled, FallAssessed|}, {|SupportCalled, UserFallen|})|]Rule5
+SLEECRule2Rule5 = timed_priority(intersectionRule2Rule5)
+
+assert SLEECRule2Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule5) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule5)
+
+
+-- Checking Rule2 with Rule6:
+
+intersectionRule2Rule6 = Rule2[|inter({|userUnresponsive, SupportCalled, FallAssessed|}, {|SupportCalled, UserFallen|})|]Rule6
+SLEECRule2Rule6 = timed_priority(intersectionRule2Rule6)
+
+assert SLEECRule2Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule6) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule6)
+
+
+-- Checking Rule3 with Rule7:
+
+intersectionRule3Rule7 = Rule3[|inter({|OpenCurtainsRequested, userUndressed, CurtainsOpened|}, {|OpenCurtainsRequested, CurtainsOpened|})|]Rule7
+SLEECRule3Rule7 = timed_priority(intersectionRule3Rule7)
+
+assert SLEECRule3Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule7) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule7)
+
+
+-- Checking Rule3 with Rule8:
+
+intersectionRule3Rule8 = Rule3[|inter({|OpenCurtainsRequested, userUndressed, CurtainsOpened|}, {|userDistressed, OpenCurtainsRequested, userUndressed, CurtainsOpened|})|]Rule8
+SLEECRule3Rule8 = timed_priority(intersectionRule3Rule8)
+
+assert SLEECRule3Rule8:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule8) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule8)
+
+
+-- Checking Rule4 with Rule5:
+
+intersectionRule4Rule5 = Rule4[|inter({|SupportCalled, UserFallen|}, {|SupportCalled, UserFallen|})|]Rule5
+SLEECRule4Rule5 = timed_priority(intersectionRule4Rule5)
+
+assert SLEECRule4Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule5) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule5)
+
+
+-- Checking Rule4 with Rule6:
+
+intersectionRule4Rule6 = Rule4[|inter({|SupportCalled, UserFallen|}, {|SupportCalled, UserFallen|})|]Rule6
+SLEECRule4Rule6 = timed_priority(intersectionRule4Rule6)
+
+assert SLEECRule4Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule6) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule6)
+
+
+-- Checking Rule5 with Rule6:
+
+intersectionRule5Rule6 = Rule5[|inter({|SupportCalled, UserFallen|}, {|SupportCalled, UserFallen|})|]Rule6
+SLEECRule5Rule6 = timed_priority(intersectionRule5Rule6)
+
+assert SLEECRule5Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule5Rule6) [T= MSN::C3(SLEECRule5)
+
+assert not MSN::C3(SLEECRule5) [T= MSN::C3(SLEECRule5Rule6)
+
+
+-- Checking Rule7 with Rule8:
+
+intersectionRule7Rule8 = Rule7[|inter({|OpenCurtainsRequested, CurtainsOpened|}, {|userDistressed, OpenCurtainsRequested, userUndressed, CurtainsOpened|})|]Rule8
+SLEECRule7Rule8 = timed_priority(intersectionRule7Rule8)
+
+assert SLEECRule7Rule8:[deadlock-free]					
+assert not MSN::C3(SLEECRule7Rule8) [T= MSN::C3(SLEECRule7)
+
+assert not MSN::C3(SLEECRule7) [T= MSN::C3(SLEECRule7Rule8)
+
+
+
+}

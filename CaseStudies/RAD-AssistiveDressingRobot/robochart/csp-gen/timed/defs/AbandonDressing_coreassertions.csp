@@ -1,0 +1,39 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 31-08-2023 19:18:10
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "core_timed_defs.csp"
+include "AbandonDressing.csp"
+include "core_defs.csp"
+include "file_rad_defs.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate OP_AbandonDressing
+P_OP_AbandonDressing = let
+	id__ = 0
+	
+	param_assent = true
+	
+	
+	
+within
+	OP_AbandonDressing::O__(id__,
+				param_assent)
+assert P_OP_AbandonDressing :[deadlock-free]	
+assert P_OP_AbandonDressing;RUN({r__}) :[deadlock-free]
+assert P_OP_AbandonDressing :[deterministic]
+assert P_OP_AbandonDressing :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_AbandonDressing[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_AbandonDressing

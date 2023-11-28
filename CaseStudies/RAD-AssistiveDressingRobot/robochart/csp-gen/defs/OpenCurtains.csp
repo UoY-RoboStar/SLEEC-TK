@@ -1,0 +1,549 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 31-08-2023 19:18:09
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+-- compileSelfContainedOperation
+module OP_OpenCurtains
+exports
+	transparent diamond
+	transparent sbisim
+	transparent dbisim
+	transparent chase
+
+	-- Transition identifiers
+	-- declaring identifiers of transitions
+	datatype NIDS = 
+	              NID_i0|
+	              NID_j0|
+	              NID_f0|
+	              NID_j1|
+	              NID_j2
+	
+	channel internal__ : NIDS
+	
+	-- Flow channels		
+	channel interrupt
+	channel exited
+	channel exit
+	channel terminate
+	
+	-- Variable channels
+	
+	-- Shared variable channels
+	
+	-- Local variable channels for defined operations that are required by the state machine
+	
+	-- Declaring state machine events
+	channel retryAgreed__: NIDS.InOut
+	channel retryAgreed: InOut
+	channel refuseRequest__: NIDS.InOut
+	channel refuseRequest: InOut
+	channel SupportCalled__: NIDS.InOut
+	channel SupportCalled: InOut
+	channel CurtainOpenRqt__: NIDS.InOut
+	channel CurtainOpenRqt: InOut
+	channel CurtainsOpened__: NIDS.InOut
+	channel CurtainsOpened: InOut
+	channel roomTemperature__: NIDS.InOut.core_int
+	channel roomTemperature: InOut.core_int
+	
+	-- Declaring call and ret events for undefined operations
+	
+	enterSS = {|
+	i0::enter,
+	j0::enter,
+	f0::enter,
+	j1::enter,
+	j2::enter
+	|}
+	
+	enteredSS = 	{|
+	f0::entered
+	|}
+	
+	internal_events = union(enteredSS,union(enterSS,{|interrupt,exited|}))
+	
+	shared_variable_events = {|
+	|}
+	
+	-- channel set with all visible events
+	sem__events = {|
+		terminate
+	,	retryAgreed,
+		refuseRequest,
+		SupportCalled,
+		CurtainOpenRqt,
+		CurtainsOpened,
+		roomTemperature
+		, share__
+		|}
+	
+	-- Nodes --
+	-- declaring all nodes
+	
+	----------------------------------------------------------------------
+	-- Initial: i0
+	module i0
+	exports
+	
+		channel enter, interrupt
+		
+		D__(id__,
+					param_underDressed,
+					param_distress) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Termination = terminate -> SKIP
+				
+				Active 		= share__choice(interrupt -> SKIP) ; Inactive
+			within
+				Inactive [| {terminate} |> SKIP)
+		
+		VS_O__(id__,
+					param_underDressed,
+					param_distress) = D__(id__,
+					param_underDressed,
+					param_distress)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- Junction: j0
+	module j0
+	exports
+	
+		channel enter, interrupt
+		
+		D__(id__,
+					param_underDressed,
+					param_distress) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Active 		= share__choice(interrupt -> SKIP) ; Inactive
+			within
+				Inactive [| {terminate} |> SKIP)
+			
+		VS_O__(id__,
+					param_underDressed,
+					param_distress) = D__(id__,
+					param_underDressed,
+					param_distress)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- Final state: f0
+	module f0
+	
+	exports
+	
+		channel enter, entered, interrupt
+		channel enteredL, enteredR
+		
+		--	Rule: behaviours(Node)
+		D__(id__,
+					param_underDressed,
+					param_distress) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Entering
+				
+				Entering 	= entered -> SKIP ; Active
+				Active		= share__choice(terminate -> SKIP [] interrupt -> SKIP) ; Interrupted
+				Interrupted	= share__choice(exit -> exited -> Inactive)
+			within
+				Inactive [| {terminate} |> SKIP)
+			
+		VS_O__(id__,
+					param_underDressed,
+					param_distress) = D__(id__,
+					param_underDressed,
+					param_distress)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- Junction: j1
+	module j1
+	exports
+	
+		channel enter, interrupt
+		
+		D__(id__,
+					param_underDressed,
+					param_distress) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Active 		= share__choice(interrupt -> SKIP) ; Inactive
+			within
+				Inactive [| {terminate} |> SKIP)
+			
+		VS_O__(id__,
+					param_underDressed,
+					param_distress) = D__(id__,
+					param_underDressed,
+					param_distress)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	
+	----------------------------------------------------------------------
+	-- Junction: j2
+	module j2
+	exports
+	
+		channel enter, interrupt
+		
+		D__(id__,
+					param_underDressed,
+					param_distress) = 
+			dbisim(let
+				Inactive 	= share__choice(enter -> SKIP [] terminate -> SKIP) ; Active
+				
+				Active 		= share__choice(interrupt -> SKIP) ; Inactive
+			within
+				Inactive [| {terminate} |> SKIP)
+			
+		VS_O__(id__,
+					param_underDressed,
+					param_distress) = D__(id__,
+					param_underDressed,
+					param_distress)
+	
+	endmodule
+	----------------------------------------------------------------------
+	
+	-- END of Nodes --
+	
+	-- Operation calls --
+	-- Only the undefined operations are declared here.
+	-- If the state machine is in isolation, all required operations will be undefined.
+	-- If it is in the context of a controller, the required operations not provided by the
+	-- controller will be declared here, and the defined operations will be defined in the
+	-- context of the Controller module, and therefore within scope of the state machine module.
+	
+	-- END of Operation calls --
+	
+	-- STM processes
+	STM(id__,
+				param_underDressed,
+				param_distress) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
+	Stateful(id__,
+				param_underDressed,
+				param_distress) \ {terminate}
+	
+	STM_VS_O(id__,
+				param_underDressed,
+				param_distress) = -- RULE: [[stm:OperationDef]]_STM^nops : CSPProcess
+	Stateful(id__,
+				param_underDressed,
+				param_distress) \ {terminate}
+	
+	-- Transitions
+	Transitions(id__,
+				param_underDressed,
+				param_distress) = ((let
+		Trans = (
+			((share__ -> SKIP
+			 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((SKIP ; j0::enter -> SKIP))))
+			 	 [] dbisim(((not (param_underDressed)))&(internal__!NID_j0 -> SKIP ;  ((SKIP ; j2::enter -> SKIP))))
+			 	 [] dbisim((param_underDressed)&(internal__!NID_j0 -> SKIP ;  ((SKIP ; j1::enter -> SKIP))))
+			 	 [] dbisim(((param_distress==Distress_high))&(internal__!NID_j1 -> SKIP ;  ((SKIP ; j2::enter -> SKIP))))
+			 	 [] dbisim((true)&(internal__!NID_j2 -> SKIP ;  ((SKIP;true&(share__choice(CurtainsOpened.out -> SKIP)) ; f0::enter -> SKIP))))
+			 	 [] dbisim(((not ((param_distress==Distress_high))))&(internal__!NID_j1 -> SKIP ;  ((SKIP;true&(share__choice(refuseRequest.out -> SKIP)) ; f0::enter -> SKIP))))
+			 ) ; Trans)
+			 []
+			 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
+			 []
+			 terminate -> SKIP
+		)
+	within
+		Trans
+	)
+	)
+	
+	-- Stateful
+	-- RULE: Stateful(stm:StateMachineBody) : CSPProcess
+	
+	-- Named process definitions
+	MachineBody(id__,
+				param_underDressed,
+				param_distress) = 
+		dbisim((
+		let
+			finalNodesEntered = {|f0::entered|}
+		within
+			((let
+				-- IMPLEMENTATION NOTE:
+				-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+				-- modules for defining the semantics of each node.
+				enterSS = {|
+				i0::enter,
+				j0::enter,
+				f0::enter,
+				j1::enter,
+				j2::enter
+				|}
+				hideSet = union(enterSS,{|exit,exited,internal__|})
+			within 
+				((let
+					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+					-- because CSPM modules are used for the semantics of Node.
+					flowevts = union(enterSS,{|exit,exited,interrupt|})
+					transSync = {|internal__.NID_i0,internal__.NID_j0,internal__.NID_j0,internal__.NID_j1,internal__.NID_j2,internal__.NID_j1|}
+				within
+					((
+					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+					   i0::D__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   j0::D__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   f0::D__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   j1::D__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   j2::D__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   )
+					   )
+					   )
+					   )
+					 )
+					 [[f0::interrupt <- x__ | x__ <- {|interrupt|}]]
+					 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
+					 [[j0::interrupt <- x__ | x__ <- {|internal__.NID_j0,internal__.NID_j0|}]]
+					 [[j1::interrupt <- x__ | x__ <- {|internal__.NID_j1,internal__.NID_j1|}]]
+					 [[j2::interrupt <- x__ | x__ <- {|internal__.NID_j2|}]]
+					 )
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+					 )
+					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+					|}) |]
+					 ((i0::enter -> Transitions(id__,
+					 			param_underDressed,
+					 			param_distress))
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+					 )
+					)
+					)
+				)
+				 \ hideSet)
+				[[
+					retryAgreed__.x____ <- retryAgreed,
+					refuseRequest__.x____ <- refuseRequest,
+					SupportCalled__.x____ <- SupportCalled,
+					CurtainOpenRqt__.x____ <- CurtainOpenRqt,
+					CurtainsOpened__.x____ <- CurtainsOpened,
+					roomTemperature__.x____ <- roomTemperature
+					| x____ <- NIDS
+				]]
+			)
+			 [| {| interrupt |} |] SKIP)
+		)
+		)
+	
+	Behaviour(id__,
+				param_underDressed,
+				param_distress) = 
+		dbisim((MachineBody(id__,
+					param_underDressed,
+					param_distress)\ enteredSS)
+		)
+	
+	
+	Stateful(id__,
+				param_underDressed,
+				param_distress) = 
+		((
+			(Behaviour(id__,
+						param_underDressed,
+						param_distress) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
+						param_underDressed,
+						param_distress))
+		 	\getsetLocalChannels
+		)
+		)
+	
+	
+	-- Visible counterparts
+	MachineBody_VS_O(id__,
+				param_underDressed,
+				param_distress) = 
+		dbisim((
+		let
+			finalNodesEntered = {|f0::entered|}
+		within
+			((let
+				-- IMPLEMENTATION NOTE:
+				-- Here the 'enter' channel set is calculated explicitly because of the use of CSPM 
+				-- modules for defining the semantics of each node.
+				enterSS = {|
+				i0::enter,
+				j0::enter,
+				f0::enter,
+				j1::enter,
+				j2::enter
+				|}
+				hideSet = union(enterSS,{|exit,exited,internal__|})
+			within 
+				((let
+					-- IMPLEMENTATION NOTE: the channel set 'enter' is calculated explicitly
+					-- because CSPM modules are used for the semantics of Node.
+					flowevts = union(enterSS,{|exit,exited,interrupt|})
+					transSync = {|internal__.NID_i0,internal__.NID_j0,internal__.NID_j0,internal__.NID_j1,internal__.NID_j2,internal__.NID_j1|}
+				within
+					((
+					 (((-- RULE composeNodes(nc:NodeContainer)^nops : CSPProcess
+					   i0::VS_O__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   j0::VS_O__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   f0::VS_O__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   j1::VS_O__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   [| { share__, terminate } |] (
+					   j2::VS_O__(id__,
+					   			param_underDressed,
+					   			param_distress)
+					   )
+					   )
+					   )
+					   )
+					 )
+					 [[f0::interrupt <- x__ | x__ <- {|interrupt|}]]
+					 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
+					 [[j0::interrupt <- x__ | x__ <- {|internal__.NID_j0,internal__.NID_j0|}]]
+					 [[j1::interrupt <- x__ | x__ <- {|internal__.NID_j1,internal__.NID_j1|}]]
+					 [[j2::interrupt <- x__ | x__ <- {|internal__.NID_j2|}]]
+					 )
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
+					 )
+					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
+					|}) |]
+					 ((i0::enter -> Transitions(id__,
+					 			param_underDressed,
+					 			param_distress))
+					  [[ share__ <- x__ | x__ <- {| share__ |} ]]
+					 )
+					)
+					)
+				)
+				 \ hideSet)
+				[[
+					retryAgreed__.x____ <- retryAgreed,
+					refuseRequest__.x____ <- refuseRequest,
+					SupportCalled__.x____ <- SupportCalled,
+					CurtainOpenRqt__.x____ <- CurtainOpenRqt,
+					CurtainsOpened__.x____ <- CurtainsOpened,
+					roomTemperature__.x____ <- roomTemperature
+					| x____ <- NIDS
+				]]
+			)
+			 [| {| interrupt |} |] SKIP)
+		)
+		)
+	
+	Behaviour_VS_O(id__,
+				param_underDressed,
+				param_distress) = 
+		dbisim((MachineBody_VS_O(id__,
+					param_underDressed,
+					param_distress))
+		)
+	
+	
+	Stateful_VS_O(id__,
+				param_underDressed,
+				param_distress) = 
+		dbisim((
+			(Behaviour_VS_O(id__,
+						param_underDressed,
+						param_distress) [| union(getsetLocalChannels,{terminate}) |] varMemory(id__,
+						param_underDressed,
+						param_distress))
+		 	\getsetLocalChannels
+		)
+		)
+	
+	
+	-- END
+	
+	-- Memory
+	-- Memory variables
+	
+	-- varMemory process
+	varMemory(id__,
+				param_underDressed,
+				param_distress) = terminate -> SKIP
+	
+	getsetLocalChannels = {||}
+	
+	-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
+	FVS__(id__,
+				param_underDressed,
+				param_distress) = STM_VS_O(id__,
+				param_underDressed,
+				param_distress)
+	
+	D__(id__,
+				param_underDressed,
+				param_distress) = STM(id__,
+				param_underDressed,
+				param_distress) \ internal_events
+	O__(id__,
+				param_underDressed,
+				param_distress) = sbisim(diamond(D__(id__,
+				param_underDressed,
+				param_distress)))
+	VS__(id__,
+				param_underDressed,
+				param_distress) = FVS__(id__,
+				param_underDressed,
+				param_distress)
+	VS_O__(id__,
+				param_underDressed,
+				param_distress) = sbisim(diamond(FVS__(id__,
+				param_underDressed,
+				param_distress)))
+	HEXT__(id__,
+				param_underDressed,
+				param_distress) = O__(id__,
+				param_underDressed,
+				param_distress) [|shared_variable_events|] SKIP
+	HUP__(id__,
+				param_underDressed,
+				param_distress) = O__(id__,
+				param_underDressed,
+				param_distress) [|{share__}|] SKIP
+			endmodule

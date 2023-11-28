@@ -1,0 +1,294 @@
+package system 
+
+robotic platform RAD {
+	uses IUserFall uses IUserParam uses IRoomTemp uses IDressing uses ICurtains
+	uses ISupportP
+	provides PlatformOp
+}controller ctrl0 {
+	requires PlatformOp
+	sref stm_ref0 = DressingService
+	sref stm_ref1 = MonitoringService
+	uses IUserFall uses IUserParam uses IRoomTemp uses IDressing uses ICurtains
+	uses ISupportP
+	opref op_ref0 = CallSupportDecision
+	opref op_ref1 = OpenCurtains
+	opref op_ref2 = Dress
+	opref op_ref3 = Retry
+
+	connection stm_ref0 on retryAgreed to ctrl0 on retryAgreed
+	connection stm_ref0 on DressingComplete to ctrl0 on DressingComplete
+	connection ctrl0 on DressingStarted to stm_ref0 on DressingStarted
+	connection ctrl0 on roomTemperature to stm_ref0 on roomTemperature
+	connection ctrl0 on DressingAbandoned to stm_ref0 on DressingAbandoned
+	connection ctrl0 on userUnderDressed to stm_ref1 on userUnderDressed
+	connection stm_ref1 on CurtainsOpened to ctrl0 on CurtainsOpened
+	connection stm_ref1 on refuseRequest to ctrl0 on refuseRequest
+	connection ctrl0 on CurtainOpenRqt to stm_ref1 on CurtainOpenRqt
+connection ctrl0 on assentToSupportCalls1 to stm_ref0 on assentToSupportCalls
+	connection ctrl0 on userDistressed to stm_ref1 on userDistressed
+opref op_ref4 = Clear
+
+	connection ctrl0 on UserFallen to stm_ref1 on UserFallen
+
+	connection ctrl0 on assentToSupportCalls2 to stm_ref1 on assentToSupportCalls
+
+	connection ctrl0 on supportCalled2 to stm_ref1 on SupportCalled
+
+	connection ctrl0 on supportCalled1 to stm_ref0 on SupportCalled
+} 
+
+
+stm DressingService {
+	uses IDressing 
+	uses IRoomTemp
+	uses ISupport
+	  
+	var temp : int
+
+	var retry : boolean , completed : boolean
+	requires ISupportCall
+	initial i0
+	state Idle {
+	}
+	state Dressing {
+		entry roomTemperature ? temp <{ 0 }
+
+		during Dress ( temp )
+
+		exit 
+	Clear ( ) ; DressingComplete <{ 0 }
+	}
+	transition t0 {
+		from i0
+		to Idle
+	}
+	transition t1 {
+		from Idle
+		to Dressing
+		trigger DressingStarted
+	}
+	transition t2 {
+		from Dressing
+		to Abandoned
+		trigger DressingAbandoned
+	}
+	transition t3 {
+		from Dressing
+		to Idle
+		condition completed
+	}
+
+	requires IDressingOp 
+	state Abandoned {
+		during 
+	Retry ( )
+		exit Clear ( )
+	}
+	transition t4 {
+		from Abandoned
+		to Dressing
+		condition retry
+		action retryAgreed <{ 0 }
+	}
+	transition t5 {
+		from Abandoned
+		to Idle
+	condition not retry /\ sinceEntry ( Abandoned ) >= 120
+		action CallSupportDecision ( )
+	}
+var assent : boolean
+}
+
+//stm FallMonitor {
+//	initial i0
+//	state Monitoring {
+//	}
+//	transition t0 {
+//		from i0
+//		to Monitoring
+//	}
+//uses ISupport requires ISupportCall transition t1 {
+//		from Monitoring
+//		to Monitoring
+//	trigger UserFallen
+//		action assentToSupportCalls ? assent <{ 0 } ; CallSupportDecision ( )
+//	}
+//	uses IUserFall var assent : boolean
+//}
+
+stm MonitoringService {
+	var underDressed : boolean  
+	var assent : boolean
+	uses ICurtains uses IUserParam uses IUserFall requires ICurtainOp
+	uses ISupport requires ISupportCall 
+	initial i0
+	state Idle {
+	}
+	junction j0 
+ 
+	transition t0 {
+		from i0
+		to Idle
+	}
+	transition t1 {
+		from Idle
+		to j0
+	trigger 
+	
+		CurtainOpenRqt
+		action userUnderDressed ? underDressed <{ 0 } ; userDistressed ? distress <{ 0 }
+	}
+	transition t2 {
+		from j0
+		to Idle
+		condition underDressed /\ distress != Distress :: high
+		action refuseRequest <{ 0 }
+	}
+	transition t3 {
+		from j0
+		to OpenCurtains
+	condition 
+		
+	not ( underDressed /\ distress != Distress :: high )
+	}
+	state OpenCurtains {
+		entry OpenCurtains ( )
+	}
+	transition t4 {
+		from OpenCurtains
+		to Idle
+	}
+	transition t5 {
+		from Idle
+		to OpenCurtains
+	trigger 
+		
+		
+		
+		UserFallen
+		action 
+	
+	
+	CallSupportDecision ( )
+	}
+var distress : Distress
+}
+
+operation CallSupportDecision ( ) {
+	uses ISupport
+	requires PlatformOp
+	var assent : boolean
+	initial i0
+	final f0
+	transition t0 {
+		from i0
+		to j0
+		action 
+	
+	assentToSupportCalls ? assent <{ 0 }
+	}
+state CallSupport {
+		entry CallSupport ( )
+	}
+	junction j0
+	transition t1 {
+		from CallSupport
+		to f0
+		trigger SupportCalled
+		<{ 60
+	}
+	}
+	transition t2 {
+		from j0
+		to CallSupport
+		condition assent
+	}
+	transition t3 {
+		from j0
+		to f0
+		condition not assent
+	}
+}
+
+operation OpenCurtains ( ) {
+event CurtainsOpened
+	initial i0
+	final f0
+	transition t0 {
+		from i0
+		to f0
+		action CurtainsOpened <{ vt ( 60 , Time :: seconds ) }
+	}
+}
+
+operation Retry ( ) {
+initial i0
+	final f0
+	transition t0 {
+		from i0
+		to f0
+		action 
+	
+	wait ( [ 0 , vt ( 159 , Time :: seconds ) ] ) ; retry = true
+	}
+requires IRetry }
+
+operation Dress ( temp : nat
+) {
+initial i0
+	final f0
+	junction j0
+	transition t0 {
+		from i0
+		to j0
+	}
+	transition t1 {
+		from j0
+		to f0
+		condition temp < 17
+		action wait ( [ 0 , vt ( 60 , Time :: seconds ) ] ) ; completed = true
+	}
+	transition t2 {
+		from j0
+		to f0
+		condition temp >= 17 /\ temp < 19
+		action wait ( [ 0 , vt ( 90 , Time :: seconds ) ] ) ; completed = true
+	}
+	transition t3 {
+		from j0
+		to f0
+		condition temp >= 19
+		action wait ( [ 0 , vt ( 2 , Time :: minutes ) ] ) ; completed = true
+	}
+requires IComplete }
+
+module Module {
+	connection rp_ref0 on DressingStarted to ctrl_ref0 on DressingStarted ( _async )
+	connection ctrl_ref0 on DressingComplete to rp_ref0 on DressingComplete ( _async )
+	connection rp_ref0 on DressingAbandoned to ctrl_ref0 on DressingAbandoned ( _async )
+	connection rp_ref0 on CurtainOpenRqt to ctrl_ref0 on CurtainOpenRqt ( _async )
+	connection ctrl_ref0 on CurtainsOpened to rp_ref0 on CurtainsOpened ( _async )
+	connection rp_ref0 on roomTemperature to ctrl_ref0 on roomTemperature ( _async )
+	connection rp_ref0 on userUnderDressed to ctrl_ref0 on userUnderDressed ( _async )
+	connection rp_ref0 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1 ( _async )
+	connection rp_ref0 on userDistressed to ctrl_ref0 on userDistressed ( _async )
+	connection rp_ref0 on UserFallen to ctrl_ref0 on UserFallen ( _async )
+	connection ctrl_ref0 on retryAgreed to rp_ref0 on retryAgreed ( _async )
+	connection ctrl_ref0 on refuseRequest to rp_ref0 on refuseRequest ( _async )
+	rref rp_ref0 = RAD
+	cref ctrl_ref0 = ctrl0
+connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
+	connection rp_ref0 on supportCalled1 to ctrl_ref0 on supportCalled1 ( _async )
+	connection rp_ref0 on supportCalled2 to ctrl_ref0 on supportCalled2 ( _async )
+} 
+
+operation Clear ( ) {
+	requires IRetry requires IComplete initial i0
+	final f0
+	transition t0 {
+		from i0
+		to f0
+		action completed = false ; retry = false
+	}
+}
+

@@ -1,0 +1,9 @@
+def_start
+	event E0
+	event E8
+def_end
+rule_start
+// no issue
+	R14 when E0 then not E8 within 20 seconds
+	R15 when E0 then E8 within 10 seconds
+rule_end

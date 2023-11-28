@@ -1,0 +1,81 @@
+interface Capabilities {
+	event BatteryCritical
+	event CameraStart
+	event SoundAlarm
+	event GoHome
+
+	event personNearby : boolean
+	event temperature : real
+	event windSpeed : windScale
+}
+
+enumeration windScale { light moderate strong } enumeration Time { seconds minutes } 
+ stm UAV {
+	uses Capabilities var person : boolean, wind : windScale, temp:real
+
+	initial i0
+	state Init {
+		entry windSpeed ? wind <{ 0 } ; temperature ? temp <{ 0 }
+	}
+	state Recording {
+		initial i0
+		state Monitoring {
+		}
+
+		junction j0
+		transition t0 {
+			from i0
+			to Monitoring
+		}
+		transition t1 {
+			from Monitoring
+			to j0
+			action  
+		personNearby ? person <{ 0 } ; wait ( 1 )
+		}
+		transition t2 {
+			from j0
+			to f0
+			condition person
+			action SoundAlarm <{ 0 }
+		}
+		entry 
+	CameraStart <{ 0 }
+		final f0
+		transition t3 {
+			from j0
+			to Monitoring
+			condition not person
+		}
+	}
+	final f0
+	transition t0 {
+		from i0
+		to Init
+	}
+	transition t1 {
+		from Init
+		to Recording
+		condition wind != windScale :: strong /\ temp > 35
+	}
+	transition t2 {
+		from Recording
+		to f0
+		trigger 
+		
+		
+		
+		BatteryCritical
+		condition sinceEntry ( Recording ) > 0
+		action GoHome
+	}
+	transition t3 {
+		from Init
+		to f0
+		trigger 
+		
+		BatteryCritical
+	}
+}
+
+function vt ( t : nat , ut : Time ) : nat { }

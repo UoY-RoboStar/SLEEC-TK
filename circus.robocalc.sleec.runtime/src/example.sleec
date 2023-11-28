@@ -1,0 +1,16 @@
+def_start
+	event E0
+	event E1
+	event E2
+	measure m0: boolean
+	measure m1: numeric
+	constant C0 = 30
+def_end
+
+rule_start
+
+	R0 when E0 then E1
+	R1 when E0 and m0 then E2
+	R2 when E0 and m1 < C0 then E1
+	
+rule_end

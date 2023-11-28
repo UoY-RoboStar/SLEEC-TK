@@ -1,0 +1,174 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 31-08-2023 19:18:10
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_rad.csp"
+
+-- generate STM
+P_STM = let
+	id__ = 0
+	
+	
+	
+within
+	STM::O__(
+		id__
+	)
+assert P_STM :[deadlock-free]	
+assert P_STM;RUN({r__}) :[deadlock-free]
+assert P_STM :[deterministic]
+assert P_STM :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_STM[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_STM
+
+-- generate OP_OpenCurtains
+P_OP_OpenCurtains = let
+	id__ = 0
+	
+	param_underDressed = true
+	param_distress = Distress_low
+	
+	
+	
+within
+	OP_OpenCurtains::O__(id__,
+				param_underDressed,
+				param_distress)
+assert P_OP_OpenCurtains :[deadlock-free]	
+assert P_OP_OpenCurtains;RUN({r__}) :[deadlock-free]
+assert P_OP_OpenCurtains :[deterministic]
+assert P_OP_OpenCurtains :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_OpenCurtains[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_OpenCurtains
+-- generate OP_CallSupport
+P_OP_CallSupport = let
+	id__ = 0
+	
+	param_assent = true
+	
+	
+	
+within
+	OP_CallSupport::O__(id__,
+				param_assent)
+assert P_OP_CallSupport :[deadlock-free]	
+assert P_OP_CallSupport;RUN({r__}) :[deadlock-free]
+assert P_OP_CallSupport :[deterministic]
+assert P_OP_CallSupport :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_CallSupport[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_CallSupport
+-- generate OP_AbandonDressing
+P_OP_AbandonDressing = let
+	id__ = 0
+	
+	param_assent = true
+	
+	
+	
+within
+	OP_AbandonDressing::O__(id__,
+				param_assent)
+assert P_OP_AbandonDressing :[deadlock-free]	
+assert P_OP_AbandonDressing;RUN({r__}) :[deadlock-free]
+assert P_OP_AbandonDressing :[deterministic]
+assert P_OP_AbandonDressing :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_OP_AbandonDressing[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_OP_AbandonDressing
+
+-- generate Controller
+P_Controller = let
+	id__ = 0
+	
+	
+	
+		
+within
+	Controller::O__(id__)
+
+assert P_Controller :[deadlock-free]	
+assert P_Controller;RUN({r__}) :[deadlock-free]
+assert P_Controller :[deterministic]
+assert P_Controller :[divergence-free]
+
+-- generate Controller_stm_ref0
+P_Controller_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	Controller::stm_ref0::O__(
+		id__
+	)
+assert P_Controller_stm_ref0 :[deadlock-free]	
+assert P_Controller_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_Controller_stm_ref0 :[deterministic]
+assert P_Controller_stm_ref0 :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_Controller_stm_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_Controller_stm_ref0
+-- timed deadlock free
+assert prioritise(P_Controller[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_Controller
+
+-- generate Module
+P_Module = let
+	id__ = 0
+	
+	
+	
+		
+	
+within
+	Module::O__(id__)
+assert P_Module :[deadlock-free]	
+assert P_Module;RUN({r__}) :[deadlock-free]
+assert P_Module :[deterministic]
+assert P_Module :[divergence-free]
+
+-- generate Module_ctrl_ref0
+P_Module_ctrl_ref0 = let
+	id__ = 0
+	
+	
+	
+		
+within
+	Module::ctrl_ref0::O__(id__)
+
+assert P_Module_ctrl_ref0 :[deadlock-free]	
+assert P_Module_ctrl_ref0;RUN({r__}) :[deadlock-free]
+assert P_Module_ctrl_ref0 :[deterministic]
+assert P_Module_ctrl_ref0 :[divergence-free]
+
+-- timed deadlock free
+assert prioritise(P_Module_ctrl_ref0[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_Module_ctrl_ref0
+-- timed deadlock free
+assert prioritise(P_Module[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_Module

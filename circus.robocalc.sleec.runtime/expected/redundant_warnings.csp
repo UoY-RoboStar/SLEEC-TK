@@ -1,0 +1,1101 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel E2
+channel E3
+channel E4
+channel E5
+channel E6
+channel E7
+channel E8
+channel m0 : Bool
+channel m1 : Int
+	
+Capabilities = 
+  {| E0,
+     E1,
+     E2,
+     E3,
+     E4,
+     E5,
+     E6,
+     E7,
+     E8,
+  	 m0,
+  	 m1
+  |}
+Measures =
+  {| m0,
+     m1
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- R0 when E0 then E1 within 20 seconds 
+
+R0 = TriggerR0; MonitoringR0; R0
+
+TriggerR0 = E0 -> SKIP
+
+MonitoringR0 = StartBy(E1 -> SKIP,(20 * 1))
+
+-- alphabet for R0 
+AR0 = {|E0, E1|}
+SLEECR0 = timed_priority(R0)
+
+
+-- R1 when E0 and (m0) then E1 within 10 seconds 
+
+R1 = TriggerR1; MonitoringR1; R1
+
+TriggerR1 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (vm0) then SKIP else TriggerR1
+	,0)
+within E0 -> MTrigger
+
+MonitoringR1 = StartBy(E1 -> SKIP,(10 * 1))
+
+-- alphabet for R1 
+AR1 = {|m0, E0, E1|}
+SLEECR1 = timed_priority(R1)
+
+
+-- R2 when E0 then E2 within 20 seconds 
+
+R2 = TriggerR2; MonitoringR2; R2
+
+TriggerR2 = E0 -> SKIP
+
+MonitoringR2 = StartBy(E2 -> SKIP,(20 * 1))
+
+-- alphabet for R2 
+AR2 = {|E0, E2|}
+SLEECR2 = timed_priority(R2)
+
+
+-- R3 when E0 then E2 within 10 seconds 
+
+R3 = TriggerR3; MonitoringR3; R3
+
+TriggerR3 = E0 -> SKIP
+
+MonitoringR3 = StartBy(E2 -> SKIP,(10 * 1))
+
+-- alphabet for R3 
+AR3 = {|E0, E2|}
+SLEECR3 = timed_priority(R3)
+
+
+-- R4 when E0 then E3 within 10 seconds 
+
+R4 = TriggerR4; MonitoringR4; R4
+
+TriggerR4 = E0 -> SKIP
+
+MonitoringR4 = StartBy(E3 -> SKIP,(10 * 1))
+
+-- alphabet for R4 
+AR4 = {|E0, E3|}
+SLEECR4 = timed_priority(R4)
+
+
+-- R5 when E0 then E3 
+
+R5 = TriggerR5; MonitoringR5; R5
+
+TriggerR5 = E0 -> SKIP
+
+MonitoringR5 = E3 -> SKIP
+
+-- alphabet for R5 
+AR5 = {|E0, E3|}
+SLEECR5 = timed_priority(R5)
+
+
+-- R6 when E0 then E4 
+
+R6 = TriggerR6; MonitoringR6; R6
+
+TriggerR6 = E0 -> SKIP
+
+MonitoringR6 = E4 -> SKIP
+
+-- alphabet for R6 
+AR6 = {|E0, E4|}
+SLEECR6 = timed_priority(R6)
+
+
+-- R7 when E0 then E4 within 10 seconds 
+
+R7 = TriggerR7; MonitoringR7; R7
+
+TriggerR7 = E0 -> SKIP
+
+MonitoringR7 = StartBy(E4 -> SKIP,(10 * 1))
+
+-- alphabet for R7 
+AR7 = {|E0, E4|}
+SLEECR7 = timed_priority(R7)
+
+
+-- R8 when E0 then E5 
+
+R8 = TriggerR8; MonitoringR8; R8
+
+TriggerR8 = E0 -> SKIP
+
+MonitoringR8 = E5 -> SKIP
+
+-- alphabet for R8 
+AR8 = {|E5, E0|}
+SLEECR8 = timed_priority(R8)
+
+
+-- R9 when E0 then E5 
+
+R9 = TriggerR9; MonitoringR9; R9
+
+TriggerR9 = E0 -> SKIP
+
+MonitoringR9 = E5 -> SKIP
+
+-- alphabet for R9 
+AR9 = {|E5, E0|}
+SLEECR9 = timed_priority(R9)
+
+
+-- R10 when E0 then not E6 within 20 seconds 
+
+R10 = TriggerR10; MonitoringR10; R10
+
+TriggerR10 = E0 -> SKIP
+
+MonitoringR10 = WAIT((20 * 1))
+
+-- alphabet for R10 
+AR10 = {|E6, E0|}
+SLEECR10 = timed_priority(R10)
+
+
+-- R11 when E0 then not E6 within 10 seconds 
+
+R11 = TriggerR11; MonitoringR11; R11
+
+TriggerR11 = E0 -> SKIP
+
+MonitoringR11 = WAIT((10 * 1))
+
+-- alphabet for R11 
+AR11 = {|E6, E0|}
+SLEECR11 = timed_priority(R11)
+
+
+-- R12 when E7 then E1 
+
+R12 = TriggerR12; MonitoringR12; R12
+
+TriggerR12 = E7 -> SKIP
+
+MonitoringR12 = E1 -> SKIP
+
+-- alphabet for R12 
+AR12 = {|E7, E1|}
+SLEECR12 = timed_priority(R12)
+
+
+-- R13 when E7 and (m0) then E1 
+
+R13 = TriggerR13; MonitoringR13; R13
+
+TriggerR13 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (vm0) then SKIP else TriggerR13
+	,0)
+within E7 -> MTrigger
+
+MonitoringR13 = E1 -> SKIP
+
+-- alphabet for R13 
+AR13 = {|E7, m0, E1|}
+SLEECR13 = timed_priority(R13)
+
+
+-- R14 when E8 and ((m1) < (5)) then E2 
+
+R14 = TriggerR14; MonitoringR14; R14
+
+TriggerR14 = let
+	MTrigger = StartBy(m1?vm1 ->
+		if ((vm1) < (5)) then SKIP else TriggerR14
+	,0)
+within E8 -> MTrigger
+
+MonitoringR14 = E2 -> SKIP
+
+-- alphabet for R14 
+AR14 = {|E8, m1, E2|}
+SLEECR14 = timed_priority(R14)
+
+
+-- R15 when E8 and ((m1) < (7)) then E2 
+
+R15 = TriggerR15; MonitoringR15; R15
+
+TriggerR15 = let
+	MTrigger = StartBy(m1?vm1 ->
+		if ((vm1) < (7)) then SKIP else TriggerR15
+	,0)
+within E8 -> MTrigger
+
+MonitoringR15 = E2 -> SKIP
+
+-- alphabet for R15 
+AR15 = {|E8, m1, E2|}
+SLEECR15 = timed_priority(R15)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking R0 with R1:
+
+intersectionR0R1 = R0[|inter({|E0, E1|}, {|m0, E0, E1|})|]R1
+SLEECR0R1 = timed_priority(intersectionR0R1)
+
+assert SLEECR0R1:[deadlock-free]					
+assert not MSN::C3(SLEECR0R1) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R1)
+
+
+-- Checking R0 with R2:
+
+intersectionR0R2 = R0[|inter({|E0, E1|}, {|E0, E2|})|]R2
+SLEECR0R2 = timed_priority(intersectionR0R2)
+
+assert SLEECR0R2:[deadlock-free]					
+assert not MSN::C3(SLEECR0R2) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R2)
+
+
+-- Checking R0 with R3:
+
+intersectionR0R3 = R0[|inter({|E0, E1|}, {|E0, E2|})|]R3
+SLEECR0R3 = timed_priority(intersectionR0R3)
+
+assert SLEECR0R3:[deadlock-free]					
+assert not MSN::C3(SLEECR0R3) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R3)
+
+
+-- Checking R0 with R4:
+
+intersectionR0R4 = R0[|inter({|E0, E1|}, {|E0, E3|})|]R4
+SLEECR0R4 = timed_priority(intersectionR0R4)
+
+assert SLEECR0R4:[deadlock-free]					
+assert not MSN::C3(SLEECR0R4) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R4)
+
+
+-- Checking R0 with R5:
+
+intersectionR0R5 = R0[|inter({|E0, E1|}, {|E0, E3|})|]R5
+SLEECR0R5 = timed_priority(intersectionR0R5)
+
+assert SLEECR0R5:[deadlock-free]					
+assert not MSN::C3(SLEECR0R5) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R5)
+
+
+-- Checking R0 with R6:
+
+intersectionR0R6 = R0[|inter({|E0, E1|}, {|E0, E4|})|]R6
+SLEECR0R6 = timed_priority(intersectionR0R6)
+
+assert SLEECR0R6:[deadlock-free]					
+assert not MSN::C3(SLEECR0R6) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R6)
+
+
+-- Checking R0 with R7:
+
+intersectionR0R7 = R0[|inter({|E0, E1|}, {|E0, E4|})|]R7
+SLEECR0R7 = timed_priority(intersectionR0R7)
+
+assert SLEECR0R7:[deadlock-free]					
+assert not MSN::C3(SLEECR0R7) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R7)
+
+
+-- Checking R0 with R8:
+
+intersectionR0R8 = R0[|inter({|E0, E1|}, {|E5, E0|})|]R8
+SLEECR0R8 = timed_priority(intersectionR0R8)
+
+assert SLEECR0R8:[deadlock-free]					
+assert not MSN::C3(SLEECR0R8) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R8)
+
+
+-- Checking R0 with R9:
+
+intersectionR0R9 = R0[|inter({|E0, E1|}, {|E5, E0|})|]R9
+SLEECR0R9 = timed_priority(intersectionR0R9)
+
+assert SLEECR0R9:[deadlock-free]					
+assert not MSN::C3(SLEECR0R9) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R9)
+
+
+-- Checking R0 with R10:
+
+intersectionR0R10 = R0[|inter({|E0, E1|}, {|E6, E0|})|]R10
+SLEECR0R10 = timed_priority(intersectionR0R10)
+
+assert SLEECR0R10:[deadlock-free]					
+assert not MSN::C3(SLEECR0R10) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R10)
+
+
+-- Checking R0 with R11:
+
+intersectionR0R11 = R0[|inter({|E0, E1|}, {|E6, E0|})|]R11
+SLEECR0R11 = timed_priority(intersectionR0R11)
+
+assert SLEECR0R11:[deadlock-free]					
+assert not MSN::C3(SLEECR0R11) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R11)
+
+
+-- Checking R0 with R12:
+
+intersectionR0R12 = R0[|inter({|E0, E1|}, {|E7, E1|})|]R12
+SLEECR0R12 = timed_priority(intersectionR0R12)
+
+assert SLEECR0R12:[deadlock-free]					
+assert not MSN::C3(SLEECR0R12) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R12)
+
+
+-- Checking R0 with R13:
+
+intersectionR0R13 = R0[|inter({|E0, E1|}, {|E7, m0, E1|})|]R13
+SLEECR0R13 = timed_priority(intersectionR0R13)
+
+assert SLEECR0R13:[deadlock-free]					
+assert not MSN::C3(SLEECR0R13) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R13)
+
+
+-- Checking R1 with R2:
+
+intersectionR1R2 = R1[|inter({|m0, E0, E1|}, {|E0, E2|})|]R2
+SLEECR1R2 = timed_priority(intersectionR1R2)
+
+assert SLEECR1R2:[deadlock-free]					
+assert not MSN::C3(SLEECR1R2) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R2)
+
+
+-- Checking R1 with R3:
+
+intersectionR1R3 = R1[|inter({|m0, E0, E1|}, {|E0, E2|})|]R3
+SLEECR1R3 = timed_priority(intersectionR1R3)
+
+assert SLEECR1R3:[deadlock-free]					
+assert not MSN::C3(SLEECR1R3) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R3)
+
+
+-- Checking R1 with R4:
+
+intersectionR1R4 = R1[|inter({|m0, E0, E1|}, {|E0, E3|})|]R4
+SLEECR1R4 = timed_priority(intersectionR1R4)
+
+assert SLEECR1R4:[deadlock-free]					
+assert not MSN::C3(SLEECR1R4) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R4)
+
+
+-- Checking R1 with R5:
+
+intersectionR1R5 = R1[|inter({|m0, E0, E1|}, {|E0, E3|})|]R5
+SLEECR1R5 = timed_priority(intersectionR1R5)
+
+assert SLEECR1R5:[deadlock-free]					
+assert not MSN::C3(SLEECR1R5) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R5)
+
+
+-- Checking R1 with R6:
+
+intersectionR1R6 = R1[|inter({|m0, E0, E1|}, {|E0, E4|})|]R6
+SLEECR1R6 = timed_priority(intersectionR1R6)
+
+assert SLEECR1R6:[deadlock-free]					
+assert not MSN::C3(SLEECR1R6) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R6)
+
+
+-- Checking R1 with R7:
+
+intersectionR1R7 = R1[|inter({|m0, E0, E1|}, {|E0, E4|})|]R7
+SLEECR1R7 = timed_priority(intersectionR1R7)
+
+assert SLEECR1R7:[deadlock-free]					
+assert not MSN::C3(SLEECR1R7) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R7)
+
+
+-- Checking R1 with R8:
+
+intersectionR1R8 = R1[|inter({|m0, E0, E1|}, {|E5, E0|})|]R8
+SLEECR1R8 = timed_priority(intersectionR1R8)
+
+assert SLEECR1R8:[deadlock-free]					
+assert not MSN::C3(SLEECR1R8) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R8)
+
+
+-- Checking R1 with R9:
+
+intersectionR1R9 = R1[|inter({|m0, E0, E1|}, {|E5, E0|})|]R9
+SLEECR1R9 = timed_priority(intersectionR1R9)
+
+assert SLEECR1R9:[deadlock-free]					
+assert not MSN::C3(SLEECR1R9) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R9)
+
+
+-- Checking R1 with R10:
+
+intersectionR1R10 = R1[|inter({|m0, E0, E1|}, {|E6, E0|})|]R10
+SLEECR1R10 = timed_priority(intersectionR1R10)
+
+assert SLEECR1R10:[deadlock-free]					
+assert not MSN::C3(SLEECR1R10) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R10)
+
+
+-- Checking R1 with R11:
+
+intersectionR1R11 = R1[|inter({|m0, E0, E1|}, {|E6, E0|})|]R11
+SLEECR1R11 = timed_priority(intersectionR1R11)
+
+assert SLEECR1R11:[deadlock-free]					
+assert not MSN::C3(SLEECR1R11) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R11)
+
+
+-- Checking R1 with R12:
+
+intersectionR1R12 = R1[|inter({|m0, E0, E1|}, {|E7, E1|})|]R12
+SLEECR1R12 = timed_priority(intersectionR1R12)
+
+assert SLEECR1R12:[deadlock-free]					
+assert not MSN::C3(SLEECR1R12) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R12)
+
+
+-- Checking R1 with R13:
+
+intersectionR1R13 = R1[|inter({|m0, E0, E1|}, {|E7, m0, E1|})|]R13
+SLEECR1R13 = timed_priority(intersectionR1R13)
+
+assert SLEECR1R13:[deadlock-free]					
+assert not MSN::C3(SLEECR1R13) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R13)
+
+
+-- Checking R2 with R3:
+
+intersectionR2R3 = R2[|inter({|E0, E2|}, {|E0, E2|})|]R3
+SLEECR2R3 = timed_priority(intersectionR2R3)
+
+assert SLEECR2R3:[deadlock-free]					
+assert not MSN::C3(SLEECR2R3) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R3)
+
+
+-- Checking R2 with R4:
+
+intersectionR2R4 = R2[|inter({|E0, E2|}, {|E0, E3|})|]R4
+SLEECR2R4 = timed_priority(intersectionR2R4)
+
+assert SLEECR2R4:[deadlock-free]					
+assert not MSN::C3(SLEECR2R4) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R4)
+
+
+-- Checking R2 with R5:
+
+intersectionR2R5 = R2[|inter({|E0, E2|}, {|E0, E3|})|]R5
+SLEECR2R5 = timed_priority(intersectionR2R5)
+
+assert SLEECR2R5:[deadlock-free]					
+assert not MSN::C3(SLEECR2R5) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R5)
+
+
+-- Checking R2 with R6:
+
+intersectionR2R6 = R2[|inter({|E0, E2|}, {|E0, E4|})|]R6
+SLEECR2R6 = timed_priority(intersectionR2R6)
+
+assert SLEECR2R6:[deadlock-free]					
+assert not MSN::C3(SLEECR2R6) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R6)
+
+
+-- Checking R2 with R7:
+
+intersectionR2R7 = R2[|inter({|E0, E2|}, {|E0, E4|})|]R7
+SLEECR2R7 = timed_priority(intersectionR2R7)
+
+assert SLEECR2R7:[deadlock-free]					
+assert not MSN::C3(SLEECR2R7) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R7)
+
+
+-- Checking R2 with R8:
+
+intersectionR2R8 = R2[|inter({|E0, E2|}, {|E5, E0|})|]R8
+SLEECR2R8 = timed_priority(intersectionR2R8)
+
+assert SLEECR2R8:[deadlock-free]					
+assert not MSN::C3(SLEECR2R8) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R8)
+
+
+-- Checking R2 with R9:
+
+intersectionR2R9 = R2[|inter({|E0, E2|}, {|E5, E0|})|]R9
+SLEECR2R9 = timed_priority(intersectionR2R9)
+
+assert SLEECR2R9:[deadlock-free]					
+assert not MSN::C3(SLEECR2R9) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R9)
+
+
+-- Checking R2 with R10:
+
+intersectionR2R10 = R2[|inter({|E0, E2|}, {|E6, E0|})|]R10
+SLEECR2R10 = timed_priority(intersectionR2R10)
+
+assert SLEECR2R10:[deadlock-free]					
+assert not MSN::C3(SLEECR2R10) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R10)
+
+
+-- Checking R2 with R11:
+
+intersectionR2R11 = R2[|inter({|E0, E2|}, {|E6, E0|})|]R11
+SLEECR2R11 = timed_priority(intersectionR2R11)
+
+assert SLEECR2R11:[deadlock-free]					
+assert not MSN::C3(SLEECR2R11) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R11)
+
+
+-- Checking R2 with R14:
+
+intersectionR2R14 = R2[|inter({|E0, E2|}, {|E8, m1, E2|})|]R14
+SLEECR2R14 = timed_priority(intersectionR2R14)
+
+assert SLEECR2R14:[deadlock-free]					
+assert not MSN::C3(SLEECR2R14) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R14)
+
+
+-- Checking R2 with R15:
+
+intersectionR2R15 = R2[|inter({|E0, E2|}, {|E8, m1, E2|})|]R15
+SLEECR2R15 = timed_priority(intersectionR2R15)
+
+assert SLEECR2R15:[deadlock-free]					
+assert not MSN::C3(SLEECR2R15) [T= MSN::C3(SLEECR2)
+
+assert not MSN::C3(SLEECR2) [T= MSN::C3(SLEECR2R15)
+
+
+-- Checking R3 with R4:
+
+intersectionR3R4 = R3[|inter({|E0, E2|}, {|E0, E3|})|]R4
+SLEECR3R4 = timed_priority(intersectionR3R4)
+
+assert SLEECR3R4:[deadlock-free]					
+assert not MSN::C3(SLEECR3R4) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R4)
+
+
+-- Checking R3 with R5:
+
+intersectionR3R5 = R3[|inter({|E0, E2|}, {|E0, E3|})|]R5
+SLEECR3R5 = timed_priority(intersectionR3R5)
+
+assert SLEECR3R5:[deadlock-free]					
+assert not MSN::C3(SLEECR3R5) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R5)
+
+
+-- Checking R3 with R6:
+
+intersectionR3R6 = R3[|inter({|E0, E2|}, {|E0, E4|})|]R6
+SLEECR3R6 = timed_priority(intersectionR3R6)
+
+assert SLEECR3R6:[deadlock-free]					
+assert not MSN::C3(SLEECR3R6) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R6)
+
+
+-- Checking R3 with R7:
+
+intersectionR3R7 = R3[|inter({|E0, E2|}, {|E0, E4|})|]R7
+SLEECR3R7 = timed_priority(intersectionR3R7)
+
+assert SLEECR3R7:[deadlock-free]					
+assert not MSN::C3(SLEECR3R7) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R7)
+
+
+-- Checking R3 with R8:
+
+intersectionR3R8 = R3[|inter({|E0, E2|}, {|E5, E0|})|]R8
+SLEECR3R8 = timed_priority(intersectionR3R8)
+
+assert SLEECR3R8:[deadlock-free]					
+assert not MSN::C3(SLEECR3R8) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R8)
+
+
+-- Checking R3 with R9:
+
+intersectionR3R9 = R3[|inter({|E0, E2|}, {|E5, E0|})|]R9
+SLEECR3R9 = timed_priority(intersectionR3R9)
+
+assert SLEECR3R9:[deadlock-free]					
+assert not MSN::C3(SLEECR3R9) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R9)
+
+
+-- Checking R3 with R10:
+
+intersectionR3R10 = R3[|inter({|E0, E2|}, {|E6, E0|})|]R10
+SLEECR3R10 = timed_priority(intersectionR3R10)
+
+assert SLEECR3R10:[deadlock-free]					
+assert not MSN::C3(SLEECR3R10) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R10)
+
+
+-- Checking R3 with R11:
+
+intersectionR3R11 = R3[|inter({|E0, E2|}, {|E6, E0|})|]R11
+SLEECR3R11 = timed_priority(intersectionR3R11)
+
+assert SLEECR3R11:[deadlock-free]					
+assert not MSN::C3(SLEECR3R11) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R11)
+
+
+-- Checking R3 with R14:
+
+intersectionR3R14 = R3[|inter({|E0, E2|}, {|E8, m1, E2|})|]R14
+SLEECR3R14 = timed_priority(intersectionR3R14)
+
+assert SLEECR3R14:[deadlock-free]					
+assert not MSN::C3(SLEECR3R14) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R14)
+
+
+-- Checking R3 with R15:
+
+intersectionR3R15 = R3[|inter({|E0, E2|}, {|E8, m1, E2|})|]R15
+SLEECR3R15 = timed_priority(intersectionR3R15)
+
+assert SLEECR3R15:[deadlock-free]					
+assert not MSN::C3(SLEECR3R15) [T= MSN::C3(SLEECR3)
+
+assert not MSN::C3(SLEECR3) [T= MSN::C3(SLEECR3R15)
+
+
+-- Checking R4 with R5:
+
+intersectionR4R5 = R4[|inter({|E0, E3|}, {|E0, E3|})|]R5
+SLEECR4R5 = timed_priority(intersectionR4R5)
+
+assert SLEECR4R5:[deadlock-free]					
+assert not MSN::C3(SLEECR4R5) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R5)
+
+
+-- Checking R4 with R6:
+
+intersectionR4R6 = R4[|inter({|E0, E3|}, {|E0, E4|})|]R6
+SLEECR4R6 = timed_priority(intersectionR4R6)
+
+assert SLEECR4R6:[deadlock-free]					
+assert not MSN::C3(SLEECR4R6) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R6)
+
+
+-- Checking R4 with R7:
+
+intersectionR4R7 = R4[|inter({|E0, E3|}, {|E0, E4|})|]R7
+SLEECR4R7 = timed_priority(intersectionR4R7)
+
+assert SLEECR4R7:[deadlock-free]					
+assert not MSN::C3(SLEECR4R7) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R7)
+
+
+-- Checking R4 with R8:
+
+intersectionR4R8 = R4[|inter({|E0, E3|}, {|E5, E0|})|]R8
+SLEECR4R8 = timed_priority(intersectionR4R8)
+
+assert SLEECR4R8:[deadlock-free]					
+assert not MSN::C3(SLEECR4R8) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R8)
+
+
+-- Checking R4 with R9:
+
+intersectionR4R9 = R4[|inter({|E0, E3|}, {|E5, E0|})|]R9
+SLEECR4R9 = timed_priority(intersectionR4R9)
+
+assert SLEECR4R9:[deadlock-free]					
+assert not MSN::C3(SLEECR4R9) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R9)
+
+
+-- Checking R4 with R10:
+
+intersectionR4R10 = R4[|inter({|E0, E3|}, {|E6, E0|})|]R10
+SLEECR4R10 = timed_priority(intersectionR4R10)
+
+assert SLEECR4R10:[deadlock-free]					
+assert not MSN::C3(SLEECR4R10) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R10)
+
+
+-- Checking R4 with R11:
+
+intersectionR4R11 = R4[|inter({|E0, E3|}, {|E6, E0|})|]R11
+SLEECR4R11 = timed_priority(intersectionR4R11)
+
+assert SLEECR4R11:[deadlock-free]					
+assert not MSN::C3(SLEECR4R11) [T= MSN::C3(SLEECR4)
+
+assert not MSN::C3(SLEECR4) [T= MSN::C3(SLEECR4R11)
+
+
+-- Checking R5 with R6:
+
+intersectionR5R6 = R5[|inter({|E0, E3|}, {|E0, E4|})|]R6
+SLEECR5R6 = timed_priority(intersectionR5R6)
+
+assert SLEECR5R6:[deadlock-free]					
+assert not MSN::C3(SLEECR5R6) [T= MSN::C3(SLEECR5)
+
+assert not MSN::C3(SLEECR5) [T= MSN::C3(SLEECR5R6)
+
+
+-- Checking R5 with R7:
+
+intersectionR5R7 = R5[|inter({|E0, E3|}, {|E0, E4|})|]R7
+SLEECR5R7 = timed_priority(intersectionR5R7)
+
+assert SLEECR5R7:[deadlock-free]					
+assert not MSN::C3(SLEECR5R7) [T= MSN::C3(SLEECR5)
+
+assert not MSN::C3(SLEECR5) [T= MSN::C3(SLEECR5R7)
+
+
+-- Checking R5 with R8:
+
+intersectionR5R8 = R5[|inter({|E0, E3|}, {|E5, E0|})|]R8
+SLEECR5R8 = timed_priority(intersectionR5R8)
+
+assert SLEECR5R8:[deadlock-free]					
+assert not MSN::C3(SLEECR5R8) [T= MSN::C3(SLEECR5)
+
+assert not MSN::C3(SLEECR5) [T= MSN::C3(SLEECR5R8)
+
+
+-- Checking R5 with R9:
+
+intersectionR5R9 = R5[|inter({|E0, E3|}, {|E5, E0|})|]R9
+SLEECR5R9 = timed_priority(intersectionR5R9)
+
+assert SLEECR5R9:[deadlock-free]					
+assert not MSN::C3(SLEECR5R9) [T= MSN::C3(SLEECR5)
+
+assert not MSN::C3(SLEECR5) [T= MSN::C3(SLEECR5R9)
+
+
+-- Checking R5 with R10:
+
+intersectionR5R10 = R5[|inter({|E0, E3|}, {|E6, E0|})|]R10
+SLEECR5R10 = timed_priority(intersectionR5R10)
+
+assert SLEECR5R10:[deadlock-free]					
+assert not MSN::C3(SLEECR5R10) [T= MSN::C3(SLEECR5)
+
+assert not MSN::C3(SLEECR5) [T= MSN::C3(SLEECR5R10)
+
+
+-- Checking R5 with R11:
+
+intersectionR5R11 = R5[|inter({|E0, E3|}, {|E6, E0|})|]R11
+SLEECR5R11 = timed_priority(intersectionR5R11)
+
+assert SLEECR5R11:[deadlock-free]					
+assert not MSN::C3(SLEECR5R11) [T= MSN::C3(SLEECR5)
+
+assert not MSN::C3(SLEECR5) [T= MSN::C3(SLEECR5R11)
+
+
+-- Checking R6 with R7:
+
+intersectionR6R7 = R6[|inter({|E0, E4|}, {|E0, E4|})|]R7
+SLEECR6R7 = timed_priority(intersectionR6R7)
+
+assert SLEECR6R7:[deadlock-free]					
+assert not MSN::C3(SLEECR6R7) [T= MSN::C3(SLEECR6)
+
+assert not MSN::C3(SLEECR6) [T= MSN::C3(SLEECR6R7)
+
+
+-- Checking R6 with R8:
+
+intersectionR6R8 = R6[|inter({|E0, E4|}, {|E5, E0|})|]R8
+SLEECR6R8 = timed_priority(intersectionR6R8)
+
+assert SLEECR6R8:[deadlock-free]					
+assert not MSN::C3(SLEECR6R8) [T= MSN::C3(SLEECR6)
+
+assert not MSN::C3(SLEECR6) [T= MSN::C3(SLEECR6R8)
+
+
+-- Checking R6 with R9:
+
+intersectionR6R9 = R6[|inter({|E0, E4|}, {|E5, E0|})|]R9
+SLEECR6R9 = timed_priority(intersectionR6R9)
+
+assert SLEECR6R9:[deadlock-free]					
+assert not MSN::C3(SLEECR6R9) [T= MSN::C3(SLEECR6)
+
+assert not MSN::C3(SLEECR6) [T= MSN::C3(SLEECR6R9)
+
+
+-- Checking R6 with R10:
+
+intersectionR6R10 = R6[|inter({|E0, E4|}, {|E6, E0|})|]R10
+SLEECR6R10 = timed_priority(intersectionR6R10)
+
+assert SLEECR6R10:[deadlock-free]					
+assert not MSN::C3(SLEECR6R10) [T= MSN::C3(SLEECR6)
+
+assert not MSN::C3(SLEECR6) [T= MSN::C3(SLEECR6R10)
+
+
+-- Checking R6 with R11:
+
+intersectionR6R11 = R6[|inter({|E0, E4|}, {|E6, E0|})|]R11
+SLEECR6R11 = timed_priority(intersectionR6R11)
+
+assert SLEECR6R11:[deadlock-free]					
+assert not MSN::C3(SLEECR6R11) [T= MSN::C3(SLEECR6)
+
+assert not MSN::C3(SLEECR6) [T= MSN::C3(SLEECR6R11)
+
+
+-- Checking R7 with R8:
+
+intersectionR7R8 = R7[|inter({|E0, E4|}, {|E5, E0|})|]R8
+SLEECR7R8 = timed_priority(intersectionR7R8)
+
+assert SLEECR7R8:[deadlock-free]					
+assert not MSN::C3(SLEECR7R8) [T= MSN::C3(SLEECR7)
+
+assert not MSN::C3(SLEECR7) [T= MSN::C3(SLEECR7R8)
+
+
+-- Checking R7 with R9:
+
+intersectionR7R9 = R7[|inter({|E0, E4|}, {|E5, E0|})|]R9
+SLEECR7R9 = timed_priority(intersectionR7R9)
+
+assert SLEECR7R9:[deadlock-free]					
+assert not MSN::C3(SLEECR7R9) [T= MSN::C3(SLEECR7)
+
+assert not MSN::C3(SLEECR7) [T= MSN::C3(SLEECR7R9)
+
+
+-- Checking R7 with R10:
+
+intersectionR7R10 = R7[|inter({|E0, E4|}, {|E6, E0|})|]R10
+SLEECR7R10 = timed_priority(intersectionR7R10)
+
+assert SLEECR7R10:[deadlock-free]					
+assert not MSN::C3(SLEECR7R10) [T= MSN::C3(SLEECR7)
+
+assert not MSN::C3(SLEECR7) [T= MSN::C3(SLEECR7R10)
+
+
+-- Checking R7 with R11:
+
+intersectionR7R11 = R7[|inter({|E0, E4|}, {|E6, E0|})|]R11
+SLEECR7R11 = timed_priority(intersectionR7R11)
+
+assert SLEECR7R11:[deadlock-free]					
+assert not MSN::C3(SLEECR7R11) [T= MSN::C3(SLEECR7)
+
+assert not MSN::C3(SLEECR7) [T= MSN::C3(SLEECR7R11)
+
+
+-- Checking R8 with R9:
+
+intersectionR8R9 = R8[|inter({|E5, E0|}, {|E5, E0|})|]R9
+SLEECR8R9 = timed_priority(intersectionR8R9)
+
+assert SLEECR8R9:[deadlock-free]					
+assert not MSN::C3(SLEECR8R9) [T= MSN::C3(SLEECR8)
+
+assert not MSN::C3(SLEECR8) [T= MSN::C3(SLEECR8R9)
+
+
+-- Checking R8 with R10:
+
+intersectionR8R10 = R8[|inter({|E5, E0|}, {|E6, E0|})|]R10
+SLEECR8R10 = timed_priority(intersectionR8R10)
+
+assert SLEECR8R10:[deadlock-free]					
+assert not MSN::C3(SLEECR8R10) [T= MSN::C3(SLEECR8)
+
+assert not MSN::C3(SLEECR8) [T= MSN::C3(SLEECR8R10)
+
+
+-- Checking R8 with R11:
+
+intersectionR8R11 = R8[|inter({|E5, E0|}, {|E6, E0|})|]R11
+SLEECR8R11 = timed_priority(intersectionR8R11)
+
+assert SLEECR8R11:[deadlock-free]					
+assert not MSN::C3(SLEECR8R11) [T= MSN::C3(SLEECR8)
+
+assert not MSN::C3(SLEECR8) [T= MSN::C3(SLEECR8R11)
+
+
+-- Checking R9 with R10:
+
+intersectionR9R10 = R9[|inter({|E5, E0|}, {|E6, E0|})|]R10
+SLEECR9R10 = timed_priority(intersectionR9R10)
+
+assert SLEECR9R10:[deadlock-free]					
+assert not MSN::C3(SLEECR9R10) [T= MSN::C3(SLEECR9)
+
+assert not MSN::C3(SLEECR9) [T= MSN::C3(SLEECR9R10)
+
+
+-- Checking R9 with R11:
+
+intersectionR9R11 = R9[|inter({|E5, E0|}, {|E6, E0|})|]R11
+SLEECR9R11 = timed_priority(intersectionR9R11)
+
+assert SLEECR9R11:[deadlock-free]					
+assert not MSN::C3(SLEECR9R11) [T= MSN::C3(SLEECR9)
+
+assert not MSN::C3(SLEECR9) [T= MSN::C3(SLEECR9R11)
+
+
+-- Checking R10 with R11:
+
+intersectionR10R11 = R10[|inter({|E6, E0|}, {|E6, E0|})|]R11
+SLEECR10R11 = timed_priority(intersectionR10R11)
+
+assert SLEECR10R11:[deadlock-free]					
+assert not MSN::C3(SLEECR10R11) [T= MSN::C3(SLEECR10)
+
+assert not MSN::C3(SLEECR10) [T= MSN::C3(SLEECR10R11)
+
+
+-- Checking R12 with R13:
+
+intersectionR12R13 = R12[|inter({|E7, E1|}, {|E7, m0, E1|})|]R13
+SLEECR12R13 = timed_priority(intersectionR12R13)
+
+assert SLEECR12R13:[deadlock-free]					
+assert not MSN::C3(SLEECR12R13) [T= MSN::C3(SLEECR12)
+
+assert not MSN::C3(SLEECR12) [T= MSN::C3(SLEECR12R13)
+
+
+-- Checking R14 with R15:
+
+intersectionR14R15 = R14[|inter({|E8, m1, E2|}, {|E8, m1, E2|})|]R15
+SLEECR14R15 = timed_priority(intersectionR14R15)
+
+assert SLEECR14R15:[deadlock-free]					
+assert not MSN::C3(SLEECR14R15) [T= MSN::C3(SLEECR14)
+
+assert not MSN::C3(SLEECR14) [T= MSN::C3(SLEECR14R15)
+
+
+
+}

@@ -1,0 +1,27 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:14:06
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+-- data definitions used by platform:/resource/RAD0/common.rct
+datatype Distress = Distress_low | Distress_medium | Distress_high
+Distress_is(Distress_low,Distress_low) = true
+Distress_is(_,Distress_low) = false
+Distress_is(Distress_medium,Distress_medium) = true
+Distress_is(_,Distress_medium) = false
+Distress_is(Distress_high,Distress_high) = true
+Distress_is(_,Distress_high) = false
+
+datatype Time = Time_seconds | Time_minutes
+Time_is(Time_seconds,Time_seconds) = true
+Time_is(_,Time_seconds) = false
+Time_is(Time_minutes,Time_minutes) = true
+Time_is(_,Time_minutes) = false
+
+
+pre_vt(param_t,param_ut) = true
+	

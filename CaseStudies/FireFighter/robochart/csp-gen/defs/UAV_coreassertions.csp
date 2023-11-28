@@ -1,0 +1,30 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:14:05
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_main_defs.csp"
+include "core_defs.csp"
+include "state_defs.csp"
+include "UAV.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+channel r__
+-- generate UAV
+P_UAV = let
+	id__ = 0
+	
+	
+	
+within
+	UAV::O__(
+		id__
+	)
+assert P_UAV :[deadlock-free]	
+assert P_UAV;RUN({r__}) :[deadlock-free]
+assert P_UAV :[deterministic]
+assert P_UAV :[divergence-free]

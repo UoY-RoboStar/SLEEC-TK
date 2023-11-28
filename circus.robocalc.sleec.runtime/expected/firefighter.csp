@@ -1,0 +1,417 @@
+include "tick-tock.csp"
+
+
+channel BatteryCritical
+channel SoundAlarm
+channel temperature : Int
+channel personDetected : Bool
+channel GoHome
+channel windSpeed : STwindSpeed
+
+datatype STwindSpeed = light | moderate | strong
+
+STlewindSpeed(v1windSpeed, v2windSpeed) =
+	if v1windSpeed == light then true
+	else (if v1windSpeed == moderate then not member(v2windSpeed,{light})
+	else v2windSpeed == strong)
+	
+STeqwindSpeed(v1windSpeed, v2windSpeed) =
+	v1windSpeed == v2windSpeed
+	
+STltwindSpeed(v1windSpeed, v2windSpeed) =
+	STlewindSpeed(v1windSpeed, v2windSpeed) and STnewindSpeed(v1windSpeed, v2windSpeed)
+	
+STgtwindSpeed(v1windSpeed, v2windSpeed) =
+	STlewindSpeed(v2windSpeed, v1windSpeed)
+	
+STnewindSpeed(v1windSpeed, v2windSpeed) =
+	not STeqwindSpeed(v1windSpeed, v2windSpeed)
+	
+STgewindSpeed(v1windSpeed, v2windSpeed) =
+	STltwindSpeed(v2windSpeed, v1windSpeed)
+
+	
+Capabilities = 
+  {| BatteryCritical,
+     SoundAlarm,
+     GoHome,
+  	 temperature,
+  	 personDetected,
+  	 windSpeed
+  |}
+Measures =
+  {| temperature,
+     personDetected,
+     windSpeed
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when BatteryCritical then SoundAlarm 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = BatteryCritical -> SKIP
+
+MonitoringRule1 = SoundAlarm -> SKIP
+
+-- alphabet for Rule1 
+ARule1 = {|BatteryCritical, SoundAlarm|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when BatteryCritical and ((temperature) > (35)) then SoundAlarm 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = let
+	MTrigger = StartBy(temperature?vtemperature ->
+		if ((vtemperature) > (35)) then SKIP else TriggerRule2
+	,0)
+within BatteryCritical -> MTrigger
+
+MonitoringRule2 = SoundAlarm -> SKIP
+
+-- alphabet for Rule2 
+ARule2 = {|temperature, BatteryCritical, SoundAlarm|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when BatteryCritical and (((temperature) > (35)) or (personDetected)) then SoundAlarm 
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = let
+	MTrigger = StartBy(temperature?vtemperature ->
+		StartBy(personDetected?vpersonDetected ->
+			if (((vtemperature) > (35)) or (vpersonDetected)) then SKIP else TriggerRule3
+		,0)
+	,0)
+within BatteryCritical -> MTrigger
+
+MonitoringRule3 = SoundAlarm -> SKIP
+
+-- alphabet for Rule3 
+ARule3 = {|personDetected, temperature, BatteryCritical, SoundAlarm|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+-- Rule4 when BatteryCritical then SoundAlarm 
+-- unless (personDetected)
+
+Rule4 = TriggerRule4; MonitoringRule4; Rule4
+
+TriggerRule4 = BatteryCritical -> SKIP
+
+MonitoringRule4 = let
+	Monitoring1 = SoundAlarm -> SKIP
+	Monitoring2 = BatteryCritical -> MonitoringRule4
+		[] personDetected?x -> Monitoring2
+within StartBy(personDetected?vpersonDetected ->
+	if (vpersonDetected) then Monitoring2
+	else (Monitoring1)
+,0)
+
+-- alphabet for Rule4 
+ARule4 = {|personDetected, BatteryCritical, SoundAlarm|}
+SLEECRule4 = timed_priority(Rule4)
+
+
+-- Rule5 when BatteryCritical then SoundAlarm 
+-- unless (personDetected) then GoHome
+
+Rule5 = TriggerRule5; MonitoringRule5; Rule5
+
+TriggerRule5 = BatteryCritical -> SKIP
+
+MonitoringRule5 = let
+	Monitoring1 = SoundAlarm -> SKIP
+	Monitoring2 = GoHome -> SKIP
+within StartBy(personDetected?vpersonDetected ->
+	if (vpersonDetected) then Monitoring2
+	else (Monitoring1)
+,0)
+
+-- alphabet for Rule5 
+ARule5 = {|personDetected, BatteryCritical, SoundAlarm|}
+SLEECRule5 = timed_priority(Rule5)
+
+
+-- Rule6 when BatteryCritical then SoundAlarm within 1 seconds
+-- otherwise GoHome 
+
+Rule6 = TriggerRule6; MonitoringRule6; Rule6
+
+TriggerRule6 = BatteryCritical -> SKIP
+
+MonitoringRule6 = TimedInterrupt(SoundAlarm -> SKIP,(1 * 1),GoHome -> SKIP)
+
+-- alphabet for Rule6 
+ARule6 = {|GoHome, BatteryCritical|}
+SLEECRule6 = timed_priority(Rule6)
+
+
+-- Rule7 when BatteryCritical then SoundAlarm 
+-- unless (personDetected) then GoHome
+-- unless ((temperature) > (35))
+
+Rule7 = TriggerRule7; MonitoringRule7; Rule7
+
+TriggerRule7 = BatteryCritical -> SKIP
+
+MonitoringRule7 = let
+	Monitoring1 = SoundAlarm -> SKIP
+	Monitoring2 = GoHome -> SKIP
+	Monitoring3 = BatteryCritical -> MonitoringRule7
+		[] personDetected?x -> Monitoring3
+		[] temperature?x -> Monitoring3
+within StartBy(personDetected?vpersonDetected ->
+	StartBy(temperature?vtemperature ->
+		if (vpersonDetected) then Monitoring3
+		else (if ((vtemperature) > (35)) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule7 
+ARule7 = {|personDetected, temperature, BatteryCritical, SoundAlarm|}
+SLEECRule7 = timed_priority(Rule7)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking Rule1 with Rule2:
+
+intersectionRule1Rule2 = Rule1[|inter({|BatteryCritical, SoundAlarm|}, {|temperature, BatteryCritical, SoundAlarm|})|]Rule2
+SLEECRule1Rule2 = timed_priority(intersectionRule1Rule2)
+
+assert SLEECRule1Rule2:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule2) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule2)
+
+
+-- Checking Rule1 with Rule3:
+
+intersectionRule1Rule3 = Rule1[|inter({|BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule3
+SLEECRule1Rule3 = timed_priority(intersectionRule1Rule3)
+
+assert SLEECRule1Rule3:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule3) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule3)
+
+
+-- Checking Rule1 with Rule4:
+
+intersectionRule1Rule4 = Rule1[|inter({|BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule4
+SLEECRule1Rule4 = timed_priority(intersectionRule1Rule4)
+
+assert SLEECRule1Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule4) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule4)
+
+
+-- Checking Rule1 with Rule5:
+
+intersectionRule1Rule5 = Rule1[|inter({|BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule5
+SLEECRule1Rule5 = timed_priority(intersectionRule1Rule5)
+
+assert SLEECRule1Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule5) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule5)
+
+
+-- Checking Rule1 with Rule6:
+
+intersectionRule1Rule6 = Rule1[|inter({|BatteryCritical, SoundAlarm|}, {|GoHome, BatteryCritical|})|]Rule6
+SLEECRule1Rule6 = timed_priority(intersectionRule1Rule6)
+
+assert SLEECRule1Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule6) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule6)
+
+
+-- Checking Rule1 with Rule7:
+
+intersectionRule1Rule7 = Rule1[|inter({|BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule7
+SLEECRule1Rule7 = timed_priority(intersectionRule1Rule7)
+
+assert SLEECRule1Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule7) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule7)
+
+
+-- Checking Rule2 with Rule3:
+
+intersectionRule2Rule3 = Rule2[|inter({|temperature, BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule3
+SLEECRule2Rule3 = timed_priority(intersectionRule2Rule3)
+
+assert SLEECRule2Rule3:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule3) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule3)
+
+
+-- Checking Rule2 with Rule4:
+
+intersectionRule2Rule4 = Rule2[|inter({|temperature, BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule4
+SLEECRule2Rule4 = timed_priority(intersectionRule2Rule4)
+
+assert SLEECRule2Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule4) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule4)
+
+
+-- Checking Rule2 with Rule5:
+
+intersectionRule2Rule5 = Rule2[|inter({|temperature, BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule5
+SLEECRule2Rule5 = timed_priority(intersectionRule2Rule5)
+
+assert SLEECRule2Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule5) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule5)
+
+
+-- Checking Rule2 with Rule6:
+
+intersectionRule2Rule6 = Rule2[|inter({|temperature, BatteryCritical, SoundAlarm|}, {|GoHome, BatteryCritical|})|]Rule6
+SLEECRule2Rule6 = timed_priority(intersectionRule2Rule6)
+
+assert SLEECRule2Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule6) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule6)
+
+
+-- Checking Rule2 with Rule7:
+
+intersectionRule2Rule7 = Rule2[|inter({|temperature, BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule7
+SLEECRule2Rule7 = timed_priority(intersectionRule2Rule7)
+
+assert SLEECRule2Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule7) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule7)
+
+
+-- Checking Rule3 with Rule4:
+
+intersectionRule3Rule4 = Rule3[|inter({|personDetected, temperature, BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule4
+SLEECRule3Rule4 = timed_priority(intersectionRule3Rule4)
+
+assert SLEECRule3Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule4) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule4)
+
+
+-- Checking Rule3 with Rule5:
+
+intersectionRule3Rule5 = Rule3[|inter({|personDetected, temperature, BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule5
+SLEECRule3Rule5 = timed_priority(intersectionRule3Rule5)
+
+assert SLEECRule3Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule5) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule5)
+
+
+-- Checking Rule3 with Rule6:
+
+intersectionRule3Rule6 = Rule3[|inter({|personDetected, temperature, BatteryCritical, SoundAlarm|}, {|GoHome, BatteryCritical|})|]Rule6
+SLEECRule3Rule6 = timed_priority(intersectionRule3Rule6)
+
+assert SLEECRule3Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule6) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule6)
+
+
+-- Checking Rule3 with Rule7:
+
+intersectionRule3Rule7 = Rule3[|inter({|personDetected, temperature, BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule7
+SLEECRule3Rule7 = timed_priority(intersectionRule3Rule7)
+
+assert SLEECRule3Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule7) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule7)
+
+
+-- Checking Rule4 with Rule5:
+
+intersectionRule4Rule5 = Rule4[|inter({|personDetected, BatteryCritical, SoundAlarm|}, {|personDetected, BatteryCritical, SoundAlarm|})|]Rule5
+SLEECRule4Rule5 = timed_priority(intersectionRule4Rule5)
+
+assert SLEECRule4Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule5) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule5)
+
+
+-- Checking Rule4 with Rule6:
+
+intersectionRule4Rule6 = Rule4[|inter({|personDetected, BatteryCritical, SoundAlarm|}, {|GoHome, BatteryCritical|})|]Rule6
+SLEECRule4Rule6 = timed_priority(intersectionRule4Rule6)
+
+assert SLEECRule4Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule6) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule6)
+
+
+-- Checking Rule4 with Rule7:
+
+intersectionRule4Rule7 = Rule4[|inter({|personDetected, BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule7
+SLEECRule4Rule7 = timed_priority(intersectionRule4Rule7)
+
+assert SLEECRule4Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule7) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule7)
+
+
+-- Checking Rule5 with Rule6:
+
+intersectionRule5Rule6 = Rule5[|inter({|personDetected, BatteryCritical, SoundAlarm|}, {|GoHome, BatteryCritical|})|]Rule6
+SLEECRule5Rule6 = timed_priority(intersectionRule5Rule6)
+
+assert SLEECRule5Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule5Rule6) [T= MSN::C3(SLEECRule5)
+
+assert not MSN::C3(SLEECRule5) [T= MSN::C3(SLEECRule5Rule6)
+
+
+-- Checking Rule5 with Rule7:
+
+intersectionRule5Rule7 = Rule5[|inter({|personDetected, BatteryCritical, SoundAlarm|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule7
+SLEECRule5Rule7 = timed_priority(intersectionRule5Rule7)
+
+assert SLEECRule5Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule5Rule7) [T= MSN::C3(SLEECRule5)
+
+assert not MSN::C3(SLEECRule5) [T= MSN::C3(SLEECRule5Rule7)
+
+
+-- Checking Rule6 with Rule7:
+
+intersectionRule6Rule7 = Rule6[|inter({|GoHome, BatteryCritical|}, {|personDetected, temperature, BatteryCritical, SoundAlarm|})|]Rule7
+SLEECRule6Rule7 = timed_priority(intersectionRule6Rule7)
+
+assert SLEECRule6Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule6Rule7) [T= MSN::C3(SLEECRule6)
+
+assert not MSN::C3(SLEECRule6) [T= MSN::C3(SLEECRule6Rule7)
+
+
+
+}

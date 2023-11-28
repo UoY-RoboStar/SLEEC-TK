@@ -1,0 +1,19 @@
+def_start
+	event E0
+	event E1
+	event E7
+	event E2
+	measure m0 : boolean
+	measure m1 : boolean
+def_end
+rule_start
+	// basic conflict
+	R0 when E0 then E1 within 20 seconds
+	R1 when E0 then not E1 within 10 seconds
+	
+	R12 when E0 then not E7 within 10 seconds
+	R13 when E0 then E7 within 20 seconds
+
+	R8 when E0 and m0 then E2 within 20 seconds
+	R9 when E0 and m1 then not E2 within 10 seconds
+rule_end

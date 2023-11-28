@@ -1,0 +1,498 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:14:06
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "defs/Dressing.csp"
+include "defs/file_common_defs.csp"
+include "defs/state_timed_defs.csp"
+include "defs/robochart_defs.csp"
+include "defs/core_defs.csp"
+include "defs/core_timed_defs.csp"
+include "defs/system_defs.csp"
+include "defs/system.csp"
+
+channel r__
+
+-- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+-- generate nat
+nametype core_nat = { 0..2}
+-- generate int
+nametype core_int = { -2..2}
+-- generate string
+nametype core_string = LSeq(Char,2)
+-- generate boolean
+nametype core_boolean = Bool
+-- generate real
+nametype core_real = { -2..2} 
+
+-- VECTOR TYPES AND OPERATIONS
+
+
+-- CLOCKS
+-- generate core_clock_type
+nametype core_clock_type = {0..1801}
+
+-- BASIC FUNCTIONS			
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+
+-- generate gt
+gt(Distress_high,x__) = true
+gt(Distress_medium,Distress_low) = true
+-- generate vt
+vt(x__,Time_seconds) = x__
+vt(x__,Time_minutes) = x__*60
+
+-- Additional tock-CSP operators not defined built-in by RoboTool:
+et(_) = 0
+
+Timed(et) {
+-- Strict timed interrupt
+channel finishedp__, finishedq__, timeout__
+
+-- Behaves as P__ until it either terminates, or, after exactly
+-- d__ time units behaves as Q__.
+TTimedInterrupt(P__,d__,Q__) =
+  ((((P__; EDeadline(finishedp__,0))
+    /\ timeout__ -> (RUN(diff(Events,{finishedp__,finishedq__,timeout__}))
+                   /\ finishedq__ -> SKIP)
+   )
+     [| Events |]
+   TRT__(d__,Q__)) \ {finishedp__, finishedq__, timeout__}); SKIP
+}
+
+-- Auxiliary counter for TTimedInterrupt definition above.
+TRT__(d__,Q__) =
+	if d__ > 0
+        then RUN(diff(Events,{finishedp__, finishedq__, timeout__, tock}))
+		  	 /\ (finishedp__ -> SKIP [] tock -> TRT__(d__-1,Q__))
+	    else timeout__ -> Q__; finishedq__ -> SKIP
+	    
+TimedInterruptSeq(e__,d__,Q__) =
+	let
+		TT(n__) = if n__ < d__ then TimeOut_1(e__ -> SKIP,TT(n__ + 1)) else Q__
+	within
+		TT(0)
+
+Rename(P__) = 
+	P__[[	system::Module::DressingStarted.in<-DressingStarted,
+			system::Module::DressingComplete.out<-DressingComplete,
+			system::Module::DressingAbandoned.in<-DressingAbandoned,
+			system::Module::CurtainOpenRqt.in<-CurtainOpenRqt,
+			system::Module::CurtainsOpened.out<-CurtainsOpened,
+			system::Module::refuseRequest.out<-RefuseRequest,
+			system::Module::UserFallen.in<-UserFallen,
+			system::Module::userUnderDressed.in<-userUnderDressed,
+			system::Module::roomTemperature.in<-roomTemperature,
+			system::Module::assentToSupportCalls1.in<-assentToSupportCalls,
+			system::Module::assentToSupportCalls2.in<-assentToSupportCalls,
+			system::Module::supportCalled1.in<-SupportCalled,
+			system::Module::supportCalled2.in<-SupportCalled,
+			system::Module::retryAgreed.out<-RetryAgreed,
+			system::Module::userDistressed.in.STuserDistressed2RC(x__)<-userDistressed.x__ | x__ <- STuserDistressed
+	]]
+
+STuserDistressed2RC(low) = Distress_low
+STuserDistressed2RC(medium) = Distress_medium
+STuserDistressed2RC(high) = Distress_high
+
+-- Original SLEEC formulation below 
+
+channel DressingStarted
+channel DressingComplete
+channel DressingAbandoned
+channel CurtainOpenRqt
+channel CurtainsOpened
+channel RefuseRequest
+channel UserFallen
+channel userUnderDressed : Bool
+channel roomTemperature : core_int
+channel assentToSupportCalls : Bool
+channel SupportCalled
+channel RetryAgreed
+channel userDistressed : STuserDistressed
+
+datatype STuserDistressed = low | medium | high
+
+STleuserDistressed(v1userDistressed, v2userDistressed) =
+	if v1userDistressed == low then true
+	else (if v1userDistressed == medium then not member(v2userDistressed,{low})
+	else v2userDistressed == high)
+	
+STequserDistressed(v1userDistressed, v2userDistressed) =
+	v1userDistressed == v2userDistressed
+	
+STltuserDistressed(v1userDistressed, v2userDistressed) =
+	STleuserDistressed(v1userDistressed, v2userDistressed) and STneuserDistressed(v1userDistressed, v2userDistressed)
+	
+STgtuserDistressed(v1userDistressed, v2userDistressed) =
+	STltuserDistressed(v2userDistressed, v1userDistressed)
+	
+STneuserDistressed(v1userDistressed, v2userDistressed) =
+	not STequserDistressed(v1userDistressed, v2userDistressed)
+	
+STgeuserDistressed(v1userDistressed, v2userDistressed) =
+	STltuserDistressed(v2userDistressed, v1userDistressed)
+
+MAX_RESPONSE_TIME = 60
+	
+Capabilities = 
+  {| DressingStarted,
+     DressingComplete,
+     DressingAbandoned,
+     CurtainOpenRqt,
+     CurtainsOpened,
+     RefuseRequest,
+     UserFallen,
+     SupportCalled,
+     RetryAgreed,
+  	 userUnderDressed,
+  	 roomTemperature,
+  	 assentToSupportCalls,
+  	 userDistressed
+  |}
+Measures =
+  {| userUnderDressed,
+     roomTemperature,
+     assentToSupportCalls,
+     userDistressed
+  |}
+  
+SUVEvents = union(Capabilities,{|system::Module::CallSupportCall|})
+	
+datatype Measure = 
+	m_userUnderDressed | 
+	m_roomTemperature | 
+	m_userDistressed | 
+	m_assentToSupportCalls
+
+m2in(m_userUnderDressed) = {|userUnderDressed|}
+m2in(m_roomTemperature) = {|roomTemperature|}
+m2in(m_userDistressed) = {|userDistressed|}
+m2in(m_assentToSupportCalls) = {|assentToSupportCalls|}
+
+GMemory(m__,i__,o__) =
+	let
+        Mem = m__?x__ -> (Provide(x__) /\ tock -> Mem)
+        Provide(x__) = RUN(union({|i__.x__|},o__))
+    within
+        Mem
+
+GMem(m_userUnderDressed,o__) = GMemory(userUnderDressed,i_userUnderDressed,o__)
+GMem(m_roomTemperature,o__) = GMemory(roomTemperature,i_roomTemperature,o__)
+GMem(m_userDistressed,o__) = GMemory(userDistressed,i_userDistressed,o__)
+GMem(m_assentToSupportCalls,o__) = GMemory(assentToSupportCalls,i_assentToSupportCalls,o__)
+
+GMemExternal(m_userUnderDressed) = {|userUnderDressed|}
+GMemExternal(m_roomTemperature) = {|roomTemperature|}
+GMemExternal(m_userDistressed) = {|userDistressed|}
+GMemExternal(m_assentToSupportCalls) = {|assentToSupportCalls|}
+
+GMemInternal(m_userUnderDressed) = {|i_userUnderDressed|}
+GMemInternal(m_roomTemperature) = {|i_roomTemperature|}
+GMemInternal(m_userDistressed) = {|i_userDistressed|}
+GMemInternal(m_assentToSupportCalls) = {|i_assentToSupportCalls|}
+
+GMemHide(P__,m_userUnderDressed) = P__[[userUnderDressed <- i_userUnderDressed]]
+GMemHide(P__,m_roomTemperature) = P__[[roomTemperature <- i_roomTemperature]]
+GMemHide(P__,m_userDistressed) = P__[[userDistressed <- i_userDistressed]]
+GMemHide(P__,m_assentToSupportCalls) = P__[[assentToSupportCalls <- i_assentToSupportCalls]]
+
+GMemorySet(s__,o__) = [| union({tock},o__) |] e__ : s__ @ GMem(e__,o__)
+GMemoryRenameSet(P__,s__) = GMemoryRenameSeq(P__,seq(s__))
+GMemoryRenameSeq(P__,<>) = P__
+GMemoryRenameSeq(P__,<s__>^ms) = GMemHide(GMemoryRenameSeq(P__,ms),s__)
+
+GMemoryInternalEvents(s__) = { e__ | m__ <- s__, e__ <- GMemInternal(m__) }
+GMemoryExternalEvents(s__) = { e__ | m__ <- s__, e__ <- GMemExternal(m__) }
+
+ARuleToGMeasureSet(alpha) = { m__ | m__ <- Measure, inter(m2in(m__),alpha) == m2in(m__) }
+
+instance MSN = model_shifting(Capabilities)
+Timed(et) {
+
+-- Rule1 when DressingStarted then DressingComplete within 2 minutes 
+-- unless ((roomTemperature) < (19)) then DressingComplete within 90 seconds
+-- unless ((roomTemperature) < (17)) then DressingComplete within 60 seconds
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = DressingStarted -> SKIP	[] DressingComplete -> TriggerRule1
+	[] DressingComplete -> TriggerRule1
+	[] DressingComplete -> TriggerRule1
+
+
+MonitoringRule1 = let
+	Monitoring1 = StartBy(DressingComplete -> SKIP,(2 * 60))
+	Monitoring2 = StartBy(DressingComplete -> SKIP,(90 * 1))
+	Monitoring3 = StartBy(DressingComplete -> SKIP,(60 * 1))
+within StartBy(roomTemperature?vroomTemperature ->
+	StartBy(roomTemperature?vroomTemperature ->
+		if ((vroomTemperature) < (17)) then Monitoring3
+		else (if ((vroomTemperature) < (19)) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+-- alphabet for Rule1 
+ARule1 = {|roomTemperature, DressingComplete, DressingStarted|}
+TRule1 = {|DressingStarted|}
+RRule1 = {|DressingComplete|}
+SLEECRule1 = timed_priority(Rule1)
+
+-- Rule2 when CurtainOpenRqt then CurtainsOpened within 60 seconds 
+-- unless (userUnderDressed) then RefuseRequest within 30 seconds
+-- unless ((userDistressed) > (medium)) then CurtainsOpened within 60 seconds
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = CurtainOpenRqt -> SKIP	[] CurtainsOpened -> TriggerRule2
+	[] RefuseRequest -> TriggerRule2
+	[] CurtainsOpened -> TriggerRule2
+
+
+MonitoringRule2 = let
+	Monitoring1 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+	Monitoring2 = StartBy(RefuseRequest -> SKIP,(30 * 1))
+	Monitoring3 = StartBy(CurtainsOpened -> SKIP,(60 * 1))
+within StartBy(userUnderDressed?vuserUnderDressed ->
+	StartBy(userDistressed?vuserDistressed ->
+		if (STgtuserDistressed(vuserDistressed, medium)) then Monitoring3
+		else (if (vuserUnderDressed) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule2
+ARule2 = {|userDistressed, RefuseRequest, CurtainOpenRqt, userUnderDressed, CurtainsOpened|}
+TRule2 = {|CurtainOpenRqt|}
+RRule2 = {|CurtainsOpened,RefuseRequest|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when UserFallen then SupportCalled 
+-- unless (not (assentToSupportCalls))
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = UserFallen -> SKIP	[] SupportCalled -> TriggerRule3
+
+
+MonitoringRule3 = let
+	Monitoring1 = TimedInterruptSeq(SupportCalled,60,SKIP)
+	Monitoring2 = SKIP -- Changed from: UserFallen -> MonitoringRule3	[] SupportCalled -> Monitoring2
+	 
+		[] SupportCalled -> Monitoring2
+within StartBy(assentToSupportCalls?vassentToSupportCalls ->
+	if (not (vassentToSupportCalls)) then Monitoring2
+	else (Monitoring1)
+,0)
+
+-- alphabet for Rule3 
+ARule3 = {|SupportCalled, UserFallen, assentToSupportCalls|}
+TRule3 = {|UserFallen|}
+RRule3 = {|SupportCalled|}
+SLEECRule3 = timed_priority(Rule3)
+
+-- Rule4 when DressingAbandoned then { RetryAgreed within 2 minutes
+-- otherwise { SupportCalled unless not assentToSupportCalls } }
+
+Rule4 = TriggerRule4; MonitoringRule4; Rule4
+
+TriggerRule4 = DressingAbandoned -> SKIP	[] RetryAgreed -> TriggerRule4
+	[] SupportCalled -> TriggerRule4
+
+
+MonitoringRule4 = TimedInterruptSeq(RetryAgreed,(2 * 60),let
+	Monitoring1 = SupportCalled -> SKIP
+	Monitoring2 = SKIP -- Changed from before
+		--	DressingAbandoned -> MonitoringRule4	[] RetryAgreed -> Monitoring2
+		-- [] SupportCalled -> Monitoring2
+		-- [] RetryAgreed -> Monitoring2
+		-- [] SupportCalled -> Monitoring2
+within StartBy(assentToSupportCalls?vassentToSupportCalls ->
+	if (not (vassentToSupportCalls)) then Monitoring2
+	else (Monitoring1)
+,0)
+)
+
+-- alphabet for Rule4 
+ARule4 = {|RetryAgreed, SupportCalled, DressingAbandoned, assentToSupportCalls|}
+TRule4 = {|DressingAbandoned|}
+RRule4 = {|SupportCalled, RetryAgreed|}
+SLEECRule4 = timed_priority(Rule4)
+
+-- ASSERTIONS --
+
+-- No intersections of rules; no assertions can be made. --
+
+--Measures =
+--  {| userUnderDressed,
+--     roomTemperature,
+--     assentToSupportCalls,
+--     userDistressed
+--  |}
+--
+-- For the measures, we can define an environment that holds
+-- the value of each measure.
+
+channel i_userUnderDressed : Bool
+channel i_roomTemperature : core_int
+channel i_assentToSupportCalls : Bool
+channel i_userDistressed : STuserDistressed
+
+}
+
+Timed(et) {
+RSpec1 = timed_priority(
+			let
+				AlphaRule = ARule1
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule1 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+	RC1 = timed_priority(
+		let
+			AlphaRule = ARule1
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+RSpec2 = timed_priority(
+			let
+				AlphaRule = ARule2
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule2 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+	RC2 = timed_priority(
+		let
+			AlphaRule = ARule2
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+RSpec3 = timed_priority(
+			let
+				AlphaRule = ARule3
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule3 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+	RC3 = timed_priority(
+		let
+			AlphaRule = ARule3
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+RSpec4 = timed_priority(
+			let
+				AlphaRule = ARule4
+				Measures = ARuleToGMeasureSet(AlphaRule)
+			within
+				(
+					GMemoryRenameSet(SLEECRule4 ||| CRUN(diff(SUVEvents,AlphaRule)),Measures)
+					[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+					GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+				) \GMemoryInternalEvents(Measures)
+	)
+}
+
+Timed(et) {
+	RC4 = timed_priority(
+		let
+			AlphaRule = ARule4
+			Measures = ARuleToGMeasureSet(AlphaRule)
+		within
+			(
+				GMemoryRenameSet(Rename(system::Module::D__(1));STOP,Measures)
+				[| union(diff(SUVEvents,GMemoryExternalEvents(Measures)),GMemoryInternalEvents(Measures)) |]
+				GMemorySet(Measures,diff(SUVEvents,GMemoryExternalEvents(Measures)))
+			) \GMemoryInternalEvents(Measures)
+	)
+}
+
+-- RCheck1 - refinement
+assert RSpec1 [T= RC1
+
+-- RCheck2 - refinement
+assert RSpec2 [T= RC2
+
+-- RCheck3 - refinement
+assert RSpec3 [T= RC3
+
+-- RCheck4 - refinement
+assert RSpec4 [T= RC4
+
