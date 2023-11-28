@@ -1,0 +1,7 @@
+def_start
+	event E0
+	event E1
+def_end
+rule_start
+	R0 when E0 then E1
+rule_end

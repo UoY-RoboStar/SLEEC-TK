@@ -1,0 +1,29 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:14:06
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "file_common.csp"
+
+
+-- generate OP_Dressing
+P_OP_Dressing = let
+	id__ = 0
+	
+	param_temp = 0
+	
+	
+	
+within
+	OP_Dressing::O__(id__,
+				param_temp)
+assert P_OP_Dressing :[deadlock-free]	
+assert P_OP_Dressing;RUN({r__}) :[deadlock-free]
+assert P_OP_Dressing :[deterministic]
+assert P_OP_Dressing :[divergence-free]
+
+

@@ -1,0 +1,20 @@
+def_start
+	event E0
+	event E1
+	event E2
+	event E3
+	event E4
+	event E5
+	measure m0 : boolean
+	measure m1 : numeric
+	measure m2 : scale(s0, s1)
+	constant C0 = 5
+	constant C1 = 7
+def_end
+rule_start
+	Rule1 when E0 and m0 and (m1 < C0 or m2 > s0) or m1 < 5 then E1 within C0 minutes
+		otherwise not E2 within C1 minutes
+		unless m1 <> C0 and (m0 or m1 < 5) then E3 within C1 seconds
+		otherwise E4 within 3 hours
+		otherwise E5
+rule_end

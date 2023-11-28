@@ -1,0 +1,11 @@
+def_start
+	event E0
+	event E1
+	event E2
+	event E3
+def_end
+rule_start
+	Rule1 when E0 then not E3 within 0 seconds
+	Rule2 when E0 then E1 within 1 seconds // not and otherwise combination
+		otherwise not E2 within 3 seconds
+rule_end

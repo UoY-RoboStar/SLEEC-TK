@@ -1,0 +1,8 @@
+def_start
+	event E0
+	event E1
+	measure m0 : boolean
+def_end
+rule_start
+	Rule1 when E0 and m0 then E1
+rule_end

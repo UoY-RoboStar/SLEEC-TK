@@ -1,0 +1,110 @@
+// rule conflicts experiments
+
+// TODO each of these scenarios should be moved their own file to be tested on its own
+
+def_start
+	event Ea
+	event Eb
+	event Ec
+	event Ed
+	event Ee
+	event E0
+	event E1
+	event E2
+	event E3
+	event E4
+	event E5
+	event E6
+	event E7
+	event E8
+	event E9
+	event E10
+	event E11
+	event E12
+	event E13
+	measure m0 : boolean
+	measure m1 : boolean
+	measure m2 : numeric
+def_end
+
+rule_start 
+	
+	// ---------------------------------------------------
+	// redundant defeaters
+	// R0 when E0 and m0 then E1 unless m1 then E2 ... unless mN then EN
+	// EK is redundant if the conditions where mK-1 are true is a subset of the conditions where mK are true
+	
+	// warning that E6 is redundant as m0 is a subset of m0
+	R05 when Ee and m0 then E6
+		unless m0
+	
+	// warning that E7 is redundant as m0 is a subset of m0
+	R01 when Ea then E6
+		unless m0 then E7
+		unless m0 then E8
+		
+	// same warning here
+	R04 when Ed then E6
+		unless m0 then E7
+		unless m0
+	
+	// warning that E10 is redundant as 10 <= 20
+	R02 when Eb then E9
+		unless m2 < 10 then E10
+		unless m2 < 20 then E11
+	
+	// no warning here
+	R03 when Ec then E1
+		unless m2 < 10 then E2
+		unless m0 then E3
+		unless m2 < 20 then E4
+		
+	// warning that E1 is redundant / never happens
+	R06 when Ee and m2 = 5 and m0 then E1
+		unless m2 =5 or m0 then E2
+	
+	// ---------------------------------------------------
+	// redundant conditions (always false/true) 
+	// if a condition exists, but the following event always/never happens, raise a warning
+	
+	// raise warning E12 never happens, R16 is redundant
+	// similar to a Java warning about if(true)
+	R16 when E0 and m0 and not m0 then E12
+	
+	// raise warning that E13 always happens
+	// suggest writing like R18
+	R17 when Ea and m0 or not m0 then E13
+	R18 when Eb then E13
+		
+	// ---------------------------------------------------
+	// redundant otherwise
+	
+	// does E1 happen again if it failed the first time?
+	R20 when Ea then E1 within 10 seconds otherwise E1 within 30 seconds otherwise E1 within 20 seconds
+	
+	// does the same problem happen here?
+	R21 when Eb then E1 within 10 seconds otherwise E2 within 30 seconds otherwise E1 within 20 seconds
+	
+	// warning that E1 is redundant
+	R22 when Ed then E1 within 10 seconds otherwise E2 within 20 seconds otherwise E1
+	
+	// ---------------------------------------------------
+	// confusing semantics
+	
+	// raise warning saying that E1 will always happen after E0
+	// suggest combining R0 and R1 to look like R2
+	R0 when E0 and m0 then E1
+	R1 when E0 and not m0 then E1
+	// R2 when E0 then E1
+
+	// raise warning to, suggest using R3 instead of R4 and R5
+	// R3 when E0 and m2 < 10 or m2 > 20 then E2
+	R4 when E0 and m2 < 10 then E2
+	R5 when E0 and m2 > 20 then E2
+
+	// raise warning here about unexpected behaviour
+	// R10 when Ea then E4
+	// R11 when Ea and m0 then E5
+	R10 when Ea then E4
+	R11 when Ea then E4 unless m0 then E5
+rule_end

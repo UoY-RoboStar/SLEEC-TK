@@ -1,0 +1,103 @@
+
+enumeration Distress { low medium high } 
+enumeration Time { seconds minutes }
+
+interface IDressing {
+	event DressingStarted
+	event DressingComplete
+	event DressingAbandoned
+	event retryAgreed
+}
+
+interface IUserParam {
+	event userUnderDressed : boolean
+	event userDistressed : Distress
+}
+
+interface IUserFall {
+	event UserFallen
+}
+
+interface ICurtains {
+	event CurtainOpenRqt
+	event CurtainsOpened
+	event refuseRequest
+}
+
+interface IRoomTemp {
+	event roomTemperature : int
+}
+
+interface IDressingOp {
+	Dress(temp:int)
+	Retry()
+	Clear()
+}
+interface ICurtainOp {
+	OpenCurtains()
+}
+
+interface ISupport {
+	event assentToSupportCalls : boolean
+
+	event SupportCalled
+}
+interface ISupportP {
+	event assentToSupportCalls1 : boolean
+	event assentToSupportCalls2 : boolean
+	event supportCalled1
+	event supportCalled2
+}
+interface ISupportCall {
+	CallSupportDecision()
+}
+interface PlatformOp {
+	CallSupport()
+}
+interface IRetry {
+	var retry:boolean
+}
+interface IComplete {
+	var completed:boolean
+}
+operation Dressing (temp : int) {
+	
+	initial i0
+
+	junction j0
+	junction j1
+
+	transition t1 {
+		from i0
+		to j0
+		}
+	transition t2 {
+		from j0
+		to j1
+		condition temp < 19
+	}
+	transition t3 {
+		from j1
+		to f0
+		condition temp < 17
+		action 
+	wait (  [ 0 , vt ( 60 , Time :: seconds ) ] )
+	}
+	transition t4 {
+		from j0
+		to f0
+		condition temp >= 19
+		action 
+	wait (  [ 0 , vt ( 2 , Time :: minutes ) ] )
+	}
+	transition t5 {
+		from j1
+		to f0
+		condition temp >= 17
+		action 
+	wait (  [ 0 , vt ( 90 , Time :: seconds ) ] )
+	}
+final f0
+} 
+
+function vt ( t : nat , ut : Time ) : nat { }

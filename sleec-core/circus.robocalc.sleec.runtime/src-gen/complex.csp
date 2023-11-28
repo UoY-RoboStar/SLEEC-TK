@@ -1,0 +1,100 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel E2
+channel E3
+channel E4
+channel E5
+channel m0 : Bool
+channel m1 : Int
+channel m2 : STm2
+
+datatype STm2 = s0 | s1
+
+STlem2(v1m2, v2m2) =
+	if v1m2 == s0 then true
+	else v2m2 == s1
+	
+STeqm2(v1m2, v2m2) =
+	v1m2 == v2m2
+	
+STltm2(v1m2, v2m2) =
+	STlem2(v1m2, v2m2) and STnem2(v1m2, v2m2)
+	
+STgtm2(v1m2, v2m2) =
+	STlem2(v2m2, v1m2)
+	
+STnem2(v1m2, v2m2) =
+	not STeqm2(v1m2, v2m2)
+	
+STgem2(v1m2, v2m2) =
+	STltm2(v2m2, v1m2)
+
+C0 = 5
+C1 = 7
+	
+Capabilities = 
+  {| E0,
+     E1,
+     E2,
+     E3,
+     E4,
+     E5,
+  	 m0,
+  	 m1,
+  	 m2
+  |}
+Measures =
+  {| m0,
+     m1,
+     m2
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when E0 and (((m0) and (((m1) < (C0)) or ((m2) > (s0)))) or ((m1) < (5))) then E1 within 5 minutes
+-- otherwise not E2 within 7 minutes 
+-- unless (((m1) != (C0)) and ((m0) or ((m1) < (5)))) then E3 within 7 seconds
+-- otherwise E4 within 3 hours
+-- otherwise E5
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = let
+	MTrigger = StartBy(m0?vm0 ->
+		StartBy(m1?vm1 ->
+			StartBy(m2?vm2 ->
+				StartBy(m1?vm1 ->
+					if (((vm0) and (((vm1) < (C0)) or (STgtm2(vm2, s0)))) or ((vm1) < (5))) then SKIP else TriggerRule1
+				,0)
+			,0)
+		,0)
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule1 = let
+	Monitoring1 = TimedInterrupt(E1 -> SKIP,(5 * 60),WAIT((7 * 60)))
+	Monitoring2 = TimedInterrupt(E3 -> SKIP,(7 * 1),TimedInterrupt(E4 -> SKIP,(3 * 3600),E5 -> SKIP))
+within StartBy(m1?vm1 ->
+	StartBy(m0?vm0 ->
+		StartBy(m1?vm1 ->
+			if (((vm1) != (C0)) and ((vm0) or ((vm1) < (5)))) then Monitoring2
+			else (Monitoring1)
+		,0)
+	,0)
+,0)
+
+-- alphabet for Rule1 
+ARule1 = {|m0, m1, m2, E0, E2|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+	
+-- ASSERTIONS --
+
+-- No intersections of rules; no assertions can be made. --
+
+}

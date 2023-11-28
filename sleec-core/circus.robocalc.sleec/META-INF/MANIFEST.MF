@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: circus.robocalc.sleec
+Bundle-ManifestVersion: 2
+Bundle-Name: circus.robocalc.sleec
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: circus.robocalc.sleec; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
+ org.eclipse.xtend.lib;bundle-version="2.14.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: circus.robocalc.sleec.sLEEC.impl,
+ circus.robocalc.sleec.serializer,
+ circus.robocalc.sleec.sLEEC.util,
+ circus.robocalc.sleec.services,
+ circus.robocalc.sleec.sLEEC,
+ circus.robocalc.sleec.parser.antlr.internal,
+ circus.robocalc.sleec.generator,
+ circus.robocalc.sleec.parser.antlr,
+ circus.robocalc.sleec.validation,
+ circus.robocalc.sleec.scoping,
+ circus.robocalc.sleec,
+ circus.robocalc.sleec.formatting2
+Import-Package: org.apache.log4j

@@ -1,0 +1,66 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel m0 : Int
+C0 = 1
+	
+Capabilities = 
+  {| E0,
+     E1,
+  	 m0
+  |}
+Measures =
+  {| m0
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when E0 and ((m0) > (C0)) then E1 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if ((vm0) > (C0)) then SKIP else TriggerRule1
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule1 = E1 -> SKIP
+
+-- alphabet for Rule1 
+ARule1 = {|m0, E0, E1|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when E0 then E1 within 1 days 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = E0 -> SKIP
+
+MonitoringRule2 = StartBy(E1 -> SKIP,(1 * 86400))
+
+-- alphabet for Rule2 
+ARule2 = {|E0, E1|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking Rule1 with Rule2:
+
+intersectionRule1Rule2 = Rule1[|inter({|m0, E0, E1|}, {|E0, E1|})|]Rule2
+SLEECRule1Rule2 = timed_priority(intersectionRule1Rule2)
+
+assert SLEECRule1Rule2:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule2) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule2)
+
+
+
+}

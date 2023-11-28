@@ -1,0 +1,29 @@
+
+
+def_start
+event BatteryCritical
+event SoundAlarm
+measure personNearBy: boolean
+event CameraStart
+event VideoRecord
+measure personRiskLevel:scale(low,medium,high)
+
+event MissionStart
+event ExploreAllFloorsInOrder
+event CheckWhetherPersonIsSafe
+constant MAX_FOOTAGE_TIME=4
+def_end
+
+rule_start
+Rule1 when BatteryCritical then SoundAlarm within 40 seconds unless
+personNearBy
+Rule2 when CameraStart then VideoRecord 
+              unless personNearBy
+              unless personRiskLevel >medium
+//Rule3 when CameraStart then VideoRecord within MAX_FOOTAGE_TIME hours 
+	//		otherwise FloorsCheck within 3 hours  otherwise AreasCheck within 2 hours unless personDetected
+	
+ Rule3 when MissionStart then ExploreAllFloorsInOrder unless personNearBy then CheckWhetherPersonIsSafe within 15 seconds
+ //Rule4 when MissionStart then ExploreAllFloorsInOrder within 30 seconds
+ //Rule5 when CameraStart and personInDanger <= medium then not VideoRecord within 60 seconds
+rule_end

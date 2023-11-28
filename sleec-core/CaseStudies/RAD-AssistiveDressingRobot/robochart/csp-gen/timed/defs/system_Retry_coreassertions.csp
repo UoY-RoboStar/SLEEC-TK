@@ -1,0 +1,37 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:20:40
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "system_defs.csp"
+include "core_timed_defs.csp"
+include "core_defs.csp"
+include "system_Retry.csp"
+include "state_timed_defs.csp"
+include "robochart_defs.csp"
+include "../instantiations.csp"
+
+transparent wbisim
+channel r__
+-- generate system_OP_Retry
+P_system_OP_Retry = let
+	id__ = 0
+	
+	
+	
+	
+within
+	system::OP_Retry::O__(id__)
+assert P_system_OP_Retry :[deadlock-free]	
+assert P_system_OP_Retry;RUN({r__}) :[deadlock-free]
+assert P_system_OP_Retry :[deterministic]
+assert P_system_OP_Retry :[divergence-free]
+-- timed deadlock free
+assert prioritise(P_system_OP_Retry[[tock<-tock,tock<-tock']],<diff(Events,{tock',tock}),{tock}>)\{tock} :[divergence free [FD]]
+
+-- timelock free
+assert RUN({tock}) ||| CHAOS(diff(Events,{|tock|})) [F= P_system_OP_Retry

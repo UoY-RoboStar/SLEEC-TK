@@ -1,0 +1,64 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel E2
+channel E3
+	
+Capabilities = 
+  {| E0,
+     E1,
+     E2,
+     E3
+  |}
+Measures =
+  {| 
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when E0 then not E3 within 0 seconds 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = E0 -> SKIP
+
+MonitoringRule1 = WAIT((0 * 1))
+
+-- alphabet for Rule1 
+ARule1 = {|E0, E3|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when E0 then E1 within 1 seconds
+-- otherwise not E2 within 3 seconds 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = E0 -> SKIP
+
+MonitoringRule2 = TimedInterrupt(E1 -> SKIP,(1 * 1),WAIT((3 * 1)))
+
+-- alphabet for Rule2 
+ARule2 = {|E0, E2|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking Rule1 with Rule2:
+
+intersectionRule1Rule2 = Rule1[|inter({|E0, E3|}, {|E0, E2|})|]Rule2
+SLEECRule1Rule2 = timed_priority(intersectionRule1Rule2)
+
+assert SLEECRule1Rule2:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule2) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule2)
+
+
+
+}

@@ -1,0 +1,397 @@
+include "tick-tock.csp"
+
+
+channel m0 : STm0
+
+datatype STm0 = s0 | s1 | s2
+
+STlem0(v1m0, v2m0) =
+	if v1m0 == s0 then true
+	else (if v1m0 == s1 then not member(v2m0,{s0})
+	else v2m0 == s2)
+	
+STeqm0(v1m0, v2m0) =
+	v1m0 == v2m0
+	
+STltm0(v1m0, v2m0) =
+	STlem0(v1m0, v2m0) and STnem0(v1m0, v2m0)
+	
+STgtm0(v1m0, v2m0) =
+	STlem0(v2m0, v1m0)
+	
+STnem0(v1m0, v2m0) =
+	not STeqm0(v1m0, v2m0)
+	
+STgem0(v1m0, v2m0) =
+	STltm0(v2m0, v1m0)
+
+channel E0
+channel E1
+	
+Capabilities = 
+  {| E0,
+     E1,
+  	 m0
+  |}
+Measures =
+  {| m0
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when E0 and ((m0) < (s1)) then E1 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STltm0(vm0, s1)) then SKIP else TriggerRule1
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule1 = E1 -> SKIP
+
+-- alphabet for Rule1 
+ARule1 = {|m0, E0, E1|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when E0 and ((m0) == (s1)) then E1 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STeqm0(vm0, s1)) then SKIP else TriggerRule2
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule2 = E1 -> SKIP
+
+-- alphabet for Rule2 
+ARule2 = {|m0, E0, E1|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when E0 and ((m0) > (s1)) then E1 
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STgtm0(vm0, s1)) then SKIP else TriggerRule3
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule3 = E1 -> SKIP
+
+-- alphabet for Rule3 
+ARule3 = {|m0, E0, E1|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+-- Rule4 when E0 and ((m0) != (s0)) then E1 
+
+Rule4 = TriggerRule4; MonitoringRule4; Rule4
+
+TriggerRule4 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STnem0(vm0, s0)) then SKIP else TriggerRule4
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule4 = E1 -> SKIP
+
+-- alphabet for Rule4 
+ARule4 = {|m0, E0, E1|}
+SLEECRule4 = timed_priority(Rule4)
+
+
+-- Rule5 when E0 and ((m0) <= (s0)) then E1 
+
+Rule5 = TriggerRule5; MonitoringRule5; Rule5
+
+TriggerRule5 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STlem0(vm0, s0)) then SKIP else TriggerRule5
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule5 = E1 -> SKIP
+
+-- alphabet for Rule5 
+ARule5 = {|m0, E0, E1|}
+SLEECRule5 = timed_priority(Rule5)
+
+
+-- Rule6 when E0 and ((m0) >= (s0)) then E1 
+
+Rule6 = TriggerRule6; MonitoringRule6; Rule6
+
+TriggerRule6 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STgem0(vm0, s0)) then SKIP else TriggerRule6
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule6 = E1 -> SKIP
+
+-- alphabet for Rule6 
+ARule6 = {|m0, E0, E1|}
+SLEECRule6 = timed_priority(Rule6)
+
+
+-- Rule7 when E0 and ((s2) >= (m0)) then E1 
+
+Rule7 = TriggerRule7; MonitoringRule7; Rule7
+
+TriggerRule7 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (STgem0(s2, vm0)) then SKIP else TriggerRule7
+	,0)
+within E0 -> MTrigger
+
+MonitoringRule7 = E1 -> SKIP
+
+-- alphabet for Rule7 
+ARule7 = {|m0, E0, E1|}
+SLEECRule7 = timed_priority(Rule7)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking Rule1 with Rule2:
+
+intersectionRule1Rule2 = Rule1[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule2
+SLEECRule1Rule2 = timed_priority(intersectionRule1Rule2)
+
+assert SLEECRule1Rule2:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule2) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule2)
+
+
+-- Checking Rule1 with Rule3:
+
+intersectionRule1Rule3 = Rule1[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule3
+SLEECRule1Rule3 = timed_priority(intersectionRule1Rule3)
+
+assert SLEECRule1Rule3:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule3) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule3)
+
+
+-- Checking Rule1 with Rule4:
+
+intersectionRule1Rule4 = Rule1[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule4
+SLEECRule1Rule4 = timed_priority(intersectionRule1Rule4)
+
+assert SLEECRule1Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule4) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule4)
+
+
+-- Checking Rule1 with Rule5:
+
+intersectionRule1Rule5 = Rule1[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule5
+SLEECRule1Rule5 = timed_priority(intersectionRule1Rule5)
+
+assert SLEECRule1Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule5) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule5)
+
+
+-- Checking Rule1 with Rule6:
+
+intersectionRule1Rule6 = Rule1[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule6
+SLEECRule1Rule6 = timed_priority(intersectionRule1Rule6)
+
+assert SLEECRule1Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule6) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule6)
+
+
+-- Checking Rule1 with Rule7:
+
+intersectionRule1Rule7 = Rule1[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule7
+SLEECRule1Rule7 = timed_priority(intersectionRule1Rule7)
+
+assert SLEECRule1Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule1Rule7) [T= MSN::C3(SLEECRule1)
+
+assert not MSN::C3(SLEECRule1) [T= MSN::C3(SLEECRule1Rule7)
+
+
+-- Checking Rule2 with Rule3:
+
+intersectionRule2Rule3 = Rule2[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule3
+SLEECRule2Rule3 = timed_priority(intersectionRule2Rule3)
+
+assert SLEECRule2Rule3:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule3) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule3)
+
+
+-- Checking Rule2 with Rule4:
+
+intersectionRule2Rule4 = Rule2[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule4
+SLEECRule2Rule4 = timed_priority(intersectionRule2Rule4)
+
+assert SLEECRule2Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule4) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule4)
+
+
+-- Checking Rule2 with Rule5:
+
+intersectionRule2Rule5 = Rule2[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule5
+SLEECRule2Rule5 = timed_priority(intersectionRule2Rule5)
+
+assert SLEECRule2Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule5) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule5)
+
+
+-- Checking Rule2 with Rule6:
+
+intersectionRule2Rule6 = Rule2[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule6
+SLEECRule2Rule6 = timed_priority(intersectionRule2Rule6)
+
+assert SLEECRule2Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule6) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule6)
+
+
+-- Checking Rule2 with Rule7:
+
+intersectionRule2Rule7 = Rule2[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule7
+SLEECRule2Rule7 = timed_priority(intersectionRule2Rule7)
+
+assert SLEECRule2Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule2Rule7) [T= MSN::C3(SLEECRule2)
+
+assert not MSN::C3(SLEECRule2) [T= MSN::C3(SLEECRule2Rule7)
+
+
+-- Checking Rule3 with Rule4:
+
+intersectionRule3Rule4 = Rule3[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule4
+SLEECRule3Rule4 = timed_priority(intersectionRule3Rule4)
+
+assert SLEECRule3Rule4:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule4) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule4)
+
+
+-- Checking Rule3 with Rule5:
+
+intersectionRule3Rule5 = Rule3[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule5
+SLEECRule3Rule5 = timed_priority(intersectionRule3Rule5)
+
+assert SLEECRule3Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule5) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule5)
+
+
+-- Checking Rule3 with Rule6:
+
+intersectionRule3Rule6 = Rule3[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule6
+SLEECRule3Rule6 = timed_priority(intersectionRule3Rule6)
+
+assert SLEECRule3Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule6) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule6)
+
+
+-- Checking Rule3 with Rule7:
+
+intersectionRule3Rule7 = Rule3[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule7
+SLEECRule3Rule7 = timed_priority(intersectionRule3Rule7)
+
+assert SLEECRule3Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule3Rule7) [T= MSN::C3(SLEECRule3)
+
+assert not MSN::C3(SLEECRule3) [T= MSN::C3(SLEECRule3Rule7)
+
+
+-- Checking Rule4 with Rule5:
+
+intersectionRule4Rule5 = Rule4[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule5
+SLEECRule4Rule5 = timed_priority(intersectionRule4Rule5)
+
+assert SLEECRule4Rule5:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule5) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule5)
+
+
+-- Checking Rule4 with Rule6:
+
+intersectionRule4Rule6 = Rule4[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule6
+SLEECRule4Rule6 = timed_priority(intersectionRule4Rule6)
+
+assert SLEECRule4Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule6) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule6)
+
+
+-- Checking Rule4 with Rule7:
+
+intersectionRule4Rule7 = Rule4[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule7
+SLEECRule4Rule7 = timed_priority(intersectionRule4Rule7)
+
+assert SLEECRule4Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule4Rule7) [T= MSN::C3(SLEECRule4)
+
+assert not MSN::C3(SLEECRule4) [T= MSN::C3(SLEECRule4Rule7)
+
+
+-- Checking Rule5 with Rule6:
+
+intersectionRule5Rule6 = Rule5[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule6
+SLEECRule5Rule6 = timed_priority(intersectionRule5Rule6)
+
+assert SLEECRule5Rule6:[deadlock-free]					
+assert not MSN::C3(SLEECRule5Rule6) [T= MSN::C3(SLEECRule5)
+
+assert not MSN::C3(SLEECRule5) [T= MSN::C3(SLEECRule5Rule6)
+
+
+-- Checking Rule5 with Rule7:
+
+intersectionRule5Rule7 = Rule5[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule7
+SLEECRule5Rule7 = timed_priority(intersectionRule5Rule7)
+
+assert SLEECRule5Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule5Rule7) [T= MSN::C3(SLEECRule5)
+
+assert not MSN::C3(SLEECRule5) [T= MSN::C3(SLEECRule5Rule7)
+
+
+-- Checking Rule6 with Rule7:
+
+intersectionRule6Rule7 = Rule6[|inter({|m0, E0, E1|}, {|m0, E0, E1|})|]Rule7
+SLEECRule6Rule7 = timed_priority(intersectionRule6Rule7)
+
+assert SLEECRule6Rule7:[deadlock-free]					
+assert not MSN::C3(SLEECRule6Rule7) [T= MSN::C3(SLEECRule6)
+
+assert not MSN::C3(SLEECRule6) [T= MSN::C3(SLEECRule6Rule7)
+
+
+
+}

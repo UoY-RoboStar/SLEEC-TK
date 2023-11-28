@@ -1,0 +1,12 @@
+def_start
+	event E0
+	event E1
+	measure m0 : boolean
+	measure m1 : boolean
+def_end
+rule_start
+	Rule0 when E0 and not m0 then E1
+	Rule1 when E0 and not m0 or m1 then E1
+	Rule3 when E0 and not (m0 or m1) then E1
+	Rule2 when E0 and not (m0 and not m1) then E1
+rule_end

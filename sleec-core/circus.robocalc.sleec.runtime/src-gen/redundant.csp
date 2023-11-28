@@ -1,0 +1,59 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E8
+	
+Capabilities = 
+  {| E0,
+     E8
+  |}
+Measures =
+  {| 
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- R14 when E0 then not E8 within 20 seconds 
+
+R14 = TriggerR14; MonitoringR14; R14
+
+TriggerR14 = E0 -> SKIP
+
+MonitoringR14 = WAIT((20 * 1))
+
+-- alphabet for R14 
+AR14 = {|E8, E0|}
+SLEECR14 = timed_priority(R14)
+
+
+-- R15 when E0 then E8 within 10 seconds 
+
+R15 = TriggerR15; MonitoringR15; R15
+
+TriggerR15 = E0 -> SKIP
+
+MonitoringR15 = StartBy(E8 -> SKIP,(10 * 1))
+
+-- alphabet for R15 
+AR15 = {|E8, E0|}
+SLEECR15 = timed_priority(R15)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking R14 with R15:
+
+intersectionR14R15 = R14[|inter({|E8, E0|}, {|E8, E0|})|]R15
+SLEECR14R15 = timed_priority(intersectionR14R15)
+
+assert SLEECR14R15:[deadlock-free]					
+assert not MSN::C3(SLEECR14R15) [T= MSN::C3(SLEECR14)
+
+assert not MSN::C3(SLEECR14) [T= MSN::C3(SLEECR14R15)
+
+
+
+}

@@ -1,0 +1,110 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel E2
+channel m0 : Bool
+channel m1 : Int
+C0 = 30
+	
+Capabilities = 
+  {| E0,
+     E1,
+     E2,
+  	 m0,
+  	 m1
+  |}
+Measures =
+  {| m0,
+     m1
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- R0 when E0 then E1 
+
+R0 = TriggerR0; MonitoringR0; R0
+
+TriggerR0 = E0 -> SKIP
+
+MonitoringR0 = E1 -> SKIP
+
+-- alphabet for R0 
+AR0 = {|E0, E1|}
+SLEECR0 = timed_priority(R0)
+
+
+-- R1 when E0 and (m0) then E2 
+
+R1 = TriggerR1; MonitoringR1; R1
+
+TriggerR1 = let
+	MTrigger = StartBy(m0?vm0 ->
+		if (vm0) then SKIP else TriggerR1
+	,0)
+within E0 -> MTrigger
+
+MonitoringR1 = E2 -> SKIP
+
+-- alphabet for R1 
+AR1 = {|m0, E0, E2|}
+SLEECR1 = timed_priority(R1)
+
+
+-- R2 when E0 and ((m1) < (C0)) then E1 
+
+R2 = TriggerR2; MonitoringR2; R2
+
+TriggerR2 = let
+	MTrigger = StartBy(m1?vm1 ->
+		if ((vm1) < (C0)) then SKIP else TriggerR2
+	,0)
+within E0 -> MTrigger
+
+MonitoringR2 = E1 -> SKIP
+
+-- alphabet for R2 
+AR2 = {|m1, E0, E1|}
+SLEECR2 = timed_priority(R2)
+
+
+	
+-- ASSERTIONS --
+
+-- Checking R0 with R1:
+
+intersectionR0R1 = R0[|inter({|E0, E1|}, {|m0, E0, E2|})|]R1
+SLEECR0R1 = timed_priority(intersectionR0R1)
+
+assert SLEECR0R1:[deadlock-free]					
+assert not MSN::C3(SLEECR0R1) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R1)
+
+
+-- Checking R0 with R2:
+
+intersectionR0R2 = R0[|inter({|E0, E1|}, {|m1, E0, E1|})|]R2
+SLEECR0R2 = timed_priority(intersectionR0R2)
+
+assert SLEECR0R2:[deadlock-free]					
+assert not MSN::C3(SLEECR0R2) [T= MSN::C3(SLEECR0)
+
+assert not MSN::C3(SLEECR0) [T= MSN::C3(SLEECR0R2)
+
+
+-- Checking R1 with R2:
+
+intersectionR1R2 = R1[|inter({|m0, E0, E2|}, {|m1, E0, E1|})|]R2
+SLEECR1R2 = timed_priority(intersectionR1R2)
+
+assert SLEECR1R2:[deadlock-free]					
+assert not MSN::C3(SLEECR1R2) [T= MSN::C3(SLEECR1)
+
+assert not MSN::C3(SLEECR1) [T= MSN::C3(SLEECR1R2)
+
+
+
+}

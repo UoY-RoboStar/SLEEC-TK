@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/circus.robocalc.sleec.feature_1.0.0.202209061616.jar" id="circus.robocalc.sleec.feature" version="1.0.0.202209061616">
+      <category name="sleec_plugin"/>
+   </feature>
+   <category-def name="sleec_plugin" label="SLEEC Plug-In"/>
+</site>

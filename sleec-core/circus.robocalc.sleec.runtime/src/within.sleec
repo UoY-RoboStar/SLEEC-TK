@@ -1,0 +1,7 @@
+def_start
+	event E0
+	event E1
+def_end
+rule_start
+	Rule1 when E0 then E1 within 2 minutes
+rule_end

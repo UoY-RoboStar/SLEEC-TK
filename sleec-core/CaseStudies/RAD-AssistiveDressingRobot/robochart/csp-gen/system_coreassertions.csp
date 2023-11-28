@@ -1,0 +1,182 @@
+
+--
+-- RoboChart generator version 3.0.0.202306261132
+-- Automatically generated on 02-11-2023 11:20:40
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "system.csp"
+
+-- generate system_DressingService
+P_system_DressingService = let
+	id__ = 0
+	
+	
+	
+within
+	system::DressingService::O__(
+		id__
+	)
+assert P_system_DressingService :[deadlock-free]	
+assert P_system_DressingService;RUN({r__}) :[deadlock-free]
+assert P_system_DressingService :[deterministic]
+assert P_system_DressingService :[divergence-free]
+-- generate system_MonitoringService
+P_system_MonitoringService = let
+	id__ = 0
+	
+	
+	
+within
+	system::MonitoringService::O__(
+		id__
+	)
+assert P_system_MonitoringService :[deadlock-free]	
+assert P_system_MonitoringService;RUN({r__}) :[deadlock-free]
+assert P_system_MonitoringService :[deterministic]
+assert P_system_MonitoringService :[divergence-free]
+
+-- generate system_OP_CallSupportDecision
+P_system_OP_CallSupportDecision = let
+	id__ = 0
+	
+	
+	
+	
+within
+	system::OP_CallSupportDecision::O__(id__)
+assert P_system_OP_CallSupportDecision :[deadlock-free]	
+assert P_system_OP_CallSupportDecision;RUN({r__}) :[deadlock-free]
+assert P_system_OP_CallSupportDecision :[deterministic]
+assert P_system_OP_CallSupportDecision :[divergence-free]
+-- generate system_OP_OpenCurtains
+P_system_OP_OpenCurtains = let
+	id__ = 0
+	
+	
+	
+	
+within
+	system::OP_OpenCurtains::O__(id__)
+assert P_system_OP_OpenCurtains :[deadlock-free]	
+assert P_system_OP_OpenCurtains;RUN({r__}) :[deadlock-free]
+assert P_system_OP_OpenCurtains :[deterministic]
+assert P_system_OP_OpenCurtains :[divergence-free]
+-- generate system_OP_Retry
+P_system_OP_Retry = let
+	id__ = 0
+	
+	
+	
+	
+within
+	system::OP_Retry::O__(id__)
+assert P_system_OP_Retry :[deadlock-free]	
+assert P_system_OP_Retry;RUN({r__}) :[deadlock-free]
+assert P_system_OP_Retry :[deterministic]
+assert P_system_OP_Retry :[divergence-free]
+-- generate system_OP_Dress
+P_system_OP_Dress = let
+	id__ = 0
+	
+	param_temp = 0
+	
+	
+	
+within
+	system::OP_Dress::O__(id__,
+				param_temp)
+assert P_system_OP_Dress :[deadlock-free]	
+assert P_system_OP_Dress;RUN({r__}) :[deadlock-free]
+assert P_system_OP_Dress :[deterministic]
+assert P_system_OP_Dress :[divergence-free]
+-- generate system_OP_Clear
+P_system_OP_Clear = let
+	id__ = 0
+	
+	
+	
+	
+within
+	system::OP_Clear::O__(id__)
+assert P_system_OP_Clear :[deadlock-free]	
+assert P_system_OP_Clear;RUN({r__}) :[deadlock-free]
+assert P_system_OP_Clear :[deterministic]
+assert P_system_OP_Clear :[divergence-free]
+
+-- generate system_ctrl0
+P_system_ctrl0 = let
+	id__ = 0
+	
+	
+	
+		
+within
+	system::ctrl0::O__(id__)
+
+assert P_system_ctrl0 :[deadlock-free]	
+assert P_system_ctrl0;RUN({r__}) :[deadlock-free]
+assert P_system_ctrl0 :[deterministic]
+assert P_system_ctrl0 :[divergence-free]
+
+-- generate system_ctrl0_stm_ref0
+P_system_ctrl0_stm_ref0 = let
+	id__ = 0
+	
+	
+	
+within
+	system::ctrl0::stm_ref0::O__(
+		id__
+	)
+assert P_system_ctrl0_stm_ref0 :[deadlock-free]	
+assert P_system_ctrl0_stm_ref0;RUN({r__}) :[deadlock-free]
+assert P_system_ctrl0_stm_ref0 :[deterministic]
+assert P_system_ctrl0_stm_ref0 :[divergence-free]
+-- generate system_ctrl0_stm_ref1
+P_system_ctrl0_stm_ref1 = let
+	id__ = 0
+	
+	
+	
+within
+	system::ctrl0::stm_ref1::O__(
+		id__
+	)
+assert P_system_ctrl0_stm_ref1 :[deadlock-free]	
+assert P_system_ctrl0_stm_ref1;RUN({r__}) :[deadlock-free]
+assert P_system_ctrl0_stm_ref1 :[deterministic]
+assert P_system_ctrl0_stm_ref1 :[divergence-free]
+
+-- generate system_Module
+P_system_Module = let
+	id__ = 0
+	
+	
+	
+		
+	
+within
+	system::Module::O__(id__)
+assert P_system_Module :[deadlock-free]	
+assert P_system_Module;RUN({r__}) :[deadlock-free]
+assert P_system_Module :[deterministic]
+assert P_system_Module :[divergence-free]
+
+-- generate system_Module_ctrl_ref0
+P_system_Module_ctrl_ref0 = let
+	id__ = 0
+	
+	
+	
+		
+within
+	system::Module::ctrl_ref0::O__(id__)
+
+assert P_system_Module_ctrl_ref0 :[deadlock-free]	
+assert P_system_Module_ctrl_ref0;RUN({r__}) :[deadlock-free]
+assert P_system_Module_ctrl_ref0 :[deterministic]
+assert P_system_Module_ctrl_ref0 :[divergence-free]
+

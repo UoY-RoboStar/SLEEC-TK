@@ -1,0 +1,11 @@
+def_start
+	event P
+	event Q
+	constant STOP = 35
+	measure c : boolean
+	measure d : numeric
+def_end
+rule_start
+	R0 when P and d > STOP then Q
+	R1 when P and c then Q
+rule_end

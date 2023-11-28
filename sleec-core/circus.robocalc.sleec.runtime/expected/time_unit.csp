@@ -1,0 +1,47 @@
+include "tick-tock.csp"
+
+
+channel E0
+channel E1
+channel E2
+channel E3
+channel E4
+C0 = 5
+C1 = 6
+	
+Capabilities = 
+  {| E0,
+     E1,
+     E2,
+     E3,
+     E4
+  |}
+Measures =
+  {| 
+  |}
+	
+instance MSN = MS(Capabilities)
+Timed(et) {
+
+-- Rule1 when E0 then E1 within 2 seconds
+-- otherwise E2 within 3 minutes
+-- otherwise E3 within 5 hours
+-- otherwise E4 within 6 days 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = E0 -> SKIP
+
+MonitoringRule1 = TimedInterrupt(E1 -> SKIP,(2 * 1),TimedInterrupt(E2 -> SKIP,(3 * 60),TimedInterrupt(E3 -> SKIP,(5 * 3600),StartBy(E4 -> SKIP,(6 * 86400)))))
+
+-- alphabet for Rule1 
+ARule1 = {|E0, E4|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+	
+-- ASSERTIONS --
+
+-- No intersections of rules; no assertions can be made. --
+
+}
