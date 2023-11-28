@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: csp
+Bundle-SymbolicName: circus.robocalc.sleec.assertions.csp;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: circus.robocalc.sleec.assertions.csp.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.xtend;bundle-version="2.2.0",
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro,
+ org.eclipse.xtext;bundle-version="2.25.0",
+ circus.robocalc.robochart.assertions;bundle-version="2.1.0",
+ circus.robocalc.sleec;bundle-version="1.0.0",
+ org.eclipse.xtext.ui,
+ org.apache.log4j,
+ org.eclipse.xtext.ui.shared,
+ circus.robocalc.robochart.textual;bundle-version="3.1.0",
+ circus.robocalc.robochart;bundle-version="2.0.0",
+ circus.robocalc.robochart.generator.csp;bundle-version="3.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: circus.robocalc.sleec.assertions.csp
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: RoboCalc Project
