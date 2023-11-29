@@ -3,6 +3,12 @@ This repository contains two Eclipse plug-ins that allow writing and validating
 Social Legal Empathetic Ethical and Cultural (SLEEC) rules, and checking whether
 a design model, written in RoboChart, conforms to a set of SLEEC rules.
 
+## Requirements
+For running the tool:
+
+* Java 11 or higher.
+* FDR4 for analysis of redundancy, conflict and conformance, available from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
+
 ## Building
 The plug-ins can be built from the source code in this repository. Below are
 requirements and stepwise instructions.
@@ -42,4 +48,6 @@ launched automatically with the plug-ins in this folder installed, as well
 as the required dependencies (eg. Xtext, Sirius, RoboChart). You can then 
 click `Finish` to exit the installer.
 
-### Production installation
+## Usage
+
+1. Activate FDR license.
