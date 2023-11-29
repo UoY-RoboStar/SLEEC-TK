@@ -1,0 +1,75 @@
+interface IMeasures {
+	event praying : boolean
+	event personAssent : boolean
+}
+
+interface IUserBasicSupport {
+	event personAssent : boolean
+event emergencyLevel : Emergency
+	event DetectUserFallen
+}
+
+enumeration Stress { low moderate high } enumeration Emergency { s1 s2 s3 s4 } 
+
+interface ISupport {
+	CallSupport ( )
+} interface IAdvancedSupport {
+	event praying : boolean
+	event timeSinceLastMeal
+	event time : nat
+} stm BasicSupport {
+	initial i0
+	state Idle {
+	}
+	transition t0 {
+		from i0
+		to Idle
+	}
+uses IUserBasicSupport requires ISupport var assent : boolean
+	var level : Emergency
+	junction j0
+	transition t1 {
+		from Idle
+		to j0
+		trigger DetectUserFallen
+		action ( emergencyLevel ? level ; personAssent ? assent ) <{ 0 }
+	}
+	transition t2 {
+		from j0
+		to Idle
+		condition lte(level,Emergency :: s4) /\ not assent
+	}
+	transition t3 {
+		from j0
+		to Idle
+		condition gte(level,Emergency :: s4) \/ assent
+		action CallSupport ( )
+	}
+}
+
+stm AdvancedSupport {
+	uses IAdvancedSupport var now : nat
+	initial i0
+	state Idle {
+	}
+	junction j0
+	state Lunch {
+	}
+	transition t0 {
+		from i0
+		to Idle
+	}
+	transition t1 {
+		from Idle
+		to j0
+		trigger time ? now
+	}
+	transition t2 {
+		from j0
+		to Lunch
+		condition now >= 12 /\ now <= 13
+	}
+}
+
+function lte(l1:Emergency,l2:Emergency):boolean {}
+function gte(l1:Emergency,l2:Emergency):boolean {}
