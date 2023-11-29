@@ -9,6 +9,9 @@ For running the tool:
 * Java 11 or higher.
 * FDR4 for analysis of redundancy, conflict and conformance, available from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
 
+We recommend that the tool is executed under Ubuntu LTS (22.04) Linux (x86_64), 
+which is the platform used for development.
+
 ## Building
 The plug-ins can be built from the source code in this repository. Below are
 requirements and stepwise instructions.
