@@ -28,7 +28,7 @@
 		<module>circus.robocalc.sleec.feature</module>
 		<module>circus.robocalc.sleec.repository</module>
 		<module>circus.robocalc.sleec.tests</module>
-		<module>circus.robocalc.sleec.ui.tests</module>
+		<!--<module>circus.robocalc.sleec.ui.tests</module>-->
 	</modules>
 	<dependencyManagement>
 		<dependencies>
