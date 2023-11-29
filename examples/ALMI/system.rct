@@ -17,6 +17,10 @@ interface ISupport {
 	event praying : boolean
 	event timeSinceLastMeal
 	event time : nat
+}
+
+interface IInform {
+	InformUser ( )
 } stm BasicSupport {
 	initial i0
 	state Idle {
@@ -68,6 +72,22 @@ stm AdvancedSupport {
 		from j0
 		to Lunch
 		condition now >= 12 /\ now <= 13
+	}
+state Dinner {
+	}
+	transition t3 {
+		from j0
+		to Dinner
+		condition now >= 18 /\ now <= 19
+	}
+	transition t4 {
+		from Dinner
+		to Idle
+	}
+	transition t5 {
+		from j0
+		to Idle
+		condition now < 12 \/ now > 19
 	}
 }
 
