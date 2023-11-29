@@ -149,6 +149,11 @@
             <layout>p2</layout>
         </repository>
 		<repository>
+            <id>robochart-textual</id>
+            <url>https://robostar.cs.york.ac.uk/robotool/textual/update/</url>
+            <layout>p2</layout>
+        </repository>
+		<repository>
             <id>robochart-csp-generator</id>
             <url>https://robostar.cs.york.ac.uk/robotool/csp-generator/update/</url>
             <layout>p2</layout>
