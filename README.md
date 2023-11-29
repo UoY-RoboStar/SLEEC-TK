@@ -20,10 +20,12 @@ requirements and stepwise instructions.
 For building, the following software must be available:
 
 * Java 11 for building
-* Maven
+* Maven (running under Java 11)
 
 ### Stepwise instructions
 Clone this git repository on your machine. In the root folder issue the command `mvn install`.
+If there are multiple JRE/JDKs on your machine, please make sure that the environment variable
+`JAVA_HOME` points to the JRE/JDK for Java 11, otherwise the Maven build may fail.
 
 ## Installation
 Once the build has succeeded, the tool can be installed by using The Eclipse 
