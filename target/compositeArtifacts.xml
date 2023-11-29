@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeArtifactRepository version='1.0.0'?>
+<repository name='&quot;SLEEC Tool Repository&quot;'
+    type='org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository' version='1.0.0'>
+  <children size='2'>
+    <child location='../sleec-core/circus.robocalc.sleec.repository/target/repository'/>
+    <child location='../sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository'/>
+  </children>
+</repository>

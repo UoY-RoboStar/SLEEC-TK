@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeMetadataRepository version='1.0.0'?>
+<repository name='&quot;SLEEC Tool Repository&quot;'
+    type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository' version='1.0.0'>
+  <children size='2'>
+    <child location='../sleec-core/circus.robocalc.sleec.repository/target/repository'/>
+    <child location='../sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository'/>
+  </children>
+  <references size='2'>
+    <repository uri='https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/' url='https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/' type='1' options='1'/>
+    <repository uri='https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/' url='https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/' type='0' options='1'/>
+  </references>
+</repository>
