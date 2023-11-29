@@ -34,8 +34,8 @@ to the folder `repository` of your local clone of this repository.
 5. Click `Next` and finally `Finish`.
 6. During the installation, which should take a couple of minutes, you will be
 prompted to:
- a. Accept the EPL license: we recommend toggling `Remember accepted licenses`.
- b. Trust `unsigned content of unknown origin`: you will need to click on
+* Accept the EPL license: we recommend toggling `Remember accepted licenses`.
+* Trust `unsigned content of unknown origin`: you will need to click on
     `Select All` followed by `Trust Selected`.
 7. At the end of this process, if everything succeeds, Eclipse 2021 will be
 launched automatically with the plug-ins in this folder installed, as well
