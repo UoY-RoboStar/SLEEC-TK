@@ -291,7 +291,7 @@ class AssertionsGenerator extends SLEECGenerator implements ISLEECConformanceGen
 		
 		val aux = m.nodes.filter(RoboticPlatform).get(0)
 		val rp = if (aux instanceof RoboticPlatformRef) aux.ref else aux as RoboticPlatformDef
-		var requiredOps = gu.requiredOperations(rp)
+		var allOps = gu.allOperations(rp)
 		val events = gu.allEvents(rp)
 		val alphaRule = su.getAlphabet(rule)
 		var mapped = new HashSet<String>()
@@ -304,7 +304,7 @@ class AssertionsGenerator extends SLEECGenerator implements ISLEECConformanceGen
 		}
 		
 		// Look at required operations
-		for (o : requiredOps) {
+		for (o : allOps) {
 			if (alphaRule.contains(o.name)) {
 				mapped.add('''«gu.processId(m)»::«o.name»Call''')
 			}

@@ -128,7 +128,7 @@ class SLEECUtils {
 	def dispatch getNamedElementMap(RCModule m, Rule rule) {
 		val aux = m.nodes.filter(RoboticPlatform).get(0)
 		val rp = if (aux instanceof RoboticPlatformRef) aux.ref else aux as RoboticPlatformDef
-		var requiredOps = gu.requiredOperations(rp)
+		var allOps = gu.allOperations(rp)
 		val events = gu.allEvents(rp)
 		val alphaRule = su.getAlphabet(rule)
 		
@@ -140,7 +140,7 @@ class SLEECUtils {
 			}
 		}
 		
-		for (o : requiredOps) {
+		for (o : allOps) {
 			if (alphaRule.contains(o.name)) {
 				map.put(o,o.name)
 			}
