@@ -15,12 +15,19 @@ interface ISupport {
 	CallSupport ( )
 } interface IAdvancedSupport {
 	event praying : boolean
-	event timeSinceLastMeal
-	event time : nat
+
+	event timeSinceLastMeal : int
+
+	event time : int
 }
 
 interface IInform {
 	InformUser ( )
+}
+
+interface IMeals {
+	event StartLunchTime
+	event StartDinnerTime
 } stm BasicSupport {
 	initial i0
 	state Idle {
@@ -52,12 +59,31 @@ uses IUserBasicSupport requires ISupport var assent : boolean
 }
 
 stm AdvancedSupport {
-	uses IAdvancedSupport var now : nat
+	uses IAdvancedSupport var now : int = 0 , meal : int
 	initial i0
 	state Idle {
 	}
 	junction j0
 	state Lunch {
+	initial i0
+		junction j0
+		final f0
+		transition t0 {
+			from i0
+			to j0
+		}
+		transition t1 {
+			from j0
+			to f0
+			condition p \/ ( now - meal ) > MAX_TIME
+		}
+		transition t2 {
+			from j0
+			to f0
+			condition not ( p \/ ( now - meal ) > MAX_TIME )
+			action InformUser ( )
+		}
+		entry StartLunchTime ; timeSinceLastMeal ! ( now - meal ) ; praying ? p <{ 0 }
 	}
 	transition t0 {
 		from i0
@@ -66,28 +92,30 @@ stm AdvancedSupport {
 	transition t1 {
 		from Idle
 		to j0
-		trigger time ? now
+		trigger 
+	time ? now
 	}
 	transition t2 {
 		from j0
 		to Lunch
 		condition now >= 12 /\ now <= 13
 	}
-state Dinner {
-	}
+	uses IMeals requires IInform var p : boolean
+	const MAX_TIME : int
 	transition t3 {
 		from j0
-		to Dinner
-		condition now >= 18 /\ now <= 19
-	}
-	transition t4 {
-		from Dinner
 		to Idle
+		condition now >= 18 /\ now <= 19
+		action StartDinnerTime ; timeSinceLastMeal ! ( now - meal ) ; meal = now
 	}
 	transition t5 {
 		from j0
 		to Idle
 		condition now < 12 \/ now > 19
+	}
+transition t6 {
+		from Lunch
+		to Idle
 	}
 }
 

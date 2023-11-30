@@ -1,0 +1,28 @@
+controller Controller {
+	uses IUserBasicSupport uses IAdvancedSupport uses IMeals requires ISupport requires IInform sref stm_ref0 = BasicSupport
+	sref stm_ref1 = AdvancedSupport
+	connection Controller on personAssent to stm_ref0 on personAssent
+	connection Controller on emergencyLevel to stm_ref0 on emergencyLevel
+	connection Controller on DetectUserFallen to stm_ref0 on DetectUserFallen
+	connection Controller on praying to stm_ref1 on praying
+	connection stm_ref1 on StartDinnerTime to Controller on StartDinnerTime
+	connection stm_ref1 on StartLunchTime to Controller on StartLunchTime
+	connection Controller on time to stm_ref1 on time
+	connection stm_ref1 on timeSinceLastMeal to Controller on timeSinceLastMeal
+}
+
+module Module {
+	connection ctrl_ref0 on StartLunchTime to Tiago on StartLunchTime ( _async )
+	connection Tiago on personAssent to ctrl_ref0 on personAssent ( _async )
+	connection Tiago on praying to ctrl_ref0 on praying ( _async )
+	connection Tiago on emergencyLevel to ctrl_ref0 on emergencyLevel ( _async )
+	connection Tiago on DetectUserFallen to ctrl_ref0 on DetectUserFallen ( _async )
+	connection ctrl_ref0 on timeSinceLastMeal to Tiago on timeSinceLastMeal ( _async )
+	connection Tiago on time to ctrl_ref0 on time ( _async )
+	connection ctrl_ref0 on StartDinnerTime to Tiago on StartDinnerTime ( _async )
+	robotic platform Tiago {
+		uses IUserBasicSupport uses IAdvancedSupport uses IMeals provides ISupport provides IInform }
+
+	cref ctrl_ref0 = Controller
+}
+
