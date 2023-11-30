@@ -9,7 +9,7 @@ event emergencyLevel : Emergency
 	event DetectUserFallen
 }
 
-enumeration Stress { low moderate high } enumeration Emergency { s1 s2 s3 s4 } 
+enumeration Stress { low moderate high } enumeration Emergency { E1 E2 E3 E4 E5 } 
 
 interface ISupport {
 	CallSupport ( )
@@ -48,13 +48,19 @@ uses IUserBasicSupport requires ISupport var assent : boolean
 	transition t2 {
 		from j0
 		to Idle
-		condition lte(level,Emergency :: s4) /\ not assent
+		condition gte(level,Emergency :: E2) /\ lt(level,Emergency :: E4) /\ (not assent)
 	}
 	transition t3 {
 		from j0
 		to Idle
-		condition gte(level,Emergency :: s4) \/ assent
+		condition gte(level,Emergency :: E4) \/ assent
 		action CallSupport ( )
+	}
+transition t4 {
+		from j0
+		to Idle
+		condition lt(level,Emergency :: E2) /\ (not assent)
+		action wait(180)
 	}
 }
 
@@ -119,5 +125,5 @@ transition t6 {
 	}
 }
 
-function lte(l1:Emergency,l2:Emergency):boolean {}
+function lt(l1:Emergency,l2:Emergency):boolean {}
 function gte(l1:Emergency,l2:Emergency):boolean {}

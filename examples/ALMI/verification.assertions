@@ -1,0 +1,100 @@
+/*
+ * Assertions for verification of RoboChart model against functional and SLEEC rules.
+ * 
+ * To run these, it is necessary to ensure that:
+ * 
+ * 1. FDR is installed and activated.
+ * 	  a. FDR can be downloaded from https://cocotec.io/fdr/.
+ * 	  b. To activate FDR first run its executable at least once and follow the onscreen instructions.
+ * 2. By default, the tool will try to look for FDR's executable in the default
+ * 	  installation path. However, if this is non-standard, it is necessary to Eclipse's Preferences
+ *    and update the path under RoboChart > Analysis (eg. /opt/fdr/bin).
+ * 
+ * Afterwards, ensure the project is clean (Project > Clean) and then either:
+ * a. Right-click on this file under the Project Explorer and select
+ * 	  RoboTool > CSP > Run..
+ * b. With this file open in the Assertions Editor within Eclipse, press the
+ *    'running human' under next to the CSP label on the toolbar.
+ * 
+ * An HTML report with the name 'verification_assertions.html' will be generated with
+ * a table of results. If Eclipse is configured appropriately, it should automatically
+ * open within Eclipse. Otherwise it can be opened in a standard HTML browser.
+ * 
+ */
+ 
+/*
+ * 
+ * Example of assertions about the functional behaviour of the system.
+ */
+timed assertion A1 : Module is deadlock-free
+timed assertion A2 : Module is deterministic
+
+/*
+ * Example of conformance checking against SLEEC rules
+ * 
+ * Module satisfies both Rules 1 and 2, but not 4.
+ * 
+ * In addition, because the system does not implement the capability 'IdentifySafePath' Rule3 is not relevant
+ * and is commented out. If assertion S3 is uncommented then an error that flags this situation.
+ */
+sleec assertion S1 : Module conforms to Rule1   
+sleec assertion S2 : Module conforms to Rule2     
+//sleec assertion S3 : Module conforms to Rule3   
+sleec assertion S4 : Module conforms to Rule4
+
+/*
+ * Below we have the explicit definition of the domain of data types for model checking,
+ * and also a definition for the functions gte and lt, defined in the RoboChart model,
+ * given directly in CSPM.
+ * 
+ * For an example not making use of functions, the definitions below can be automatically
+ * calculated by the tool. An exercise would be to comment the csp-begin/csp-end block 
+ * below and re-run the verification. What changes?
+ */
+timed csp Instantiations csp-begin
+-- generate nat
+nametype core_nat = {0..5}
+
+-- clocks
+nametype core_clock_type = {0..10}
+-- generate const_AdvancedSupport_MAX_TIME
+const_AdvancedSupport_MAX_TIME = 8
+
+-- generate string
+nametype core_string = LSeq(Char,2)
+
+-- generate const_Controller_stm_ref1_MAX_TIME
+const_Controller_stm_ref1_MAX_TIME = 8
+
+-- BASIC TYPES
+-- generate real
+nametype core_real = { -5..5}
+-- generate int
+nametype core_int = { -5..5}
+-- generate boolean
+nametype core_boolean = Bool
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate gte not
+em2int(Emergency_E1) = 1
+em2int(Emergency_E2) = 2
+em2int(Emergency_E3) = 3
+em2int(Emergency_E4) = 4
+em2int(Emergency_E5) = 5
+gte(x__,y__) = em2int(x__) >= em2int(y__)
+lt(x__,y__) = em2int(x__) < em2int(y__)
+
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+csp-end 

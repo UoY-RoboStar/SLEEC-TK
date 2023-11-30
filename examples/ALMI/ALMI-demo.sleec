@@ -11,7 +11,7 @@ def_start
   measure praying:boolean
   measure timeSinceLastMeal:numeric
   measure personAssent:boolean
-  measure emergencyLevel: scale(s1,s2,s3,s4,s5) 
+  measure emergencyLevel: scale(E1,E2,E3,E4,E5) 
   measure personStressLevel: scale(low,moderate,high) 
   constant MAX_TIME=8
 def_end
@@ -24,10 +24,10 @@ rule_start
   //Ethical-Legal: privacy, emergency
   Rule2 when DetectUserFallen then CallSupport within 2 minutes
         unless not personAssent
-        unless emergencyLevel>=s4 then CallSupport
+        unless emergencyLevel>=E4 then CallSupport
   //Empathetic: well-being
   Rule3 when IdentifySafePath and noSafePath and not waiting then SoundWarning
         unless personStressLevel>=moderate then Wait   
   //Legal: Emergency
-  Rule4 when DetectUserFallen and emergencyLevel<s2 then not CallSupport within 3 minutes
+  Rule4 when DetectUserFallen and emergencyLevel<E2 then not CallSupport within 3 minutes
 rule_end
