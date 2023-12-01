@@ -63,6 +63,14 @@ line interface for performing conflict and redundancy checking.
 ```
 java -jar sleec-core/circus.robocalc.sleec/target/sleec.jar [file.sleec]
 ```
+We recommend that the above command is executed in the context of an Eclipse project,
+by first changing directory, for example:
+```
+cd examples/ALMI
+java -jar ../../sleec-core/circus.robocalc.sleec/target/sleec.jar ALMI-demo.sleec
+```
+In this case, a directory `src-gen` is created with the calculated semantics from 
+the SLEEC file `ALMI-demo.sleec`.
 
 ## FDR4 Installation
 General instructions for installation are avaiable from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
@@ -120,10 +128,12 @@ This can be loaded into Eclipse by using its EGit import facility:
 3. When the pane `Select a Git Repository` appears, click on `Add`. A new dialog will appear to facilitate
    locating the cloned copy of this repository. Click on `Browse` and locate it as appropriate. Then, in
    the list below, select the repository, and then click on `Add`.
-4. Back in the pane `Select a Git Repository`, select the newly added repository and press `Next`.
-5. In the pane named `Import projects from File System or Archive`, click `Deselect All`. Afterwards,
+   * Alternatively, if the above fails, this repository can be cloned using the URL
+   `https://github.com/UoY-RoboStar/SLEEC/` directly.
+5. Back in the pane `Select a Git Repository`, select the newly added repository and press `Next`.
+6. In the pane named `Import projects from File System or Archive`, click `Deselect All`. Afterwards,
    search for the repository whose folder includes the path `examples/ALMI` and select it.
-6. Finally click on `Finish`. The new project will now be loaded and appear under the view `Project Explorer`.
+7. Finally click on `Finish`. The new project will now be loaded and appear under the view `Project Explorer`.
    You may expand the project view by clicking on the arrows to expand the file tree.
 
 This Eclipse project contains SLEEC rules in the file `ALMI-demo.sleec` and a RoboChart model specified across
@@ -138,6 +148,10 @@ TBC
 Before performing any verification ensure that FDR4 is correctly installed and configured, and activated, 
 as described above. In the sample project ALMI, a file named `verification.assertions` contains a collection
 of functional and sleec assertions. It can be loaded for edition by double-clicking on the file.
+
+If the tool cannot find FDR's path it will raise an error `Could not find refines`. In this case, configure
+its path manually by going to `Window` > `Preferences` > `RoboChart` > `Analysis` and locating FDR's installation
+folder, which will vary depending on your installation (eg. `/opt/fdr/bin`).
 
 To run the verifications from within the Eclipse environment, right-click on the file `verification.assertions`
 and select `RoboTool` > `CSP` > `Run...`. If FDR is correctly configured, the verification will be performed
