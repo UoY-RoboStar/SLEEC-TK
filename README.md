@@ -17,8 +17,8 @@ We recommend that the tool is executed under Ubuntu LTS (22.04) Linux (x86_64),
 which is the platform used for development.
 
 ## Building
-The plug-ins can be built from the source code in this repository. Below are
-requirements and stepwise instructions.
+The plug-ins, as well as a standalone version of the SLEEC core tool for validation, can be built 
+from the source code in this repository. Below are requirements and stepwise instructions.
 
 ### Requirements
 For building, the following software must be available:
@@ -31,7 +31,7 @@ Clone this git repository on your machine. In the root folder issue the command 
 If there are multiple JRE/JDKs on your machine, please make sure that the environment variable
 `JAVA_HOME` points to the JRE/JDK for Java 11, otherwise the Maven build may fail.
 
-## SLEEC Tool Installation
+## Eclipse SLEEC Tool Installation
 Once the build has succeeded, the tool can be installed by using The Eclipse 
 Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
 
@@ -56,6 +56,13 @@ Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
    launched automatically with the plug-ins in this folder installed, as well
    as the required dependencies (eg. Xtext, Sirius, RoboChart). You can then
    click `Finish` to exit the installer.
+
+## Executable jar file for SLEEC rule validation (conflict and redundancy checking)
+In addition to the Eclipse environment, one can execute a jar file using the command
+line interface for performing conflict and redundancy checking.
+```
+java -jar sleec-core/circus.robocalc.sleec/target/sleec.jar 
+```
 
 ## FDR4 Installation
 General instructions for installation are avaiable from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
