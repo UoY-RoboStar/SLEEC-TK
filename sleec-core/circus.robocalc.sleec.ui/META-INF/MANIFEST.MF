@@ -16,8 +16,8 @@ Require-Bundle: circus.robocalc.sleec,
  org.eclipse.ui,
  org.eclipse.compare,
  org.eclipse.xtext.builder,
- org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
- org.eclipse.xtend.lib;bundle-version="2.14.0";resolution:=optional
+ org.eclipse.xtext.xbase.lib;bundle-version="2.25.0",
+ org.eclipse.xtend.lib;bundle-version="2.25.0";resolution:=optional
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: circus.robocalc.sleec.ui.contentassist,
