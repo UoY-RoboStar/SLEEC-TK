@@ -61,7 +61,7 @@ Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
 In addition to the Eclipse environment, one can execute a jar file using the command
 line interface for performing conflict and redundancy checking.
 ```
-java -jar sleec-core/circus.robocalc.sleec/target/sleec.jar 
+java -jar sleec-core/circus.robocalc.sleec/target/sleec.jar [file.sleec]
 ```
 
 ## FDR4 Installation
