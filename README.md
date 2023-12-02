@@ -115,7 +115,7 @@ refines test.csp
 ## Usage of tools via example
 To demonstrate use of the SLEEC tool, an example is provided as an Eclipse project under the folder `examples/ALMI`.
 
-Further details on the usage of the SLEEC tool can be found in [TBC](), while for RoboChart this can be found in the 
+Further details on the usage of the SLEEC tool can be found in the [SLEEC documentation](https://sleec-project.github.io/documentation.html), while for RoboChart this can be found in the 
 [RoboTool manual](https://robostar.cs.york.ac.uk/publications/techreports/reports/robotool-manual.pdf). 
 For convenience, below, we include instructions for getting started with a demo example included in this repository.
 
