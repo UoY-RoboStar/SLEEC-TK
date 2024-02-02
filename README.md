@@ -1,4 +1,4 @@
-# SLEEC tool
+# SLEEC-TK (SLEEC Toolkit)
 This repository contains Eclipse plug-ins that allow writing and validating
 Social, Legal, Ethical, Empathetic and Cultural (SLEEC) rules, and checking whether
 a design model, written in RoboChart, conforms to a set of SLEEC rules.
