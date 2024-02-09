@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="RoboTool" uid="robotool.product" id="robostar.robotool.customization.product" application="org.eclipse.ui.ide.workbench" version="1.0.0" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="SLEEC-TK" uid="robostar.sleectk.product" id="robostar.sleectk.customization.product" application="org.eclipse.ui.ide.workbench" version="1.0.0" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>

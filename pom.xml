@@ -13,7 +13,7 @@ SPDX-License-Identifier: EPL-2.0
 	<version>1.0.0-SNAPSHOT</version>
 	<artifactId>tool</artifactId>
 	<packaging>pom</packaging>
-
+	<name>SLEEC-TK Tool</name>
 	<properties>
 		<xtextVersion>2.25.0</xtextVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,10 +32,10 @@ SPDX-License-Identifier: EPL-2.0
 	<modules>
         <module>sleec-core</module>
         <module>sleec-assertions</module>
-	<module>sleec-customization</module>
-	<module>sleec-customization-repository</module>
-	<module>sleec-feature</module>
-	<module>sleec-product</module>
+		<module>sleec-customization</module>
+		<module>sleec-customization-repository</module>
+		<module>sleec-feature</module>
+		<module>sleec-product</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
@@ -58,33 +58,6 @@ SPDX-License-Identifier: EPL-2.0
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-source-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>plugin-source</id>
-						<goals>
-							<goal>plugin-source</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-source-feature-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>source-feature</id>
-						<phase>package</phase>
-						<goals>
-							<goal>source-feature</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<executions>
@@ -97,37 +70,6 @@ SPDX-License-Identifier: EPL-2.0
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<target>
-						<artifact>
-							<groupId>circus.robocalc.robochart.textual</groupId>
-							<artifactId>circus.robocalc.robochart.textual.target</artifactId>
-							<version>${project.version}</version>
-						</artifact>
-					</target>
-					<environments>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-				</configuration>
-			</plugin>-->
 		</plugins>
 		<pluginManagement>
 			<plugins>
