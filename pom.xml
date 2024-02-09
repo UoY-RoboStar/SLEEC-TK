@@ -9,9 +9,9 @@ SPDX-License-Identifier: EPL-2.0
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>circus.robocalc.sleec.tool</groupId>
+	<groupId>robostar.sleectk</groupId>
 	<version>1.0.0-SNAPSHOT</version>
-	<artifactId>circus.robocalc.sleec.tool</artifactId>
+	<artifactId>tool</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -20,16 +20,22 @@ SPDX-License-Identifier: EPL-2.0
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<!-- Tycho settings -->
-		<tycho-version>2.6.0</tycho-version>
+		<tycho-version>2.7.5</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
 		<systemProperties></systemProperties>
 		<tycho.testArgLine></tycho.testArgLine>
+		<eclipse-repo.url>https://download.eclipse.org/releases/2021-12</eclipse-repo.url>
+		<robotool.url>https://robostar.cs.york.ac.uk/robotool/update</robotool.url>
 	</properties>
 	<modules>
         <module>sleec-core</module>
         <module>sleec-assertions</module>
+	<module>sleec-customization</module>
+	<module>sleec-customization-repository</module>
+	<module>sleec-feature</module>
+	<module>sleec-product</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
