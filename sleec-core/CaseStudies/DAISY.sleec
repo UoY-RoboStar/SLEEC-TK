@@ -1,0 +1,62 @@
+//Project owner: Bev Towsend
+def_start
+measure userNameUnknown:boolean
+event AddressUserName
+event UsePreferredName
+event AddressSirOrMadam
+measure userDirectsOpposite:boolean
+event Disclosed
+event NotDisclosePersonalInformation //not is not allowed without within
+measure directlyToUser:boolean
+measure userConsentAvalaible:boolean
+measure medicalEmergency:boolean
+measure culturalIndicatorA:boolean
+measure genderTypeB:boolean
+event RequestHumanAgent
+event EventX // please specify an event that initiates the case.
+event Speaking
+event UseChoicenLanguage
+measure languagePreferenceAvailable:boolean
+event UseDefaultasEnglish
+measure informationAvailable:boolean
+measure informationDisclosureNotPermitted:boolean
+event InstructionFail
+event RepeatInstruction
+measure timeElapsed:numeric //minutes
+event CallSupport
+measure instructionRepeat:numeric
+
+def_end
+
+rule_start
+//address the user by their preferred name according to cultural type
+Rule1 when AddressUserName then UsePreferredName
+		unless userNameUnknown then AddressSirOrMadam
+		unless userDirectsOpposite
+
+Rule2 when Disclosed then NotDisclosePersonalInformation
+		unless directlyToUser
+		unless userConsentAvalaible
+		unless medicalEmergency
+
+Rule3 when EventX and culturalIndicatorA and genderTypeB then RequestHumanAgent
+		unless userDirectsOpposite //here the user directs the otherwise for this specific case. should we have the same measures for this?
+		unless medicalEmergency
+
+Rule4 when Speaking then UseChoicenLanguage
+		unless not languagePreferenceAvailable then UseDefaultasEnglish
+		unless userDirectsOpposite
+
+ Rule6 when UserRequestInfo then ProvideInfo
+		unless not informationAvailable then InformUserandReferToHumanCarer
+		unless informationDisclosureNotPermitted then InformUserandReferToHumanCarer
+
+Rule7 when InstructionFail then RepeatInstruction
+		unless instructionRepeat >=3 then CallSupport
+		unless timeElapsed > 20 then CallSupport
+
+	
+rule_end
+
+
+

@@ -1,0 +1,128 @@
+def_start
+// Events
+    event RobotMoving //Includes arm and base movement
+    event RobotWorking
+    event RobotContinueTask
+    event RobotStopAction
+    event AvoidBumping
+    event AdjustRoute
+    event InquireSafety
+    event AccountHumanRandomness
+    event TrackHumanLocation
+    event InformHuman
+    event HumanSaysStop
+    event AskPermission
+    event MoveAtSafeSpeed
+    event IncreaseSpeed
+    event PreparingRobot
+    event AssignToRobot
+    event AssignLiability
+    event ConsiderAppearance
+    event ReportIncident
+    event MinimizeCobotCollaboration
+    event PrioritizeHumans
+   // Added events during the resolution process
+    event ActionHumanRandom
+    event Communicate
+    event MoveAwayFromHuman
+
+   // measures
+    measure humanInRoute: boolean
+    measure humanInRange: boolean
+    measure bumpHuman: boolean
+    measure humanTooClose: boolean
+    measure routeAvailable: boolean
+    measure humanReEnables: boolean
+    measure risk: scale (low, medium, high)
+    measure efficiency: scale(elow, emedium, ehigh)
+    measure isHumanTask: boolean
+    measure humanConsents: boolean
+    measure accident: boolean
+    measure humansPresent: boolean
+    measure obstaclePresent: boolean
+def_end
+
+rule_start
+R1 when RobotMoving then AvoidBumping
+unless humanInRoute then AdjustRoute
+unless humanTooClose then AdjustRoute
+unless bumpHuman then InquireSafety
+
+//** Resolve the concern c2: ADD a rule
+// ** uncomment R1b
+// R1b when RobotMoving and humanInRange or humanTooClose or not routeAvailable then AvoidBumping
+//****************************************************************************************
+
+
+    R2 when RobotMoving then AccountHumanRandomness
+
+    R3 when RobotMoving then TrackHumanLocation
+
+    R4 when RobotWorking then InformHuman
+
+    R4b when RobotWorking then InformHuman
+
+   // resolve redundancies comment R4b
+
+    R5 when HumanSaysStop then RobotStopAction
+
+    R6 when InformHuman then RobotMoving unless humanInRoute then AdjustRoute
+ 	unless not routeAvailable then AskPermission
+
+    R7 when RobotMoving and humanInRange then RobotStopAction
+   	 unless humanReEnables then RobotContinueTask
+
+    R8 when RobotMoving then MoveAtSafeSpeed
+   	 unless efficiency = elow and risk = low then IncreaseSpeed
+
+    R9 when PreparingRobot and isHumanTask then not AssignToRobot within 2 minutes
+   	 unless humanConsents
+
+    R10 when PreparingRobot then AssignLiability
+
+    R10_1 when PreparingRobot then InformHuman
+
+    R11 when PreparingRobot then ConsiderAppearance
+
+    R12 when PreparingRobot then MinimizeCobotCollaboration
+
+	R12_1 when PreparingRobot then PrioritizeHumans
+
+    R13 when RobotWorking and accident then RobotStopAction
+
+    R13_1 when RobotWorking and accident then ReportIncident
+
+    R14 when PreparingRobot and humansPresent then InformHuman
+
+    //**  Correct redundancy 2 comment r14, delete rule
+    // R14v when PreparingRobot and humansPresent then Communicate
+    //****************************************************************************************
+
+    R15 when RobotWorking and obstaclePresent then ReportIncident
+
+    R15_1 when RobotWorking and obstaclePresent then RobotStopAction
+
+   //** Resolve concern c1 ADD rule R16, uncomment R16
+   // R16 when RobotWorking and humanInRange or bumpHuman or humanTooClose or not routeAvailable then not RobotContinueTask
+    //****************************************************************************************
+
+  //** Resolve concern c4 ADD rule R17 + event, uncomment R17
+  // R17 when ActionHumanRandom then RobotStopAction
+  //****************************************************************************************
+
+//** Resolve concern c5 ADD rules R18, R19, uncomment R18 and R19
+// R18 when ActionHumanRandom then AskPermission
+// R19 when AskPermission then not RobotMoving
+
+ //****************************************************************************************
+
+//** Resolve concern c6 ADD rule R20, uncomment R20
+// R20 when ActionHumanRandom and routeAvailable then MoveAwayFromHuman
+//****************************************************************************************
+
+//** Resolve concern c7 ADD rule R21, uncomment R21
+R21 when TrackHumanLocation and humanTooClose then InformHuman
+//****************************************************************************************
+
+rule_end
+
