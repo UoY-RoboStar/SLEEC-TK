@@ -36,7 +36,7 @@
                value="Welcome to SLEEC-TK"/>
          <property
                name="aboutImage"
-               value="eclipse_lg.png">
+               value="logo-sleec.png">
          </property>
          <property
                name="windowImages"
