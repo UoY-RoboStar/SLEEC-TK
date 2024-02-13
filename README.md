@@ -9,7 +9,7 @@ Details on the SLEEC framework can be found in related papers, namely
 ## Requirements
 For running the tool:
 
-* Java 11 or higher.
+* Java 11.
 * FDR4 for analysis of redundancy, conflict and conformance, available from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
   Stepwise installation instructions available below.
 
@@ -29,7 +29,21 @@ For building, the following software must be available:
 ### Stepwise instructions
 Clone this git repository on your machine. In the root folder issue the command `mvn install`.
 If there are multiple JRE/JDKs on your machine, please make sure that the environment variable
-`JAVA_HOME` points to the JRE/JDK for Java 11, otherwise the Maven build may fail.
+`JAVA_HOME` points to the JRE/JDK for Java 11, otherwise the Maven build may fail. Changing
+the environment variable can be done using `export JAVA_HOME=...` and passing the path for
+the JRE/JDK installation. Alternatively, it may also be possible to change it using the
+command `update-alternatives --config java`.
+
+To check that Maven is running under the correct Java version the command `mvn --version` can 
+be used. A correct configuration will output something similar to the following:
+```
+$ mvn --version
+Apache Maven 3.6.3
+Maven home: /usr/share/maven
+Java version: 11.0.21, vendor: Ubuntu, runtime: /usr/lib/jvm/java-11-openjdk-amd64
+Default locale: en_GB, platform encoding: UTF-8
+OS name: "linux", version: "5.15.0-92-generic", arch: "amd64", family: "unix"
+```
 
 ## Eclipse SLEEC Tool Installation
 Once the build has succeeded, the tool can be installed by using The Eclipse 
