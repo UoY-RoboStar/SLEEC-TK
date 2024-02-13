@@ -177,7 +177,7 @@ There are there files generated under the src-gen folder for rule consistency ch
 1)instantiations.csp file, where users can override a default bound for numeric types necessary for model checking; 
 2)a file with the same name as the SLEEC specification but extension.csp that contains the CSP semantics of the SLEEC rules; and 
 3)a file whose name includes the suffix -assertions.
-To perform conflict and redundancy checking,  one needs to the execute the third file. In the example of ALMI project, the file is supposed to be called ALMI-assertions.csp. This file can be run either by right clicking and choose FDR as it is installed in your machine and FDR GUI will pop up; or from your terminal by running an FDR command, e.g. refines -q --format plain --brief ALMI-assertions.csp > path folder/output.txt which will generate the results in the output.txt file.
+To perform conflict and redundancy checking,  one needs to the execute the third file. In the example of ALMI project, the file is supposed to be called `ALMI-demo-assertions.csp`. This file can be run either by right clicking and choose FDR as it is installed in your machine and FDR GUI will pop up; or from your terminal by running an FDR command, e.g. `refines -q --format plain --brief ALMI-demo-assertions.csp > path folder/output.txt` which will generate the results in the output.txt file.
 
 ### Conformance verification
 Before performing any verification ensure that FDR4 is correctly installed and configured, and activated, 
