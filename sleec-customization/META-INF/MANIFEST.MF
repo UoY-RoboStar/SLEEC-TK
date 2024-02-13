@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-Name: SLEECTK 
+Bundle-SymbolicName: robostar.sleectk.customization;singleton=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: robostar.sleectk.customization
