@@ -13,8 +13,9 @@ For running the tool:
 * FDR4 for analysis of redundancy, conflict and conformance, available from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
   Stepwise installation instructions available below.
 
-We recommend that the tool is executed under Ubuntu LTS (22.04) Linux (x86_64), 
-which is the platform used for development.
+The instructions in this file target building and execution of SLEEC-TK under Ubuntu LTS (22.04) Linux (x86_64), which is the 
+platform used for development and testing. While the tool has been tested to run under Java 11 it may be possible to run it 
+on more recent versions of Java due to Java's backward compatibility. Please note that for building from source Java 11 is required.
 
 ## Building
 The plug-ins, as well as a standalone version of the SLEEC core tool for validation, can be built 
@@ -23,16 +24,35 @@ from the source code in this repository. Below are requirements and stepwise ins
 ### Requirements
 For building, the following software must be available:
 
-* Java 11 for building
+* Java 11
 * Maven (running under Java 11)
 
 ### Stepwise instructions
 Clone this git repository on your machine. In the root folder issue the command `mvn install`.
 If there are multiple JRE/JDKs on your machine, please make sure that the environment variable
-`JAVA_HOME` points to the JRE/JDK for Java 11, otherwise the Maven build may fail.
+`JAVA_HOME` points to the JRE/JDK for Java 11, otherwise the Maven build may fail. Changing
+the environment variable can be done using `export JAVA_HOME=...` and passing the path for
+the JRE/JDK installation. Alternatively, it may also be possible to change it using the
+command `update-alternatives --config java`.
 
-## Eclipse SLEEC Tool Installation
-Once the build has succeeded, the tool can be installed by using The Eclipse 
+To check that Maven is running under the correct Java version the command `mvn --version` can 
+be used. A correct configuration will output something similar to the following:
+```
+$ mvn --version
+Apache Maven 3.6.3
+Maven home: /usr/share/maven
+Java version: 11.0.21, vendor: Ubuntu, runtime: /usr/lib/jvm/java-11-openjdk-amd64
+Default locale: en_GB, platform encoding: UTF-8
+OS name: "linux", version: "5.15.0-92-generic", arch: "amd64", family: "unix"
+```
+
+## SLEEC-TK Tool Installation
+There are two ways to install the SLEEC-TK tool: (1) using the code manually compiled 
+following the stepwise instructions above; (2) using a pre-compiled version made 
+available in the releases of this repository. Below, we describe both ways in more detail.
+
+### 1. Installation using the manually compiled code
+Once the build has succeeded, the tool can be installed by using the Eclipse 
 Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
 
 1. Download the Eclipse Installer 2023-09 R from [https://www.eclipse.org/downloads/packages/installer](https://www.eclipse.org/downloads/packages/installer), extract and run it.
@@ -41,7 +61,9 @@ Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
 4. Click the green plus button (+) on the top-right corner. A dialog titled
    `Add User Products` will appear. Find the file `RoboTool_and_SLEEC.setup`,
    and then press `OK`.
-3. Select a suitable Java VM. If there is no version suitable, then select a
+3. Select a Java VM (version 11 or higher). Note that here the Eclipse installer will
+   by default list JVMs that are installed locally, which may include other
+   versions. If there is no version suitable listed, then select a
    compatible Java Runtime Environment (JRE) for installation. It is also
    recommended that `Bundle Pool` is left disabled.
 5. Click `Next` twice and for the field `SLEEC Tool repository location` browse
@@ -56,6 +78,15 @@ Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
    launched automatically with the plug-ins in this folder installed, as well
    as the required dependencies (eg. Xtext, Sirius, RoboChart). You can then
    click `Finish` to exit the installer.
+
+### 2. Installation using the pre-compiled code
+Pre-compiled releases for SLEEC-TK are available in this repository, which
+can be used to run the tool without having to manually compile it first.
+
+1. Download a .zip file from the [releases](https://github.com/UoY-RoboStar/SLEEC-TK/releases) 
+of this repository for your platform.
+2. Extract the archive file.
+3. Run the Eclipse binary.
 
 ## Executable jar file for SLEEC rule validation (conflict and redundancy checking)
 In addition to the Eclipse environment, one can execute a jar file using the command
@@ -146,7 +177,7 @@ There are there files generated under the src-gen folder for rule consistency ch
 1)instantiations.csp file, where users can override a default bound for numeric types necessary for model checking; 
 2)a file with the same name as the SLEEC specification but extension.csp that contains the CSP semantics of the SLEEC rules; and 
 3)a file whose name includes the suffix -assertions.
-To perform conflict and redundancy checking,  one needs to the execute the third file. In the example of ALMI project, the file is supposed to be called ALMI-assertions.csp. This file can be run either by right clicking and choose FDR as it is installed in your machine and FDR GUI will pop up; or from your terminal by running an FDR command, e.g. refines -q --format plain --brief ALMI-assertions.csp > path folder/output.txt which will generate the results in the output.txt file.
+To perform conflict and redundancy checking,  one needs to the execute the third file. In the example of ALMI project, the file is supposed to be called `ALMI-demo-assertions.csp`. This file can be run either by right clicking and choose FDR as it is installed in your machine and FDR GUI will pop up; or from your terminal by running an FDR command, e.g. `refines -q --format plain --brief ALMI-demo-assertions.csp > path folder/output.txt` which will generate the results in the output.txt file.
 
 ### Conformance verification
 Before performing any verification ensure that FDR4 is correctly installed and configured, and activated, 
