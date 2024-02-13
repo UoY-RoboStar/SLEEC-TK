@@ -9,27 +9,33 @@ SPDX-License-Identifier: EPL-2.0
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>circus.robocalc.sleec.tool</groupId>
+	<groupId>robostar.sleectk</groupId>
 	<version>1.0.0-SNAPSHOT</version>
-	<artifactId>circus.robocalc.sleec.tool</artifactId>
+	<artifactId>tool</artifactId>
 	<packaging>pom</packaging>
-
+	<name>SLEEC-TK Tool</name>
 	<properties>
 		<xtextVersion>2.25.0</xtextVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<!-- Tycho settings -->
-		<tycho-version>2.6.0</tycho-version>
+		<tycho-version>2.7.5</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
 		<systemProperties></systemProperties>
 		<tycho.testArgLine></tycho.testArgLine>
+		<eclipse-repo.url>https://download.eclipse.org/releases/2021-12</eclipse-repo.url>
+		<robotool.url>https://robostar.cs.york.ac.uk/robotool/update</robotool.url>
 	</properties>
 	<modules>
         <module>sleec-core</module>
         <module>sleec-assertions</module>
+		<module>sleec-customization</module>
+		<module>sleec-customization-repository</module>
+		<module>sleec-feature</module>
+		<module>sleec-product</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>
@@ -52,33 +58,6 @@ SPDX-License-Identifier: EPL-2.0
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-source-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>plugin-source</id>
-						<goals>
-							<goal>plugin-source</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-source-feature-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>source-feature</id>
-						<phase>package</phase>
-						<goals>
-							<goal>source-feature</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<executions>
@@ -91,37 +70,6 @@ SPDX-License-Identifier: EPL-2.0
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<target>
-						<artifact>
-							<groupId>circus.robocalc.robochart.textual</groupId>
-							<artifactId>circus.robocalc.robochart.textual.target</artifactId>
-							<version>${project.version}</version>
-						</artifact>
-					</target>
-					<environments>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-				</configuration>
-			</plugin>-->
 		</plugins>
 		<pluginManagement>
 			<plugins>

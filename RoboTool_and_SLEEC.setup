@@ -24,7 +24,7 @@
   </annotation>
   <version name="2021-12"
       label="2021-12"
-      requiredJavaVersion="17">
+      requiredJavaVersion="11">
     <setupTask
         xsi:type="setup:EclipseIniTask"
         option="-Xmx"
