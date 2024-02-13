@@ -9,12 +9,13 @@ Details on the SLEEC framework can be found in related papers, namely
 ## Requirements
 For running the tool:
 
-* Java 11.
+* Java 11 or higher.
 * FDR4 for analysis of redundancy, conflict and conformance, available from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
   Stepwise installation instructions available below.
 
-We recommend that the tool is executed under Ubuntu LTS (22.04) Linux (x86_64), 
-which is the platform used for development.
+The instructions in this file target building and execution of SLEEC-TK under Ubuntu LTS (22.04) Linux (x86_64), which is the 
+platform used for development and testing. While the tool has been tested to run under Java 11 it may be possible to run it 
+on more recent versions of Java due to Java's backward compatibility. Please note that for building from source Java 11 is required.
 
 ## Building
 The plug-ins, as well as a standalone version of the SLEEC core tool for validation, can be built 
@@ -23,7 +24,7 @@ from the source code in this repository. Below are requirements and stepwise ins
 ### Requirements
 For building, the following software must be available:
 
-* Java 11 for building
+* Java 11
 * Maven (running under Java 11)
 
 ### Stepwise instructions
@@ -45,8 +46,13 @@ Default locale: en_GB, platform encoding: UTF-8
 OS name: "linux", version: "5.15.0-92-generic", arch: "amd64", family: "unix"
 ```
 
-## Eclipse SLEEC Tool Installation
-Once the build has succeeded, the tool can be installed by using The Eclipse 
+## SLEEC-TK Tool Installation
+There are two ways to install the SLEEC-TK tool: (1) using the code manually compiled 
+following the stepwise instructions above; (2) using a pre-compiled version made 
+available in the releases of this repository. Below, we describe both ways in more detail.
+
+### 1. Installation using the manually compiled code
+Once the build has succeeded, the tool can be installed by using the Eclipse 
 Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
 
 1. Download the Eclipse Installer 2023-09 R from [https://www.eclipse.org/downloads/packages/installer](https://www.eclipse.org/downloads/packages/installer), extract and run it.
@@ -55,7 +61,9 @@ Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
 4. Click the green plus button (+) on the top-right corner. A dialog titled
    `Add User Products` will appear. Find the file `RoboTool_and_SLEEC.setup`,
    and then press `OK`.
-3. Select a suitable Java VM. If there is no version suitable, then select a
+3. Select a Java VM (version 11 or higher). Note that here the Eclipse installer will
+   by default list JVMs that are installed locally, which may include other
+   versions. If there is no version suitable listed, then select a
    compatible Java Runtime Environment (JRE) for installation. It is also
    recommended that `Bundle Pool` is left disabled.
 5. Click `Next` twice and for the field `SLEEC Tool repository location` browse
@@ -70,6 +78,15 @@ Installer and the Eclipse Product file `RoboTool_and_SLEEC.setup`.
    launched automatically with the plug-ins in this folder installed, as well
    as the required dependencies (eg. Xtext, Sirius, RoboChart). You can then
    click `Finish` to exit the installer.
+
+### 2. Installation using the pre-compiled code
+Pre-compiled releases for SLEEC-TK are available in this repository, which
+can be used to run the tool without having to manually compile it first.
+
+1. Download a .zip file from the [releases](https://github.com/UoY-RoboStar/SLEEC-TK/releases) 
+of this repository for your platform.
+2. Extract the archive file.
+3. Run the Eclipse binary.
 
 ## Executable jar file for SLEEC rule validation (conflict and redundancy checking)
 In addition to the Eclipse environment, one can execute a jar file using the command
