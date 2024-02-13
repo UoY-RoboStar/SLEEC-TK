@@ -186,7 +186,7 @@ of functional and sleec assertions. It can be loaded for edition by double-click
 
 If the tool cannot find FDR's path it will raise an error `Could not find refines`. In this case, configure
 its path manually by going to `Window` > `Preferences` > `RoboChart` > `Analysis` and locating FDR's installation
-folder, which will vary depending on your installation (eg. `/opt/fdr/bin`).
+folder, which will vary depending on your installation (eg. `/opt/fdr/bin`). This configuration step is only valid for Linux.
 
 To run the verifications from within the Eclipse environment, right-click on the file `verification.assertions`
 and select `RoboTool` > `CSP` > `Run...`. If FDR is correctly configured, the verification will be performed
