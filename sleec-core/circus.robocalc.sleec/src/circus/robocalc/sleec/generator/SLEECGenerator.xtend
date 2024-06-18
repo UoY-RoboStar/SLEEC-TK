@@ -48,6 +48,8 @@ import java.util.HashSet
 import java.io.File
 import circus.robocalc.sleec.sLEEC.Constraint
 import java.util.LinkedHashSet
+import org.eclipse.core.runtime.FileLocator
+import java.net.URL
 
 /**
  * Generates code from your model files on save.
@@ -58,22 +60,22 @@ class SLEECGenerator extends AbstractGenerator {
 
 	Set<String> scaleIDs
 	Set<String> measureIDs
+	
+	static final String GEN_ID = "circus.robocalc.sleec"
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		this.scaleIDs = resource.allContents.filter(Measure).filter[it.type instanceof Scale].map['v' + it.name].toSet
 		this.measureIDs = resource.allContents.filter(Measure).map[name].toSet
-
-		val ticktock = new File("../src-gen/ticktock.csp")
-		if (!ticktock.exists()) {
+		
+		if (!fsa.isFile('tick-tock.csp', GEN_ID)) {
 			generateTickTock(resource, fsa, context)
 		}
 		
-		val instantiatons = new File("../src-gen/ticktock.csp")
-		if (!instantiatons.exists()) {
+		if (!fsa.isFile('instantiations.csp', GEN_ID)) {
 			generateInstantiations(resource, fsa, context)
 		}
 		
-		fsa.generateFile(resource.getURI().trimFileExtension().lastSegment() + '.csp', '''
+		fsa.generateFile(resource.getURI().trimFileExtension().lastSegment() + '.csp', GEN_ID, '''
 			
 			--Specify the integer intervals for type Int e.g. {0..30}. 
 			
@@ -112,7 +114,7 @@ class SLEECGenerator extends AbstractGenerator {
 			}
 		''')
 		
-		fsa.generateFile(resource.getURI().trimFileExtension().lastSegment() + '-assertions.csp', ''' 
+		fsa.generateFile(resource.getURI().trimFileExtension().lastSegment() + '-assertions.csp', GEN_ID, ''' 
 			-- ASSERTIONS --
 			include "tick-tock.csp"
 			include "instantiations.csp"
@@ -488,7 +490,8 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 		var assertions = ''
 		var assertions_part = ''
 		if (unionMeasures.size == 0) {
-			assertions += '''   «firstRule.name»_wrt_«secondRule.name» =
+			assertions += '''
+		«firstRule.name»_wrt_«secondRule.name» =
 		let
 		-- The external 'm' channels for every measure of («firstRule.name» or «secondRule.name»)
 		MemoryExternalEvents = {||}
@@ -519,7 +522,8 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 						        						 						      '''
 		}else if (unionMeasures.size == 1) {
 			val element = unionMeasures.get(0)
-			assertions += '''   «firstRule.name»_wrt_«secondRule.name» =
+			assertions += '''
+		«firstRule.name»_wrt_«secondRule.name» =
 		let
 		-- The external 'm' channels for every measure of («firstRule.name» or «secondRule.name»)
 		MemoryExternalEvents = {|«element»|}
@@ -555,7 +559,8 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 						     				     
   
 		}else{ // (unionMeasures.size >1)
-		assertions += '''   «firstRule.name»_wrt_«secondRule.name» =
+		assertions += '''
+		«firstRule.name»_wrt_«secondRule.name» =
 		let
 		-- The external 'm' channels for every measure of («firstRule.name» or «secondRule.name»)
 		MemoryExternalEvents = {|'''
@@ -569,8 +574,9 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 						       	}
 						       }
 						       assertions+='''|}'''
-						       assertions+='''   -- The internal 'i_m' channels for every measure of («firstRule.name» or «secondRule.name»)
-		MemoryInternalEvents = {|'''
+						       assertions+='''
+								-- The internal 'i_m' channels for every measure of («firstRule.name» or «secondRule.name»)
+								MemoryInternalEvents = {|'''
 						         for (m : 0 ..< unionMeasures.size) { 
 						       val element = unionMeasures.get(m)
 						       	
@@ -624,7 +630,8 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 						assertions+= '''-> MemoryInOrder
 						'''
 							
-						assertions+= '''within
+						assertions+= '''
+		within
 		timed_priority(
 						 (
 							(
@@ -637,12 +644,15 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 								
 
 							} else if (m > 0) {
-								assertions += ''',
-							«element» <- i_«element»
+								assertions += 
+								'''
+								,
+								«element» <- i_«element»
 								'''
 							}
 						}
-							assertions += ''' ]]
+							assertions += '''
+					]]
 							)
 							[| union(diff(A«firstRule.name»,MemoryExternalEvents),MemoryInternalEvents) |]
 							(
@@ -652,7 +662,7 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 							MemoryInOrder
 						    )
 						 ) \MemoryInternalEvents
-				     ) 
+					) 
 																			      '''
 						}					
 	}
@@ -883,7 +893,7 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 	}
 	
 	private def generateInstantiations(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		fsa.generateFile('instantiations.csp',
+		fsa.generateFile('instantiations.csp', GEN_ID, 
 			'''
 			-- This file contains user-adjustable parameters for model-checking.
 			
@@ -898,8 +908,9 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 	// -----------------------------------------------------------
 	private def generateTickTock(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile(
-			'tick-tock.csp',
-			'''---------------------------------------------------------------------------
+			'tick-tock.csp', GEN_ID, 
+		'''
+		---------------------------------------------------------------------------
 		-- Pedro Ribeiro <pedro.ribeiro@york.ac.uk>
 		-- Department of Computer Science
 		-- University of York
@@ -1260,9 +1271,7 @@ assertions += '''assert not «secondRule.name»_wrt_«firstRule.name» [T= «fir
 		
 		endmodule
 		---------------------------------------------------------------------------
-
-
-	'''
+		'''
 		)
 	}
 
