@@ -26,6 +26,7 @@ import org.eclipse.xtext.util.CancelIndicator
 import org.eclipse.xtext.validation.CheckMode
 import org.eclipse.xtext.validation.IResourceValidator
 import org.eclipse.xtext.diagnostics.Severity
+import org.eclipse.xtext.generator.OutputConfiguration
 
 class Main {
 
@@ -62,6 +63,17 @@ class Main {
 
 		// Configure and start the generator if there were no errors
 		fileAccess.outputPath = 'src-gen/'
+		val dc = new OutputConfiguration("circus.robocalc.sleec");
+		dc.setDescription("Configuration for SLEEC generator");
+		dc.setOutputDirectory("src-gen");
+		dc.setOverrideExistingResources(true);
+		dc.setCreateOutputDirectory(true);
+		dc.setCanClearOutputDirectory(true);
+		dc.setCleanUpDerivedResources(false);
+		dc.setSetDerivedProperty(true);
+		dc.setKeepLocalHistory(true);
+		fileAccess.outputConfigurations.put(dc.name, dc)
+		
 		val context = new GeneratorContext => [
 			cancelIndicator = CancelIndicator.NullImpl
 		]
