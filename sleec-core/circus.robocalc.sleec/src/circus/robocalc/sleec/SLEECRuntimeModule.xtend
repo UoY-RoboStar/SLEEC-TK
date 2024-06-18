@@ -14,9 +14,15 @@
  ********************************************************************************/
 package circus.robocalc.sleec
 
+import org.eclipse.xtext.generator.IOutputConfigurationProvider
+import circus.robocalc.sleec.generator.SLEECOutputConfigurationProvider
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class SLEECRuntimeModule extends AbstractSLEECRuntimeModule {
+	
+	def Class<? extends IOutputConfigurationProvider> bindIOutputConfigurationProvider() {
+		return SLEECOutputConfigurationProvider
+	}
 }

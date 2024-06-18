@@ -135,155 +135,155 @@ class SLEECValidator extends AbstractSLEECValidator {
 		
 		// check for conflicts
 		
-		// create map between each variable and the expressions that it is found in
-		val Multimap<String, RelComp> expressions = HashMultimap.create()
-		ruleBlock.eAllContents
-			.filter(MBoolExpr)
-			.forEach[ expr |
-				switch(expr) {
-					Atom case system.isBoolean(expr.measureID):
-						expressions.put(expr.measureID, null)
-					RelComp: {
-						val args = expr.eContents
-							.filter(Atom)
-							.map[measureID]
-							.filter[system.isNumeric(it) || system.isScaleID(it)]
-						// TODO also include expressions that contain two variables as its arguments
-						// but this checking for conflicts is more difficult e.g. x < y, y < z, x < y
-						args.length == 1 ? expressions.put(args.get(0), expr)
-					} 
-				}
-			]
-//		System.out.println('variable -> expression:\t' + expressions)
-		
-		// find possible values for each variable to make each expression either true or false
-		// for numeric expressions x = 5, x < 3, x > 7 the values of x can be: 0, 5, 10
-		// for any boolean expression b: b will be 0 (false), 1 (true)
-		// for any scale expression: the values will be the 0 .. #scaleParams - 1
-		val Multimap<String, Integer> values = HashMultimap.create()
-		expressions.asMap.forEach [ k, v |			
-			switch(k) {
-				case system.isBoolean(k):
-					values.get(k).addAll(0, 1)
-				case system.isNumeric(k): {
-					val getValue = [ RelComp expr |
-						system.eval(expr.left) ?: system.eval(expr.right)
-					]
-					val range = v.map(getValue).min - 1 .. v.map(getValue).max + 1
-					val Set<List<Boolean>> outcomes = new HashSet()
-					values.putAll(k, range.filter [ i |
-						val result = v.map [ expr |
-							val left = system.eval(expr.left) ?: i
-							val right = system.eval(expr.right) ?: i
-							SLEECEvaluator.eval(left, expr.op, right)
-						].toList
-						outcomes.add(result)
-					])
-				}
-				case system.isScaleID(k): {
-					val eval = [ MBoolExpr expr |
-						switch (expr) {
-							Atom: system.scales.get(k).indexOf(expr.measureID)
-						}
-					]
-					val range = 0 ..< system.scales.get(k).length
-					val Set<List<Boolean>> outcomes = new HashSet()
-					values.putAll(k, range.filter [ i |
-						val result = v.map [ expr |
-							val Integer left = eval.apply(expr.left) ?: i
-							val Integer right = eval.apply(expr.right) ?: i
-							SLEECEvaluator.eval(left, expr.op, right)
-						].toList
-						outcomes.add(result)
-					])
-				}
-			}
-		]
-//		System.out.println('variable -> value:\t' + values)
-		
-		// map between a rule and the index of the index of the combination of values of variables if that combination triggered the rule
-		// for:
-		// Rule0 when Event0 and x = 5 or y = 3 then E1
-		// Rule1 when Event0 and x = 3 and y = 6 then E1
-		// values will be
-		//{x = [x = 5, x = 3], y = [y = 3, y = 6]}
-		// the cartesian product of the values will be:
-		// {[x = 5, y = 3], [x = 5, y = 6], [x = 3, y = 3], [x = 3, y = 6]}
-		// ruleeTriggered will be:
-		// {Rule0 = [0, 1, 2], Rule1 = [3]}
-		val Multimap<Rule, Integer> ruleTriggered = HashMultimap.create()
-		Sets.cartesianProduct(values.asMap.values.map[toSet]).forEach [ combination, i |
-			val variables = (0 ..< combination.size).toMap([values.keySet.get(it)], [combination.get(it)])
-			val scales = new HashMap<String, Integer>()
-			system.scales.values.forEach [
-				forEach[k, v|scales.put(k, v)]
-			]
-//			System.out.println(variables)
-			val evaluator = new SLEECEvaluator(variables, system.constants, scales)
-			ruleBlock.rules.forEach [ rule |
-				evaluator.eval(rule) ? ruleTriggered.put(rule, i)
-			]
-		]
-//		System.out.println('expressions:\t' + expressions.values.length + '\t' + expressions.values.join(' '))
-//		System.out.println('rule -> triggered?\t' + ruleTriggered)
-		
-		// group rules by matching trigger-response pair
-		val Multimap<Pair<String, String>, Rule> rules = HashMultimap.create()
-		ruleBlock.rules.forEach [ rule |
-			rules.put(rule.trigger.event.name -> rule.response.constraint.event.name, rule)
-		]
-//		System.out.println('trigger -> response:\t' + rules)
-		
-		// check for conflicts and redundancies
-		rules.asMap.forEach [ trigger, triggeredRules |
-			for (i : 0 ..< triggeredRules.length){
-				
-				val rule0 = triggeredRules.get(i)
-				val set0 = ruleTriggered.get(rule0)
-				
-				for (j : i + 1 ..< triggeredRules.length) {
-					
-					val rule1 = triggeredRules.get(j)
-					val set1 = ruleTriggered.get(rule1)
-					// first check for conflicts
-					// conflicts happen when responses in the form are both triggered at the same time
-					// Event0 within x
-					// not Event0 within y
-					// where y < x
-					if (rule0.response.constraint.not != rule1.response.constraint.not) {
-						// only 1 of the 2 rules has a not in their response
-						if (rule0.response.constraint.not && system.eval(rule0.response.constraint.value) < system.eval(rule1.response.constraint.value) ||
-							rule1.response.constraint.not && system.eval(rule0.response.constraint.value) > system.eval(rule1.response.constraint.value)) {
-							error('''«rule0.name» conflicts with «rule1.name».''', rule0, SLEECPackage.Literals.RULE__NAME)
-							error('''«rule1.name» conflicts with «rule0.name».''', rule1, SLEECPackage.Literals.RULE__NAME)
-							return
-						}
-						
-					}
-					// then check for redundancies
-					else {
-						// either both rules have 'not' or don't have 'not'
-						val rule0Redundant = set1.containsAll(set0)
-						val rule1Redundant = set0.containsAll(set1)
-						// rule0 is redundant if result == 1
-						// rule1 is redundant is result == -1
-						// no rules are redundant if result == 0
-						var result = 
-							if (rule0Redundant && (!rule1Redundant || system.eval(rule0.response.constraint.value) <= system.eval(rule1.response.constraint.value)))
-								1
-							else if (rule1Redundant)
-								-1
-						// if both rules have not, invert the result
-						rule0.response.constraint.not && rule1.response.constraint.not ? result = -result
-						switch (result) {
-							case 1: warning('''Redundant rule: «rule0.name», under «rule1.name».''', rule0, SLEECPackage.Literals.RULE__NAME)
-							case -1: warning('''Redundant rule: «rule1.name», under «rule0.name».''', rule1, SLEECPackage.Literals.RULE__NAME)
-						}
-					}		
-				}
-			}	
-		]
-		
+//		// create map between each variable and the expressions that it is found in
+//		val Multimap<String, RelComp> expressions = HashMultimap.create()
+//		ruleBlock.eAllContents
+//			.filter(MBoolExpr)
+//			.forEach[ expr |
+//				switch(expr) {
+//					Atom case system.isBoolean(expr.measureID):
+//						expressions.put(expr.measureID, null)
+//					RelComp: {
+//						val args = expr.eContents
+//							.filter(Atom)
+//							.map[measureID]
+//							.filter[system.isNumeric(it) || system.isScaleID(it)]
+//						// TODO also include expressions that contain two variables as its arguments
+//						// but this checking for conflicts is more difficult e.g. x < y, y < z, x < y
+//						args.length == 1 ? expressions.put(args.get(0), expr)
+//					} 
+//				}
+//			]
+////		System.out.println('variable -> expression:\t' + expressions)
+//		
+//		// find possible values for each variable to make each expression either true or false
+//		// for numeric expressions x = 5, x < 3, x > 7 the values of x can be: 0, 5, 10
+//		// for any boolean expression b: b will be 0 (false), 1 (true)
+//		// for any scale expression: the values will be the 0 .. #scaleParams - 1
+//		val Multimap<String, Integer> values = HashMultimap.create()
+//		expressions.asMap.forEach [ k, v |			
+//			switch(k) {
+//				case system.isBoolean(k):
+//					values.get(k).addAll(0, 1)
+//				case system.isNumeric(k): {
+//					val getValue = [ RelComp expr |
+//						system.eval(expr.left) ?: system.eval(expr.right)
+//					]
+//					val range = v.map(getValue).min - 1 .. v.map(getValue).max + 1
+//					val Set<List<Boolean>> outcomes = new HashSet()
+//					values.putAll(k, range.filter [ i |
+//						val result = v.map [ expr |
+//							val left = system.eval(expr.left) ?: i
+//							val right = system.eval(expr.right) ?: i
+//							SLEECEvaluator.eval(left, expr.op, right)
+//						].toList
+//						outcomes.add(result)
+//					])
+//				}
+//				case system.isScaleID(k): {
+//					val eval = [ MBoolExpr expr |
+//						switch (expr) {
+//							Atom: system.scales.get(k).indexOf(expr.measureID)
+//						}
+//					]
+//					val range = 0 ..< system.scales.get(k).length
+//					val Set<List<Boolean>> outcomes = new HashSet()
+//					values.putAll(k, range.filter [ i |
+//						val result = v.map [ expr |
+//							val Integer left = eval.apply(expr.left) ?: i
+//							val Integer right = eval.apply(expr.right) ?: i
+//							SLEECEvaluator.eval(left, expr.op, right)
+//						].toList
+//						outcomes.add(result)
+//					])
+//				}
+//			}
+//		]
+////		System.out.println('variable -> value:\t' + values)
+//		
+//		// map between a rule and the index of the index of the combination of values of variables if that combination triggered the rule
+//		// for:
+//		// Rule0 when Event0 and x = 5 or y = 3 then E1
+//		// Rule1 when Event0 and x = 3 and y = 6 then E1
+//		// values will be
+//		//{x = [x = 5, x = 3], y = [y = 3, y = 6]}
+//		// the cartesian product of the values will be:
+//		// {[x = 5, y = 3], [x = 5, y = 6], [x = 3, y = 3], [x = 3, y = 6]}
+//		// ruleeTriggered will be:
+//		// {Rule0 = [0, 1, 2], Rule1 = [3]}
+//		val Multimap<Rule, Integer> ruleTriggered = HashMultimap.create()
+//		Sets.cartesianProduct(values.asMap.values.map[toSet]).forEach [ combination, i |
+//			val variables = (0 ..< combination.size).toMap([values.keySet.get(it)], [combination.get(it)])
+//			val scales = new HashMap<String, Integer>()
+//			system.scales.values.forEach [
+//				forEach[k, v|scales.put(k, v)]
+//			]
+////			System.out.println(variables)
+//			val evaluator = new SLEECEvaluator(variables, system.constants, scales)
+//			ruleBlock.rules.forEach [ rule |
+//				evaluator.eval(rule) ? ruleTriggered.put(rule, i)
+//			]
+//		]
+////		System.out.println('expressions:\t' + expressions.values.length + '\t' + expressions.values.join(' '))
+////		System.out.println('rule -> triggered?\t' + ruleTriggered)
+//		
+//		// group rules by matching trigger-response pair
+//		val Multimap<Pair<String, String>, Rule> rules = HashMultimap.create()
+//		ruleBlock.rules.forEach [ rule |
+//			rules.put(rule.trigger.event.name -> rule.response.constraint.event.name, rule)
+//		]
+////		System.out.println('trigger -> response:\t' + rules)
+//		
+//		// check for conflicts and redundancies
+//		rules.asMap.forEach [ trigger, triggeredRules |
+//			for (i : 0 ..< triggeredRules.length){
+//				
+//				val rule0 = triggeredRules.get(i)
+//				val set0 = ruleTriggered.get(rule0)
+//				
+//				for (j : i + 1 ..< triggeredRules.length) {
+//					
+//					val rule1 = triggeredRules.get(j)
+//					val set1 = ruleTriggered.get(rule1)
+//					// first check for conflicts
+//					// conflicts happen when responses in the form are both triggered at the same time
+//					// Event0 within x
+//					// not Event0 within y
+//					// where y < x
+//					if (rule0.response.constraint.not != rule1.response.constraint.not) {
+//						// only 1 of the 2 rules has a not in their response
+//						if (rule0.response.constraint.not && system.eval(rule0.response.constraint.value) < system.eval(rule1.response.constraint.value) ||
+//							rule1.response.constraint.not && system.eval(rule0.response.constraint.value) > system.eval(rule1.response.constraint.value)) {
+//							error('''«rule0.name» conflicts with «rule1.name».''', rule0, SLEECPackage.Literals.RULE__NAME)
+//							error('''«rule1.name» conflicts with «rule0.name».''', rule1, SLEECPackage.Literals.RULE__NAME)
+//							return
+//						}
+//						
+//					}
+//					// then check for redundancies
+//					else {
+//						// either both rules have 'not' or don't have 'not'
+//						val rule0Redundant = set1.containsAll(set0)
+//						val rule1Redundant = set0.containsAll(set1)
+//						// rule0 is redundant if result == 1
+//						// rule1 is redundant is result == -1
+//						// no rules are redundant if result == 0
+//						var result = 
+//							if (rule0Redundant && (!rule1Redundant || system.eval(rule0.response.constraint.value) <= system.eval(rule1.response.constraint.value)))
+//								1
+//							else if (rule1Redundant)
+//								-1
+//						// if both rules have not, invert the result
+//						rule0.response.constraint.not && rule1.response.constraint.not ? result = -result
+//						switch (result) {
+//							case 1: warning('''Redundant rule: «rule0.name», under «rule1.name».''', rule0, SLEECPackage.Literals.RULE__NAME)
+//							case -1: warning('''Redundant rule: «rule1.name», under «rule0.name».''', rule1, SLEECPackage.Literals.RULE__NAME)
+//						}
+//					}		
+//				}
+//			}	
+//		]
+//		
 		// Checks a rule's components are not self-conflicting
 //		for (rule : ruleBlock.rules) {
 			
