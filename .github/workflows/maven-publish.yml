@@ -94,6 +94,8 @@ jobs:
           remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-core/'
+          sym-link-name: 'update'
+          sym-link-override: 'true'
           maven-target: 'sleec-core/circus.robocalc.sleec.repository/target/repository/'
 
     - name: Create commit comment
@@ -116,6 +118,13 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.1
       with:
         ssh-private-key: ${{ secrets.SLEEC_ASSERTIONS_SSH_PRIVATE_KEY }}
+
+    - name: Add SSH known hosts
+      run: echo "${ROBOSTAR_WEB_HOST} ${ROBOSTAR_WEB_SSH_FINGERPRINT_TYPE} ${ROBOSTAR_WEB_SSH_FINGERPRINT}" >> ~/.ssh/known_hosts
+      env:
+          ROBOSTAR_WEB_HOST: ${{ secrets.ROBOSTAR_WEB_HOST }}
+          ROBOSTAR_WEB_SSH_FINGERPRINT: ${{ secrets.ROBOSTAR_WEB_SSH_FINGERPRINT }}
+          ROBOSTAR_WEB_SSH_FINGERPRINT_TYPE: ${{ secrets.ROBOSTAR_WEB_SSH_FINGERPRINT_TYPE }}
         
     - id: deploy
       name: Deploy
@@ -126,6 +135,8 @@ jobs:
           remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-assertions/'
+          sym-link-name: 'update'
+          sym-link-override: 'true'
           maven-target: 'sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository/'
           
     - name: Create commit comment
