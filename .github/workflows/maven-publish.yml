@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -44,11 +43,39 @@ jobs:
         file: "sleec-product/target/products/*.tar.gz;sleec-product/target/products/*.zip"
         tags: true
         draft: true
-        
+
+    - name: Store release for sleec-core
+      uses: actions/upload-artifact@v4
+      with:
+        name: sleec-core
+        path: sleec-core
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+
+    - name: Store release for sleec-assertions
+      uses: actions/upload-artifact@v4
+      with:
+        name: sleec-assertions
+        path: sleec-assertions
+        if-no-files-found: error
+        overwrite: true
+        retention-days: 1
+
+  deploy-sleec-core:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+          name: sleec-core
+          
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.1
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.SLEEC_CORE_SSH_PRIVATE_KEY }}
           
     - name: Add SSH known hosts
       run: echo "${ROBOSTAR_WEB_HOST} ${ROBOSTAR_WEB_SSH_FINGERPRINT_TYPE} ${ROBOSTAR_WEB_SSH_FINGERPRINT}" >> ~/.ssh/known_hosts
@@ -67,8 +94,39 @@ jobs:
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-core/'
           maven-target: 'sleec-core/circus.robocalc.sleec.repository/target/repository/'
-          
+
     - name: Create commit comment
       uses: peter-evans/commit-comment@v1
       with:
           body: 'Successfully deployed at: https://robostar.cs.york.ac.uk/robotool/sleec-core/${{ steps.deploy.outputs.dest }}'      
+
+  deploy-sleec-assertions:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+          name: sleec-assertions
+    
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.1
+      with:
+        ssh-private-key: ${{ secrets.SLEEC_ASSERTIONS_SSH_PRIVATE_KEY }}
+        
+    - id: deploy
+      name: Deploy
+      uses: UoY-RoboStar/ga-eclipse-deploy@master
+      with:
+          remote-host: ${{ secrets.ROBOSTAR_WEB_HOST }}
+          remote-user: ${{ secrets.ROBOSTAR_WEB_USER }}
+          remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
+          remote-baseurl: 'https://robostar.cs.york.ac.uk'
+          remote-relative-path: 'robotool/sleec-assertions/'
+          maven-target: 'sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository/'
+          
+    - name: Create commit comment
+      uses: peter-evans/commit-comment@v1
+      with:
+          body: 'Successfully deployed at: https://robostar.cs.york.ac.uk/robotool/sleec-assertions/${{ steps.deploy.outputs.dest }}'
