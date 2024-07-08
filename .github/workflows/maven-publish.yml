@@ -65,6 +65,9 @@ jobs:
   deploy-sleec-core:
     runs-on: ubuntu-latest
     needs: build
+    defaults:
+      run:
+        working-directory: SLEEC-TK/SLEEC-TK
     steps:
 
     - name: Download artifacts
@@ -93,7 +96,7 @@ jobs:
           remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-core/'
-          maven-target: 'sleec-core/circus.robocalc.sleec.repository/target/repository/'
+          maven-target: '${GITHUB_WORKSPACE}/sleec-core/circus.robocalc.sleec.repository/target/repository/'
 
     - name: Create commit comment
       uses: peter-evans/commit-comment@v1
@@ -103,6 +106,9 @@ jobs:
   deploy-sleec-assertions:
     runs-on: ubuntu-latest
     needs: build
+    defaults:
+      run:
+        working-directory: SLEEC-TK/SLEEC-TK
     steps:
 
     - name: Download artifacts
@@ -124,7 +130,7 @@ jobs:
           remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-assertions/'
-          maven-target: 'sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository/'
+          maven-target: '${GITHUB_WORKSPACE}/sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository/'
           
     - name: Create commit comment
       uses: peter-evans/commit-comment@v1
