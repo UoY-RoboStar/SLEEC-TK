@@ -71,9 +71,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
           name: sleec-core
-
-    - name: Display structure of downloaded files
-      run: ls -R
+          path: sleec-core
           
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.1
@@ -96,7 +94,7 @@ jobs:
           remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-core/'
-          maven-target: '${GITHUB_WORKSPACE}/sleec-core/circus.robocalc.sleec.repository/target/repository/'
+          maven-target: 'sleec-core/circus.robocalc.sleec.repository/target/repository/'
 
     - name: Create commit comment
       uses: peter-evans/commit-comment@v1
@@ -112,6 +110,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
           name: sleec-assertions
+          path: sleec-assertions
     
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.1
@@ -127,7 +126,7 @@ jobs:
           remote-root: ${{ secrets.ROBOSTAR_WEB_ROOT }}
           remote-baseurl: 'https://robostar.cs.york.ac.uk'
           remote-relative-path: 'robotool/sleec-assertions/'
-          maven-target: '${GITHUB_WORKSPACE}/sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository/'
+          maven-target: 'sleec-assertions/circus.robocalc.sleec.assertions.csp.update/target/repository/'
           
     - name: Create commit comment
       uses: peter-evans/commit-comment@v1
