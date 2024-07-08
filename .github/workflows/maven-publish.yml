@@ -74,6 +74,9 @@ jobs:
       uses: actions/download-artifact@v4
       with:
           name: sleec-core
+
+    - name: Display structure of downloaded files
+      run: ls -R
           
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.1
