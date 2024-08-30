@@ -1,0 +1,266 @@
+
+--Specify the integer intervals for type Int e.g. {0..30}. 
+
+channel BatteryCritical
+channel CameraStart
+channel SoundAlarm
+channel GoHome
+channel personNearby, i_personNearby : Bool
+Mem_personNearby(o__) =
+	let
+		Mem =  personNearby?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_personNearby.x__|},o__))
+	within
+		Mem
+channel temperature, i_temperature : core_int
+Mem_temperature(o__) =
+	let
+		Mem =  temperature?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_temperature.x__|},o__))
+	within
+		Mem
+channel windSpeed, i_windSpeed : STwindSpeed
+
+datatype STwindSpeed = light | moderate | strong
+
+STlewindSpeed(v1windSpeed, v2windSpeed) =
+	if v1windSpeed == light then true
+	else (if v1windSpeed == moderate then not member(v2windSpeed,{light})
+	else v2windSpeed == strong)
+	
+STeqwindSpeed(v1windSpeed, v2windSpeed) =
+	v1windSpeed == v2windSpeed
+	
+STltwindSpeed(v1windSpeed, v2windSpeed) =
+	STlewindSpeed(v1windSpeed, v2windSpeed) and STnewindSpeed(v1windSpeed, v2windSpeed)
+	
+STgtwindSpeed(v1windSpeed, v2windSpeed) =
+	STltwindSpeed(v2windSpeed, v1windSpeed)
+	
+STnewindSpeed(v1windSpeed, v2windSpeed) =
+	not STeqwindSpeed(v1windSpeed, v2windSpeed)
+	
+STgewindSpeed(v1windSpeed, v2windSpeed) =
+	STltwindSpeed(v2windSpeed, v1windSpeed)
+
+Mem_windSpeed(o__) =
+	let
+		Mem =  windSpeed?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_windSpeed.x__|},o__))
+	within
+		Mem
+ALARMDEADLINE = 30
+	
+Capabilities = 
+  {| BatteryCritical,
+     CameraStart,
+     SoundAlarm,
+     GoHome,
+  	 personNearby,
+  	 temperature,
+  	 windSpeed
+  |}
+Measures =
+  {| personNearby,
+     temperature,
+     windSpeed
+  |}
+	
+
+Timed(OneStep) {
+
+-- Rule1 when CameraStart and (personNearby) then SoundAlarm 
+
+Rule1 = TriggerRule1; MonitoringRule1; Rule1
+
+TriggerRule1 = let
+	MTrigger = StartBy(personNearby?vpersonNearby ->
+		if (vpersonNearby) then SKIP else TriggerRule1
+	,0)
+within CameraStart -> MTrigger 
+	[] SoundAlarm -> TriggerRule1
+
+MonitoringRule1 = SoundAlarm -> SKIP
+
+-- alphabet for Rule1 
+ARule1 = {|CameraStart, personNearby, SoundAlarm|}
+SLEECRule1 = timed_priority(Rule1)
+
+
+-- Rule2 when CameraStart and (personNearby) then SoundAlarm within 2 seconds 
+
+Rule2 = TriggerRule2; MonitoringRule2; Rule2
+
+TriggerRule2 = let
+	MTrigger = StartBy(personNearby?vpersonNearby ->
+		if (vpersonNearby) then SKIP else TriggerRule2
+	,0)
+within CameraStart -> MTrigger 
+	[] SoundAlarm -> TriggerRule2
+
+MonitoringRule2 = StartBy(SoundAlarm -> SKIP,(2 * 1))
+
+-- alphabet for Rule2 
+ARule2 = {|CameraStart, personNearby, SoundAlarm|}
+SLEECRule2 = timed_priority(Rule2)
+
+
+-- Rule3 when SoundAlarm then not GoHome within 5 minutes 
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = SoundAlarm -> SKIP	[] GoHome -> TriggerRule3
+
+
+MonitoringRule3 = WAIT((5 * 60))
+
+-- alphabet for Rule3 
+ARule3 = {|GoHome, SoundAlarm|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+-- Rule4 when CameraStart then SoundAlarm 
+-- unless (personNearby) then GoHome
+-- unless ((temperature) > (35))
+
+Rule4 = TriggerRule4; MonitoringRule4; Rule4
+
+TriggerRule4 = CameraStart -> SKIP	[] SoundAlarm -> TriggerRule4
+	[] GoHome -> TriggerRule4
+
+
+MonitoringRule4 = let
+	Monitoring1 = SoundAlarm -> SKIP
+	Monitoring2 = GoHome -> SKIP
+	Monitoring3 = SKIP
+within StartBy(personNearby?vpersonNearby ->
+	StartBy(temperature?vtemperature ->
+		if ((vtemperature) > (35)) then Monitoring3
+		else (if (vpersonNearby) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for Rule4 
+ARule4 = {|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}
+SLEECRule4 = timed_priority(Rule4)
+
+
+-- Rule2_a when CameraStart and (personNearby) then SoundAlarm within 2 seconds
+-- otherwise GoHome 
+
+Rule2_a = TriggerRule2_a; MonitoringRule2_a; Rule2_a
+
+TriggerRule2_a = let
+	MTrigger = StartBy(personNearby?vpersonNearby ->
+		if (vpersonNearby) then SKIP else TriggerRule2_a
+	,0)
+within CameraStart -> MTrigger 
+	[] SoundAlarm -> TriggerRule2_a
+	[] GoHome -> TriggerRule2_a
+
+MonitoringRule2_a = TimedInterruptSeq(SoundAlarm,(2 * 1),GoHome -> SKIP)
+
+-- alphabet for Rule2_a 
+ARule2_a = {|CameraStart, GoHome, personNearby, SoundAlarm|}
+SLEECRule2_a = timed_priority(Rule2_a)
+
+
+-- Rule4_a when CameraStart then SoundAlarm 
+-- unless (personNearby) then GoHome
+
+Rule4_a = TriggerRule4_a; MonitoringRule4_a; Rule4_a
+
+TriggerRule4_a = CameraStart -> SKIP	[] SoundAlarm -> TriggerRule4_a
+	[] GoHome -> TriggerRule4_a
+
+
+MonitoringRule4_a = let
+	Monitoring1 = SoundAlarm -> SKIP
+	Monitoring2 = GoHome -> SKIP
+within StartBy(personNearby?vpersonNearby ->
+	if (vpersonNearby) then Monitoring2
+	else (Monitoring1)
+,0)
+
+-- alphabet for Rule4_a 
+ARule4_a = {|CameraStart, GoHome, personNearby, SoundAlarm|}
+SLEECRule4_a = timed_priority(Rule4_a)
+
+
+-- RuleA when BatteryCritical and ((temperature) < (25)) then GoHome within 1 minutes 
+
+RuleA = TriggerRuleA; MonitoringRuleA; RuleA
+
+TriggerRuleA = let
+	MTrigger = StartBy(temperature?vtemperature ->
+		if ((vtemperature) < (25)) then SKIP else TriggerRuleA
+	,0)
+within BatteryCritical -> MTrigger 
+	[] GoHome -> TriggerRuleA
+
+MonitoringRuleA = StartBy(GoHome -> SKIP,(1 * 60))
+
+-- alphabet for RuleA 
+ARuleA = {|GoHome, temperature, BatteryCritical|}
+SLEECRuleA = timed_priority(RuleA)
+
+
+-- RuleC when BatteryCritical then CameraStart 
+-- unless (personNearby) then GoHome
+-- unless ((temperature) > (35)) then SoundAlarm
+
+RuleC = TriggerRuleC; MonitoringRuleC; RuleC
+
+TriggerRuleC = BatteryCritical -> SKIP	[] CameraStart -> TriggerRuleC
+	[] GoHome -> TriggerRuleC
+	[] SoundAlarm -> TriggerRuleC
+
+
+MonitoringRuleC = let
+	Monitoring1 = CameraStart -> SKIP
+	Monitoring2 = GoHome -> SKIP
+	Monitoring3 = SoundAlarm -> SKIP
+within StartBy(personNearby?vpersonNearby ->
+	StartBy(temperature?vtemperature ->
+		if ((vtemperature) > (35)) then Monitoring3
+		else (if (vpersonNearby) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for RuleC 
+ARuleC = {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}
+SLEECRuleC = timed_priority(RuleC)
+
+
+-- RuleD when BatteryCritical then CameraStart 
+-- unless (personNearby) then SoundAlarm
+-- unless ((temperature) > (35)) then GoHome
+
+RuleD = TriggerRuleD; MonitoringRuleD; RuleD
+
+TriggerRuleD = BatteryCritical -> SKIP	[] CameraStart -> TriggerRuleD
+	[] SoundAlarm -> TriggerRuleD
+	[] GoHome -> TriggerRuleD
+
+
+MonitoringRuleD = let
+	Monitoring1 = CameraStart -> SKIP
+	Monitoring2 = SoundAlarm -> SKIP
+	Monitoring3 = GoHome -> SKIP
+within StartBy(personNearby?vpersonNearby ->
+	StartBy(temperature?vtemperature ->
+		if ((vtemperature) > (35)) then Monitoring3
+		else (if (vpersonNearby) then Monitoring2
+		else (Monitoring1))
+	,0)
+,0)
+
+-- alphabet for RuleD 
+ARuleD = {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}
+SLEECRuleD = timed_priority(RuleD)
+
+
+	
+}

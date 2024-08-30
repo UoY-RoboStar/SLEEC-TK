@@ -1,0 +1,820 @@
+-- ASSERTIONS --
+include "tick-tock.csp"
+include "instantiations.csp"
+include "firefighterResolved.csp"			
+Timed(OneStep) {
+
+-- Checking FRule1 with FRule2:
+intersectionFRule1FRule2 = 
+  let
+EnvFRule1FRule2 = EnvbatteryFull
+    EnvbatteryFull = batteryFull?x__ -> VEnvbatteryFull(x__)
+    VEnvbatteryFull(x__) = batteryFull!x__ -> VEnvbatteryFull(x__) 
+  within
+  
+  (FRule1[|diff(inter({|GoHome, SoundAlarm, batteryFull|}, {|CameraStart, SoundAlarm|}),{|batteryFull|})|]FRule2)
+  [| {|batteryFull|} |]
+  	EnvFRule1FRule2
+  SLEECFRule1FRule2 = timed_priority(intersectionFRule1FRule2)
+					
+  assert SLEECFRule1FRule2:[deadlock-free]					
+  			
+  SLEECFRule1FRule2CF   = prioritise(
+  	timed_priority(intersectionFRule1FRule2)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule1FRule2CF  :[divergence-free]
+  
+FRule1_wrt_FRule2 =
+let
+-- The external 'm' channels for every measure of (FRule1 or FRule2)
+MemoryExternalEvents = {|batteryFull|}
+-- The internal 'i_m' channels for every measure of (FRule1 or FRule2)
+MemoryInternalEvents = {|i_batteryFull|}
+-- Common events of FRule1 and FRule2
+CommonEvents = union(AFRule1,AFRule2)
+-- Common events of FRule1 and FRule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_batteryFull(CommonProvideEvents)
+	     MemoryInOrder = batteryFull?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECFRule1 [[
+				     batteryFull <- i_batteryFull
+				     ]]
+				    )
+				    [| union(diff(AFRule1,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+FRule2_wrt_FRule1 =
+let
+-- The external 'm' channels for every measure of (FRule2 or FRule1)
+MemoryExternalEvents = {|batteryFull|}
+-- The internal 'i_m' channels for every measure of (FRule2 or FRule1)
+MemoryInternalEvents = {|i_batteryFull|}
+-- Common events of FRule2 and FRule1
+CommonEvents = union(AFRule2,AFRule1)
+-- Common events of FRule2 and FRule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_batteryFull(CommonProvideEvents)
+	     MemoryInOrder = batteryFull?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECFRule2 [[
+				     batteryFull <- i_batteryFull
+				     ]]
+				    )
+				    [| union(diff(AFRule2,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not FRule1_wrt_FRule2 [T= FRule2_wrt_FRule1 
+assert not FRule2_wrt_FRule1 [T= FRule1_wrt_FRule2 
+
+-- Checking FRule1 with FRule7:
+intersectionFRule1FRule7 = 
+  let
+    EnvFRule1FRule7 = EnvbatteryFull||| EnvpersonNearby
+||| Envtemperature
+    EnvbatteryFull = batteryFull?x__ -> VEnvbatteryFull(x__)
+    VEnvbatteryFull(x__) = batteryFull!x__ -> VEnvbatteryFull(x__) 
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (FRule1[|diff(inter({|GoHome, SoundAlarm, batteryFull|}, {|GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|batteryFull,personNearby,temperature|})|]FRule7)
+  [| {|batteryFull,personNearby,temperature|} |]
+  	EnvFRule1FRule7
+  SLEECFRule1FRule7 = timed_priority(intersectionFRule1FRule7)
+					
+  assert SLEECFRule1FRule7:[deadlock-free]					
+  			
+  SLEECFRule1FRule7CF   = prioritise(
+  	timed_priority(intersectionFRule1FRule7)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule1FRule7CF  :[divergence-free]
+  
+FRule1_wrt_FRule7 =
+let
+-- The external 'm' channels for every measure of (FRule1 or FRule7)
+MemoryExternalEvents = {|batteryFull,personNearby,temperature|}-- The internal 'i_m' channels for every measure of (FRule1 or FRule7)
+MemoryInternalEvents = {|i_batteryFull,i_personNearby,i_temperature|}-- Common events of FRule1 and FRule7
+CommonEvents = union(AFRule1,AFRule7)
+-- Common events of FRule1 and FRule7, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_batteryFull(CommonProvideEvents) [| CommonProvideEvents |] (Mem_personNearby(CommonProvideEvents)
+ [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+)
+MemoryInOrder = batteryFull?x__-> personNearby?x__ 
+-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule1[[ batteryFull <- i_batteryFull,
+personNearby <- i_personNearby
+,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(AFRule1,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule7_wrt_FRule1 =
+let
+-- The external 'm' channels for every measure of (FRule7 or FRule1)
+MemoryExternalEvents = {|batteryFull,personNearby,temperature|}-- The internal 'i_m' channels for every measure of (FRule7 or FRule1)
+MemoryInternalEvents = {|i_batteryFull,i_personNearby,i_temperature|}-- Common events of FRule7 and FRule1
+CommonEvents = union(AFRule7,AFRule1)
+-- Common events of FRule7 and FRule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_batteryFull(CommonProvideEvents) [| CommonProvideEvents |] (Mem_personNearby(CommonProvideEvents)
+ [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+)
+MemoryInOrder = batteryFull?x__-> personNearby?x__ 
+-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule7[[ batteryFull <- i_batteryFull,
+personNearby <- i_personNearby
+,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(AFRule7,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule1_wrt_FRule7 [T= FRule7_wrt_FRule1 
+assert not FRule7_wrt_FRule1 [T= FRule1_wrt_FRule7 
+
+-- Checking FRule2 with FRule5:
+intersectionFRule2FRule5 = 
+  let
+EnvFRule2FRule5 = EnvhumanDetected
+    EnvhumanDetected = humanDetected?x__ -> VEnvhumanDetected(x__)
+    VEnvhumanDetected(x__) = humanDetected!x__ -> VEnvhumanDetected(x__) 
+  within
+  
+  (FRule2[|diff(inter({|CameraStart, SoundAlarm|}, {|CameraStart, humanDetected, RemainAnonymous|}),{|humanDetected|})|]FRule5)
+  [| {|humanDetected|} |]
+  	EnvFRule2FRule5
+  SLEECFRule2FRule5 = timed_priority(intersectionFRule2FRule5)
+					
+  assert SLEECFRule2FRule5:[deadlock-free]					
+  			
+  SLEECFRule2FRule5CF   = prioritise(
+  	timed_priority(intersectionFRule2FRule5)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule2FRule5CF  :[divergence-free]
+  
+FRule2_wrt_FRule5 =
+let
+-- The external 'm' channels for every measure of (FRule2 or FRule5)
+MemoryExternalEvents = {|humanDetected|}
+-- The internal 'i_m' channels for every measure of (FRule2 or FRule5)
+MemoryInternalEvents = {|i_humanDetected|}
+-- Common events of FRule2 and FRule5
+CommonEvents = union(AFRule2,AFRule5)
+-- Common events of FRule2 and FRule5, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_humanDetected(CommonProvideEvents)
+	     MemoryInOrder = humanDetected?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECFRule2 [[
+				     humanDetected <- i_humanDetected
+				     ]]
+				    )
+				    [| union(diff(AFRule2,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+FRule5_wrt_FRule2 =
+let
+-- The external 'm' channels for every measure of (FRule5 or FRule2)
+MemoryExternalEvents = {|humanDetected|}
+-- The internal 'i_m' channels for every measure of (FRule5 or FRule2)
+MemoryInternalEvents = {|i_humanDetected|}
+-- Common events of FRule5 and FRule2
+CommonEvents = union(AFRule5,AFRule2)
+-- Common events of FRule5 and FRule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_humanDetected(CommonProvideEvents)
+	     MemoryInOrder = humanDetected?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECFRule5 [[
+				     humanDetected <- i_humanDetected
+				     ]]
+				    )
+				    [| union(diff(AFRule5,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not FRule2_wrt_FRule5 [T= FRule5_wrt_FRule2 
+assert not FRule5_wrt_FRule2 [T= FRule2_wrt_FRule5 
+
+-- Checking FRule2 with FRule6:
+intersectionFRule2FRule6 = 
+  let
+    EnvFRule2FRule6 = EnvanimalDetected||| EnvhumanDetected
+    EnvanimalDetected = animalDetected?x__ -> VEnvanimalDetected(x__)
+    VEnvanimalDetected(x__) = animalDetected!x__ -> VEnvanimalDetected(x__) 
+    EnvhumanDetected = humanDetected?x__ -> VEnvhumanDetected(x__)
+    VEnvhumanDetected(x__) = humanDetected!x__ -> VEnvhumanDetected(x__) 
+  within
+  
+  (FRule2[|diff(inter({|CameraStart, SoundAlarm|}, {|CameraStart, humanDetected, animalDetected, ReportLocation|}),{|animalDetected,humanDetected|})|]FRule6)
+  [| {|animalDetected,humanDetected|} |]
+  	EnvFRule2FRule6
+  SLEECFRule2FRule6 = timed_priority(intersectionFRule2FRule6)
+					
+  assert SLEECFRule2FRule6:[deadlock-free]					
+  			
+  SLEECFRule2FRule6CF   = prioritise(
+  	timed_priority(intersectionFRule2FRule6)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule2FRule6CF  :[divergence-free]
+  
+FRule2_wrt_FRule6 =
+let
+-- The external 'm' channels for every measure of (FRule2 or FRule6)
+MemoryExternalEvents = {|animalDetected,humanDetected|}-- The internal 'i_m' channels for every measure of (FRule2 or FRule6)
+MemoryInternalEvents = {|i_animalDetected,i_humanDetected|}-- Common events of FRule2 and FRule6
+CommonEvents = union(AFRule2,AFRule6)
+-- Common events of FRule2 and FRule6, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_animalDetected(CommonProvideEvents) [| CommonProvideEvents |] Mem_humanDetected(CommonProvideEvents)
+)
+MemoryInOrder = animalDetected?x__-> humanDetected?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule2[[ animalDetected <- i_animalDetected,
+humanDetected <- i_humanDetected
+]]
+		)
+		[| union(diff(AFRule2,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule6_wrt_FRule2 =
+let
+-- The external 'm' channels for every measure of (FRule6 or FRule2)
+MemoryExternalEvents = {|animalDetected,humanDetected|}-- The internal 'i_m' channels for every measure of (FRule6 or FRule2)
+MemoryInternalEvents = {|i_animalDetected,i_humanDetected|}-- Common events of FRule6 and FRule2
+CommonEvents = union(AFRule6,AFRule2)
+-- Common events of FRule6 and FRule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_animalDetected(CommonProvideEvents) [| CommonProvideEvents |] Mem_humanDetected(CommonProvideEvents)
+)
+MemoryInOrder = animalDetected?x__-> humanDetected?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule6[[ animalDetected <- i_animalDetected,
+humanDetected <- i_humanDetected
+]]
+		)
+		[| union(diff(AFRule6,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule2_wrt_FRule6 [T= FRule6_wrt_FRule2 
+assert not FRule6_wrt_FRule2 [T= FRule2_wrt_FRule6 
+
+-- Checking FRule2 with FRule7:
+intersectionFRule2FRule7 = 
+  let
+    EnvFRule2FRule7 = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (FRule2[|diff(inter({|CameraStart, SoundAlarm|}, {|GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]FRule7)
+  [| {|personNearby,temperature|} |]
+  	EnvFRule2FRule7
+  SLEECFRule2FRule7 = timed_priority(intersectionFRule2FRule7)
+					
+  assert SLEECFRule2FRule7:[deadlock-free]					
+  			
+  SLEECFRule2FRule7CF   = prioritise(
+  	timed_priority(intersectionFRule2FRule7)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule2FRule7CF  :[divergence-free]
+  
+FRule2_wrt_FRule7 =
+let
+-- The external 'm' channels for every measure of (FRule2 or FRule7)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (FRule2 or FRule7)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of FRule2 and FRule7
+CommonEvents = union(AFRule2,AFRule7)
+-- Common events of FRule2 and FRule7, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule2[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(AFRule2,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule7_wrt_FRule2 =
+let
+-- The external 'm' channels for every measure of (FRule7 or FRule2)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (FRule7 or FRule2)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of FRule7 and FRule2
+CommonEvents = union(AFRule7,AFRule2)
+-- Common events of FRule7 and FRule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule7[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(AFRule7,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule2_wrt_FRule7 [T= FRule7_wrt_FRule2 
+assert not FRule7_wrt_FRule2 [T= FRule2_wrt_FRule7 
+
+-- Checking FRule3 with FRule7:
+intersectionFRule3FRule7 = 
+  let
+    EnvFRule3FRule7 = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (FRule3[|diff(inter({|BatteryCritical, BatteryAlarmandGoHome|}, {|GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]FRule7)
+  [| {|personNearby,temperature|} |]
+  	EnvFRule3FRule7
+  SLEECFRule3FRule7 = timed_priority(intersectionFRule3FRule7)
+					
+  assert SLEECFRule3FRule7:[deadlock-free]					
+  			
+  SLEECFRule3FRule7CF   = prioritise(
+  	timed_priority(intersectionFRule3FRule7)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule3FRule7CF  :[divergence-free]
+  
+FRule3_wrt_FRule7 =
+let
+-- The external 'm' channels for every measure of (FRule3 or FRule7)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (FRule3 or FRule7)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of FRule3 and FRule7
+CommonEvents = union(AFRule3,AFRule7)
+-- Common events of FRule3 and FRule7, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule3[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(AFRule3,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule7_wrt_FRule3 =
+let
+-- The external 'm' channels for every measure of (FRule7 or FRule3)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (FRule7 or FRule3)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of FRule7 and FRule3
+CommonEvents = union(AFRule7,AFRule3)
+-- Common events of FRule7 and FRule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule7[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(AFRule7,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule3_wrt_FRule7 [T= FRule7_wrt_FRule3 
+assert not FRule7_wrt_FRule3 [T= FRule3_wrt_FRule7 
+
+-- Checking FRule4 with FRule9:
+intersectionFRule4FRule9 = 
+  let
+    EnvFRule4FRule9 = EnvdetectPersonFallen||| Envauthorized
+    EnvdetectPersonFallen = detectPersonFallen?x__ -> VEnvdetectPersonFallen(x__)
+    VEnvdetectPersonFallen(x__) = detectPersonFallen!x__ -> VEnvdetectPersonFallen(x__) 
+    Envauthorized = authorized?x__ -> VEnvauthorized(x__)
+    VEnvauthorized(x__) = authorized!x__ -> VEnvauthorized(x__) 
+  within
+  
+  (FRule4[|diff(inter({|detectPersonFallen, StartMission, SeekHelp|}, {|NotifyError, authorized, StartMission, FinishMission|}),{|detectPersonFallen,authorized|})|]FRule9)
+  [| {|detectPersonFallen,authorized|} |]
+  	EnvFRule4FRule9
+  SLEECFRule4FRule9 = timed_priority(intersectionFRule4FRule9)
+					
+  assert SLEECFRule4FRule9:[deadlock-free]					
+  			
+  SLEECFRule4FRule9CF   = prioritise(
+  	timed_priority(intersectionFRule4FRule9)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule4FRule9CF  :[divergence-free]
+  
+FRule4_wrt_FRule9 =
+let
+-- The external 'm' channels for every measure of (FRule4 or FRule9)
+MemoryExternalEvents = {|detectPersonFallen,authorized|}-- The internal 'i_m' channels for every measure of (FRule4 or FRule9)
+MemoryInternalEvents = {|i_detectPersonFallen,i_authorized|}-- Common events of FRule4 and FRule9
+CommonEvents = union(AFRule4,AFRule9)
+-- Common events of FRule4 and FRule9, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_detectPersonFallen(CommonProvideEvents) [| CommonProvideEvents |] Mem_authorized(CommonProvideEvents)
+)
+MemoryInOrder = detectPersonFallen?x__-> authorized?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule4[[ detectPersonFallen <- i_detectPersonFallen,
+authorized <- i_authorized
+]]
+		)
+		[| union(diff(AFRule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule9_wrt_FRule4 =
+let
+-- The external 'm' channels for every measure of (FRule9 or FRule4)
+MemoryExternalEvents = {|detectPersonFallen,authorized|}-- The internal 'i_m' channels for every measure of (FRule9 or FRule4)
+MemoryInternalEvents = {|i_detectPersonFallen,i_authorized|}-- Common events of FRule9 and FRule4
+CommonEvents = union(AFRule9,AFRule4)
+-- Common events of FRule9 and FRule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_detectPersonFallen(CommonProvideEvents) [| CommonProvideEvents |] Mem_authorized(CommonProvideEvents)
+)
+MemoryInOrder = detectPersonFallen?x__-> authorized?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule9[[ detectPersonFallen <- i_detectPersonFallen,
+authorized <- i_authorized
+]]
+		)
+		[| union(diff(AFRule9,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule4_wrt_FRule9 [T= FRule9_wrt_FRule4 
+assert not FRule9_wrt_FRule4 [T= FRule4_wrt_FRule9 
+
+-- Checking FRule5 with FRule6:
+intersectionFRule5FRule6 = 
+  let
+    EnvFRule5FRule6 = EnvhumanDetected||| EnvanimalDetected
+    EnvhumanDetected = humanDetected?x__ -> VEnvhumanDetected(x__)
+    VEnvhumanDetected(x__) = humanDetected!x__ -> VEnvhumanDetected(x__) 
+    EnvanimalDetected = animalDetected?x__ -> VEnvanimalDetected(x__)
+    VEnvanimalDetected(x__) = animalDetected!x__ -> VEnvanimalDetected(x__) 
+  within
+  
+  (FRule5[|diff(inter({|CameraStart, humanDetected, RemainAnonymous|}, {|CameraStart, humanDetected, animalDetected, ReportLocation|}),{|humanDetected,animalDetected|})|]FRule6)
+  [| {|humanDetected,animalDetected|} |]
+  	EnvFRule5FRule6
+  SLEECFRule5FRule6 = timed_priority(intersectionFRule5FRule6)
+					
+  assert SLEECFRule5FRule6:[deadlock-free]					
+  			
+  SLEECFRule5FRule6CF   = prioritise(
+  	timed_priority(intersectionFRule5FRule6)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule5FRule6CF  :[divergence-free]
+  
+FRule5_wrt_FRule6 =
+let
+-- The external 'm' channels for every measure of (FRule5 or FRule6)
+MemoryExternalEvents = {|humanDetected,animalDetected|}-- The internal 'i_m' channels for every measure of (FRule5 or FRule6)
+MemoryInternalEvents = {|i_humanDetected,i_animalDetected|}-- Common events of FRule5 and FRule6
+CommonEvents = union(AFRule5,AFRule6)
+-- Common events of FRule5 and FRule6, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_humanDetected(CommonProvideEvents) [| CommonProvideEvents |] Mem_animalDetected(CommonProvideEvents)
+)
+MemoryInOrder = humanDetected?x__-> animalDetected?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule5[[ humanDetected <- i_humanDetected,
+animalDetected <- i_animalDetected
+]]
+		)
+		[| union(diff(AFRule5,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule6_wrt_FRule5 =
+let
+-- The external 'm' channels for every measure of (FRule6 or FRule5)
+MemoryExternalEvents = {|humanDetected,animalDetected|}-- The internal 'i_m' channels for every measure of (FRule6 or FRule5)
+MemoryInternalEvents = {|i_humanDetected,i_animalDetected|}-- Common events of FRule6 and FRule5
+CommonEvents = union(AFRule6,AFRule5)
+-- Common events of FRule6 and FRule5, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_humanDetected(CommonProvideEvents) [| CommonProvideEvents |] Mem_animalDetected(CommonProvideEvents)
+)
+MemoryInOrder = humanDetected?x__-> animalDetected?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule6[[ humanDetected <- i_humanDetected,
+animalDetected <- i_animalDetected
+]]
+		)
+		[| union(diff(AFRule6,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule5_wrt_FRule6 [T= FRule6_wrt_FRule5 
+assert not FRule6_wrt_FRule5 [T= FRule5_wrt_FRule6 
+
+-- Checking FRule7 with FRule10:
+intersectionFRule7FRule10 = 
+  let
+    EnvFRule7FRule10 = EnvpersonNearby||| Envtemperature
+||| Envdistance
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+    Envdistance = distance?x__ -> VEnvdistance(x__)
+    VEnvdistance(x__) = distance!x__ -> VEnvdistance(x__) 
+  within
+  
+  (FRule7[|diff(inter({|GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}, {|distance, SoundWarningMessage, personNearby, OperatorInstruction, SprayWater|}),{|personNearby,temperature,distance|})|]FRule10)
+  [| {|personNearby,temperature,distance|} |]
+  	EnvFRule7FRule10
+  SLEECFRule7FRule10 = timed_priority(intersectionFRule7FRule10)
+					
+  assert SLEECFRule7FRule10:[deadlock-free]					
+  			
+  SLEECFRule7FRule10CF   = prioritise(
+  	timed_priority(intersectionFRule7FRule10)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECFRule7FRule10CF  :[divergence-free]
+  
+FRule7_wrt_FRule10 =
+let
+-- The external 'm' channels for every measure of (FRule7 or FRule10)
+MemoryExternalEvents = {|personNearby,temperature,distance|}-- The internal 'i_m' channels for every measure of (FRule7 or FRule10)
+MemoryInternalEvents = {|i_personNearby,i_temperature,i_distance|}-- Common events of FRule7 and FRule10
+CommonEvents = union(AFRule7,AFRule10)
+-- Common events of FRule7 and FRule10, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] (Mem_temperature(CommonProvideEvents)
+ [| CommonProvideEvents |] Mem_distance(CommonProvideEvents)
+)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> distance?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule7[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+,
+distance <- i_distance
+]]
+		)
+		[| union(diff(AFRule7,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+FRule10_wrt_FRule7 =
+let
+-- The external 'm' channels for every measure of (FRule10 or FRule7)
+MemoryExternalEvents = {|personNearby,temperature,distance|}-- The internal 'i_m' channels for every measure of (FRule10 or FRule7)
+MemoryInternalEvents = {|i_personNearby,i_temperature,i_distance|}-- Common events of FRule10 and FRule7
+CommonEvents = union(AFRule10,AFRule7)
+-- Common events of FRule10 and FRule7, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] (Mem_temperature(CommonProvideEvents)
+ [| CommonProvideEvents |] Mem_distance(CommonProvideEvents)
+)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> distance?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECFRule10[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+,
+distance <- i_distance
+]]
+		)
+		[| union(diff(AFRule10,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not FRule7_wrt_FRule10 [T= FRule10_wrt_FRule7 
+assert not FRule10_wrt_FRule7 [T= FRule7_wrt_FRule10 
+
+}

@@ -1,0 +1,10 @@
+[
+{ "name": "UAV conforms to FRule2 [traces]",
+  "type": "conforms",
+  "negated": false 
+},
+{ "name": "UAV conforms to FRule7 [traces]",
+  "type": "conforms",
+  "negated": false 
+}
+			]
