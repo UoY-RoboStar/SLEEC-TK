@@ -26,7 +26,7 @@
   measure animalDetected:boolean
   event RemainAnonymous
   event ReportLocation
-  constant MAX_TEMPERATURE=30
+  constant MAX_TEMPERATURE=35
   event FullyCharged
   event TestEfficiencyPreserved
   event StartMission
@@ -38,37 +38,35 @@
   event SoundWarningMessage
   measure distance:numeric
   event SoundAlarm
-  measure batteryFull:boolean
+  measure batteryCharged:boolean
   event BatteryAlarmandGoHome
 def_end
 
 rule_start
  
- FRule1 when SoundAlarm and batteryFull 
+ // Relevant for conformance verification
+ FRule1 when SoundAlarm and batteryCharged 
       then not GoHome within 5 minutes 
     
- // Relevant for conformance verification
- FRule2 when SoundAlarm then CameraStart within 1 minutes
+ FRule2 when BatteryCritical then BatteryAlarmandGoHome within 5 minutes
 
- FRule3 when BatteryCritical then BatteryAlarmandGoHome within 5 minutes
-
- FRule4 when StartMission and detectPersonFallen
+ FRule3 when StartMission and detectPersonFallen
  then SeekHelp within 5 seconds
 
- FRule5 when CameraStart and humanDetected then RemainAnonymous
- FRule6 when CameraStart and animalDetected or humanDetected then ReportLocation
+ FRule4 when CameraStart and humanDetected then RemainAnonymous
+ FRule5 when CameraStart and animalDetected or humanDetected then ReportLocation
  
  // Relevant for conformance verification
- FRule7 when BatteryCritical then GoHome
+ FRule6 when BatteryCritical then GoHome
 	unless personNearby and temperature >  MAX_TEMPERATURE 
    	then SoundAlarm
- FRule8 when FullyCharged then TestEfficiencyPreserved within 24 hours
+ FRule7 when FullyCharged then TestEfficiencyPreserved within 24 hours
 
- FRule9 when StartMission then FinishMission within MAX_MISSION_TIME seconds
+ FRule8 when StartMission then FinishMission within MAX_MISSION_TIME seconds
  	otherwise NotifyError within  1 hours
 	unless not authorized
 
- FRule10 when OperatorInstruction then SoundWarningMessage within 1 seconds
+ FRule9 when OperatorInstruction then SoundWarningMessage within 1 seconds
  unless personNearby and distance<1 then not SprayWater within 1 seconds 
 
 rule_end

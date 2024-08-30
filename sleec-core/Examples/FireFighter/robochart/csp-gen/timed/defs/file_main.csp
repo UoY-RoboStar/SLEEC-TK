@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 11:48:33
+-- Automatically generated on 30-08-2024 18:09:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -34,6 +34,7 @@ exports
 	channel terminate
 	
 	-- Variable channels
+	channel get_charged, set_charged, setL_charged, setR_charged: core_boolean
 	channel get_person, set_person, setL_person, setR_person: core_boolean
 	channel get_wind, set_wind, setL_wind, setR_wind: windScale
 	channel get_temp, set_temp, setL_temp, setR_temp: core_real
@@ -57,6 +58,8 @@ exports
 	channel temperature: InOut.core_real
 	channel windSpeed__: NIDS.InOut.windScale
 	channel windSpeed: InOut.windScale
+	channel batteryCharged__: NIDS.InOut.core_boolean
+	channel batteryCharged: InOut.core_boolean
 	
 	-- Declaring call and ret events for undefined operations
 	
@@ -87,7 +90,8 @@ exports
 		GoHome,
 		personNearby,
 		temperature,
-		windSpeed
+		windSpeed,
+		batteryCharged
 		|}
 	
 	channel clockReset, clockResetL, clockResetR 
@@ -96,8 +100,8 @@ exports
 	
 	
 	channel get_CLID_Recording : core_clock_type 
-	channel get_CLID_Init : core_clock_type 
 	channel get_CLID_f0 : core_clock_type 
+	channel get_CLID_Init : core_clock_type 
 	--channel increment__
 	
 	CLID_Recording_clock_type(id__) = 
@@ -110,7 +114,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_Init_clock_type(id__) = 
+	CLID_f0_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -119,7 +123,7 @@ exports
 	within
 		if member(max,core_clock_type) then ctype else error("core_clock_type is not wide enough")
 	
-	CLID_f0_clock_type(id__) = 
+	CLID_Init_clock_type(id__) = 
 		let
 			max = (clock_type_max(Union({
 	{}
@@ -272,6 +276,7 @@ exports
 			channel personNearby__: NIDS.InOut.core_boolean
 			channel temperature__: NIDS.InOut.core_real
 			channel windSpeed__: NIDS.InOut.windScale
+			channel batteryCharged__: NIDS.InOut.core_boolean
 			
 			channel get_CLID_Monitoring : core_clock_type 
 			--channel increment__
@@ -524,7 +529,8 @@ exports
 						 				GoHome__.x____ <- GoHome,
 						 				personNearby__.x____ <- personNearby,
 						 				temperature__.x____ <- temperature,
-						 				windSpeed__.x____ <- windSpeed
+						 				windSpeed__.x____ <- windSpeed,
+						 				batteryCharged__.x____ <- batteryCharged
 						 				| x____ <- NIDS
 						 			]]
 						 		)
@@ -533,23 +539,25 @@ exports
 						 	)\{|get_CLID_Monitoring|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_person,setR_temp,setR_wind |} ]] 
-						  [[set_person <- setL_person,set_temp <- setL_temp,set_wind <- setL_wind]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_charged,setR_person,setR_wind,setR_temp |} ]] 
+						  [[set_charged <- setL_charged,set_person <- setL_person,set_wind <- setL_wind,set_temp <- setL_temp]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+						 			,setL_charged
 						 			,setL_person
-						 			,setL_temp
 						 			,setL_wind
-						 			,setR_person
-						 			 			,setR_temp
+						 			,setL_temp
+						 			,setR_charged
+						 			 			,setR_person
 						 			 			,setR_wind
+						 			 			,setR_temp
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_person,setL_temp,setL_wind |} ]]
-						  [[set_person <- setR_person,set_temp <- setR_temp,set_wind <- setR_wind]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_charged,setL_person,setL_wind,setL_temp |} ]]
+						  [[set_charged <- setR_charged,set_person <- setR_person,set_wind <- setR_wind,set_temp <- setR_temp]]
 						 )
-						)[[setL_person <- set_person,setL_temp <- set_temp,setL_wind <- set_wind]]
-						 [[setR_person <- set_person,setR_temp <- set_temp,setR_wind <- set_wind]]
+						)[[setL_charged <- set_charged,setL_person <- set_person,setL_wind <- set_wind,setL_temp <- set_temp]]
+						 [[setR_charged <- set_charged,setR_person <- set_person,setR_wind <- set_wind,setR_temp <- set_temp]]
 						)\union(enteredSS,{terminate}) 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -629,7 +637,8 @@ exports
 						 				GoHome__.x____ <- GoHome,
 						 				personNearby__.x____ <- personNearby,
 						 				temperature__.x____ <- temperature,
-						 				windSpeed__.x____ <- windSpeed
+						 				windSpeed__.x____ <- windSpeed,
+						 				batteryCharged__.x____ <- batteryCharged
 						 				| x____ <- NIDS
 						 			]]
 						 		)
@@ -638,23 +647,25 @@ exports
 						 	)\{|get_CLID_Monitoring|}
 						 )
 						 ))
-						  [[ share__ <- x__ | x__ <- {| share__,setR_person,setR_temp,setR_wind |} ]] 
-						  [[set_person <- setL_person,set_temp <- setL_temp,set_wind <- setL_wind]]
+						  [[ share__ <- x__ | x__ <- {| share__,setR_charged,setR_person,setR_wind,setR_temp |} ]] 
+						  [[set_charged <- setL_charged,set_person <- setL_person,set_wind <- setL_wind,set_temp <- setL_temp]]
 						 )
 						 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
+						 			,setL_charged
 						 			,setL_person
-						 			,setL_temp
 						 			,setL_wind
-						 			,setR_person
-						 			 			,setR_temp
+						 			,setL_temp
+						 			,setR_charged
+						 			 			,setR_person
 						 			 			,setR_wind
+						 			 			,setR_temp
 						 			|}) |]
 						 ((During)
-						  [[ share__ <- x__ | x__ <- {| share__,setL_person,setL_temp,setL_wind |} ]]
-						  [[set_person <- setR_person,set_temp <- setR_temp,set_wind <- setR_wind]]
+						  [[ share__ <- x__ | x__ <- {| share__,setL_charged,setL_person,setL_wind,setL_temp |} ]]
+						  [[set_charged <- setR_charged,set_person <- setR_person,set_wind <- setR_wind,set_temp <- setR_temp]]
 						 )
-						)[[setL_person <- set_person,setL_temp <- set_temp,setL_wind <- set_wind]]
-						 [[setR_person <- set_person,setR_temp <- set_temp,setR_wind <- set_wind]]
+						)[[setL_charged <- set_charged,setL_person <- set_person,setL_wind <- set_wind,setL_temp <- set_temp]]
+						 [[setR_charged <- set_charged,setR_person <- set_person,setR_wind <- set_wind,setR_temp <- set_temp]]
 						)\{terminate} 
 					)
 					During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -666,7 +677,7 @@ exports
 					Trans = share__choice(get_person?person -> TimeOut_1(
 						 (share__ -> SKIP
 						 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((SKIP ; Monitoring::enter -> SKIP))))
-						 [] dbisim((true)&(internal__!NID_Monitoring -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; Deadline(true&(share__choice(personNearby.in?person -> (SStop /\ set_person!person -> SKIP))),0);SHARE_WAIT(1) ; j0::enter -> SKIP)))
+						 [] dbisim((true)&(internal__!NID_Monitoring -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; Deadline(true&(share__choice(personNearby.in?person -> (SStop /\ set_person!person -> SKIP))),0);SHARE_WAIT(1);Deadline(true&(share__choice(batteryCharged.in?charged -> (SStop /\ set_charged!charged -> SKIP))),0) ; j0::enter -> SKIP)))
 						 [] dbisim((person)&(internal__!NID_j0 -> SKIP ;  ((Deadline(true&(share__choice(SoundAlarm.out -> SKIP)),0) ; f0::enter -> SKIP))))
 						 [] dbisim(((not (person)))&(internal__!NID_j0 -> SKIP ;  ((SKIP ; Monitoring::enter -> SKIP))))
 						 []
@@ -770,11 +781,11 @@ exports
 		
 		-- Transitions
 		Transitions(id__) = ((let
-			Trans = share__choice(get_temp?temp -> get_wind?wind -> get_CLID_Recording?Recording:CLID_Recording_clock_type(id__) -> TimeOut_1(
+			Trans = share__choice(get_CLID_Recording?Recording:CLID_Recording_clock_type(id__) -> get_charged?charged -> get_wind?wind -> get_temp?temp -> TimeOut_1(
 				 (share__ -> SKIP
 				 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((SKIP ; Init::enter -> SKIP))))
 				 [] dbisim((((wind!=windScale_strong) and (temp>35)))&(internal__!NID_Init -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; Recording::enter -> SKIP)))
-				 [] dbisim(((Recording>0))&(BatteryCritical__!NID_Recording.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; true&(share__choice(GoHome.out -> SKIP)) ; f0::enter -> SKIP)))
+				 [] dbisim((((Recording>0) and ((not (charged)))))&(BatteryCritical__!NID_Recording.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; true&(share__choice(GoHome.out -> SKIP)) ; f0::enter -> SKIP)))
 				 [] dbisim((true)&(BatteryCritical__!NID_Init.in -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; f0::enter -> SKIP)))
 				 []
 				 (interrupt -> share__choice(exit -> SKIP) ; share__choice(exited -> terminate -> SKIP))
@@ -834,17 +845,18 @@ exports
 						 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_temp <- setL_temp,set_wind <- setL_wind,Recording::entered <- Recording::enteredL]]
+						  [[Recording::entered <- Recording::enteredL,set_charged <- setL_charged,set_wind <- setL_wind,set_temp <- setL_temp]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_temp
-						 			,setL_wind
 						 			,Recording::enteredL
+						 			,setL_charged
+						 			,setL_wind
+						 			,setL_temp
 						|}) |]
 						 ((i0::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_temp,setL_wind,Recording::enteredL |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,Recording::enteredL,setL_charged,setL_wind,setL_temp |} ]]
 						 )
-						)[[setL_temp <- set_temp,setL_wind <- set_wind,Recording::enteredL <- Recording::entered]]
+						)[[Recording::enteredL <- Recording::entered,setL_charged <- set_charged,setL_wind <- set_wind,setL_temp <- set_temp]]
 						)
 					)
 					 \ hideSet)
@@ -855,7 +867,8 @@ exports
 						GoHome__.x____ <- GoHome,
 						personNearby__.x____ <- personNearby,
 						temperature__.x____ <- temperature,
-						windSpeed__.x____ <- windSpeed
+						windSpeed__.x____ <- windSpeed,
+						batteryCharged__.x____ <- batteryCharged
 						| x____ <- NIDS
 					]]
 				)
@@ -898,7 +911,8 @@ exports
 		
 		Stateful(id__) = 
 			((let
-				getsetLocalChannels = {|get_person,set_person,
+				getsetLocalChannels = {|get_charged,set_charged,
+				get_person,set_person,
 				get_wind,set_wind,
 				get_temp,set_temp|}
 				clockSync = {||}
@@ -917,18 +931,24 @@ exports
 						sbisim(
 							dbisim(
 								sbisim(
-									IteratedBehaviour(id__)
-									[| {|get_temp,set_temp,terminate|} |]
-									Memory_temp(0)
-								)\{|get_temp,set_temp|}
+									dbisim(
+										sbisim(
+											IteratedBehaviour(id__)
+											[| {|get_temp,set_temp,terminate|} |]
+											Memory_temp(0)
+										)\{|get_temp,set_temp|}
+									)
+									[| {|get_wind,set_wind,terminate|} |]
+									Memory_wind(windScale_light)
+								)\{|get_wind,set_wind|}
 							)
-							[| {|get_wind,set_wind,terminate|} |]
-							Memory_wind(windScale_light)
-						)\{|get_wind,set_wind|}
+							[| {|get_person,set_person,terminate|} |]
+							Memory_person(true)
+						)\{|get_person,set_person|}
 					)
-					[| {|get_person,set_person,terminate|} |]
-					Memory_person(true)
-				)\{|get_person,set_person|}
+					[| {|get_charged,set_charged,terminate|} |]
+					Memory_charged(true)
+				)\{|get_charged,set_charged|}
 			)
 			)
 		
@@ -975,17 +995,18 @@ exports
 						 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
 						 )
 						  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-						  [[set_temp <- setL_temp,set_wind <- setL_wind,Recording::entered <- Recording::enteredL]]
+						  [[Recording::entered <- Recording::enteredL,set_charged <- setL_charged,set_wind <- setL_wind,set_temp <- setL_temp]]
 						 )
 						 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-						 			,setL_temp
-						 			,setL_wind
 						 			,Recording::enteredL
+						 			,setL_charged
+						 			,setL_wind
+						 			,setL_temp
 						|}) |]
 						 ((i0::enter -> Transitions(id__))
-						  [[ share__ <- x__ | x__ <- {| share__,setL_temp,setL_wind,Recording::enteredL |} ]]
+						  [[ share__ <- x__ | x__ <- {| share__,Recording::enteredL,setL_charged,setL_wind,setL_temp |} ]]
 						 )
-						)[[setL_temp <- set_temp,setL_wind <- set_wind,Recording::enteredL <- Recording::entered]]
+						)[[Recording::enteredL <- Recording::entered,setL_charged <- set_charged,setL_wind <- set_wind,setL_temp <- set_temp]]
 						)
 					)
 					 \ hideSet)
@@ -996,7 +1017,8 @@ exports
 						GoHome__.x____ <- GoHome,
 						personNearby__.x____ <- personNearby,
 						temperature__.x____ <- temperature,
-						windSpeed__.x____ <- windSpeed
+						windSpeed__.x____ <- windSpeed,
+						batteryCharged__.x____ <- batteryCharged
 						| x____ <- NIDS
 					]]
 				)
@@ -1039,7 +1061,8 @@ exports
 		
 		Stateful_VS_O(id__) = 
 			dbisim((let
-				getsetLocalChannels = {|get_person,set_person,
+				getsetLocalChannels = {|get_charged,set_charged,
+				get_person,set_person,
 				get_wind,set_wind,
 				get_temp,set_temp|}
 				clockSync = {||}
@@ -1058,18 +1081,24 @@ exports
 						sbisim(
 							dbisim(
 								sbisim(
-									IteratedBehaviour_VS_O(id__)
-									[| {|get_temp,set_temp,terminate|} |]
-									Memory_temp(0)
-								)\{|get_temp,set_temp|}
+									dbisim(
+										sbisim(
+											IteratedBehaviour_VS_O(id__)
+											[| {|get_temp,set_temp,terminate|} |]
+											Memory_temp(0)
+										)\{|get_temp,set_temp|}
+									)
+									[| {|get_wind,set_wind,terminate|} |]
+									Memory_wind(windScale_light)
+								)\{|get_wind,set_wind|}
 							)
-							[| {|get_wind,set_wind,terminate|} |]
-							Memory_wind(windScale_light)
-						)\{|get_wind,set_wind|}
+							[| {|get_person,set_person,terminate|} |]
+							Memory_person(true)
+						)\{|get_person,set_person|}
 					)
-					[| {|get_person,set_person,terminate|} |]
-					Memory_person(true)
-				)\{|get_person,set_person|}
+					[| {|get_charged,set_charged,terminate|} |]
+					Memory_charged(true)
+				)\{|get_charged,set_charged|}
 			)
 			)
 		
@@ -1077,6 +1106,12 @@ exports
 		
 		-- Memory
 		-- Memory variables
+		Memory_charged(charged) =
+			get_charged!charged -> Memory_charged(charged)
+			[]
+			set_charged?x__ -> Memory_charged(x__)
+			[]
+			terminate -> SKIP
 		Memory_person(person) =
 			get_person!person -> Memory_person(person)
 			[]
@@ -1097,15 +1132,18 @@ exports
 			terminate -> SKIP
 		
 		-- varMemory process
-		varMemory(id__) = Memory_person(true)
+		varMemory(id__) = Memory_charged(true)
+		[| { terminate } |] (
+		Memory_person(true)
 		[| { terminate } |] (
 		Memory_wind(windScale_light)
 		[| { terminate } |] (
 		Memory_temp(0)
 		)
 		)
+		)
 		
-		getsetLocalChannels = {|get_person,set_person,get_wind,set_wind,get_temp,set_temp|}
+		getsetLocalChannels = {|get_charged,set_charged,get_person,set_person,get_wind,set_wind,get_temp,set_temp|}
 		
 		-- Definition of the behaviour of state machines (default, optimised, visible, visible and optimised)
 		FVS__(id__) = STM_VS_O(id__) \ localClockResets

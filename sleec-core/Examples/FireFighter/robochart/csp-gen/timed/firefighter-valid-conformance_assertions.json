@@ -1,9 +1,9 @@
 [
-{ "name": "UAV conforms to FRule2 [traces]",
+{ "name": "UAV conforms to FRule1 [traces]",
   "type": "conforms",
   "negated": false 
 },
-{ "name": "UAV conforms to FRule7 [traces]",
+{ "name": "UAV conforms to FRule6 [traces]",
   "type": "conforms",
   "negated": false 
 }

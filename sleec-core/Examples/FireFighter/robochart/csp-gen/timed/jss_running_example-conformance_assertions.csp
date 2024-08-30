@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 11:48:33
+-- Automatically generated on 30-08-2024 18:09:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -141,9 +141,9 @@ RCheck1_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
 		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
-		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart
+		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 [[				personNearby <- i_personNearby
 ]]	within
@@ -220,9 +220,9 @@ RCheck2_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
 		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
-		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart
+		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 [[				personNearby <- i_personNearby
 ]]	within
@@ -298,8 +298,8 @@ RCheck3_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 	within
 		timed_priority(
@@ -384,11 +384,11 @@ RCheck4_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
 		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
-		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart
+		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
+		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 [[				personNearby <- i_personNearby,
 				temperature <- i_temperature

@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 11:48:33
+-- Automatically generated on 30-08-2024 18:09:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -91,24 +91,25 @@ Timed(OneStep) {
 
 RCheck1_spec = 
 	let
-		-- The external 'm' channels for every measure of FRule2
-		MemoryExternalEvents = {||}
-		-- The internal 'i_m' channels for every measure of FRule2
-		MemoryInternalEvents = {||}
-		-- Events of FRule2 except for those of measures, and any unmapped SUV events:
-		CommonProvideEvents = diff(union(AFRule2,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The external 'm' channels for every measure of FRule1
+		MemoryExternalEvents = {|batteryCharged|}
+		-- The internal 'i_m' channels for every measure of FRule1
+		MemoryInternalEvents = {|i_batteryCharged|}
+		-- Events of FRule1 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule1,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
 		-- The memory process
-		Memory = TRUN(CommonProvideEvents)
+		Memory = Mem_batteryCharged(CommonProvideEvents)
 		-- Ordered reading
-		MemoryInOrder = SKIP
+		MemoryInOrder = batteryCharged?x__ -> MemoryInOrder
 		-- Mapped events
-		MappedRCEvents = {|UAV::SoundAlarm,UAV::CameraStart|}
+		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::batteryCharged|}
 		-- SLEEC rule renamed
-		Rule = SLEECFRule2
-	within
+		Rule = SLEECFRule1
+[[					batteryCharged <- i_batteryCharged
+]]	within
 		timed_priority(
 			(
-				(Rule ||| TRUN(diff(CommonProvideEvents,AFRule2)))
+				(Rule ||| TRUN(diff(CommonProvideEvents,AFRule1)))
 				[| union(CommonProvideEvents,MemoryInternalEvents) |]
 				(
 					Memory
@@ -120,18 +121,18 @@ RCheck1_spec =
 
 RCheck1_suv =
 	let
-		-- The external 'm' channels for every measure of FRule2
-		MemoryExternalEvents = {||}
-		-- The internal 'i_m' channels for every measure of FRule2
-		MemoryInternalEvents = {||}
-		-- Events of FRule2 except for those of measures, and any unmapped SUV events:
-		CommonProvideEvents = diff(union(AFRule2,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The external 'm' channels for every measure of FRule1
+		MemoryExternalEvents = {|batteryCharged|}
+		-- The internal 'i_m' channels for every measure of FRule1
+		MemoryInternalEvents = {|i_batteryCharged|}
+		-- Events of FRule1 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule1,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
 		-- The memory process
-		Memory = TRUN(CommonProvideEvents)
+		Memory = Mem_batteryCharged(CommonProvideEvents)
 		-- Ordered reading
-		MemoryInOrder = SKIP
+		MemoryInOrder = batteryCharged?x__ -> MemoryInOrder
 		-- Mapped events
-		MappedRCEvents = {|UAV::SoundAlarm,UAV::CameraStart|}
+		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::batteryCharged|}
 		-- SUV renamed
 		SUV = ((let 
 			id__ = 0
@@ -140,10 +141,12 @@ RCheck1_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
 		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
-		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart
+		UAV::batteryCharged.in <- batteryCharged,UAV::batteryCharged.out <- batteryCharged
 		]])
-	within
+[[				batteryCharged <- i_batteryCharged
+]]	within
 		timed_priority(
 			(
 				(SUV ; STOP)
@@ -167,12 +170,12 @@ Timed(OneStep) {
 
 RCheck2_spec = 
 	let
-		-- The external 'm' channels for every measure of FRule7
+		-- The external 'm' channels for every measure of FRule6
 		MemoryExternalEvents = {|personNearby,temperature|}
-		-- The internal 'i_m' channels for every measure of FRule7
+		-- The internal 'i_m' channels for every measure of FRule6
 		MemoryInternalEvents = {|i_personNearby,i_temperature|}
-		-- Events of FRule7 except for those of measures, and any unmapped SUV events:
-		CommonProvideEvents = diff(union(AFRule7,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- Events of FRule6 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule6,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
 		-- The memory process
 		Memory = (
 			Mem_personNearby(CommonProvideEvents)
@@ -184,13 +187,13 @@ RCheck2_spec =
 		-- Mapped events
 		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::temperature,UAV::BatteryCritical,UAV::personNearby|}
 		-- SLEEC rule renamed
-		Rule = SLEECFRule7
+		Rule = SLEECFRule6
 [[					personNearby <- i_personNearby,
 					temperature <- i_temperature
 ]]	within
 		timed_priority(
 			(
-				(Rule ||| TRUN(diff(CommonProvideEvents,AFRule7)))
+				(Rule ||| TRUN(diff(CommonProvideEvents,AFRule6)))
 				[| union(CommonProvideEvents,MemoryInternalEvents) |]
 				(
 					Memory
@@ -202,12 +205,12 @@ RCheck2_spec =
 
 RCheck2_suv =
 	let
-		-- The external 'm' channels for every measure of FRule7
+		-- The external 'm' channels for every measure of FRule6
 		MemoryExternalEvents = {|personNearby,temperature|}
-		-- The internal 'i_m' channels for every measure of FRule7
+		-- The internal 'i_m' channels for every measure of FRule6
 		MemoryInternalEvents = {|i_personNearby,i_temperature|}
-		-- Events of FRule7 except for those of measures, and any unmapped SUV events:
-		CommonProvideEvents = diff(union(AFRule7,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- Events of FRule6 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule6,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
 		-- The memory process
 		Memory = (
 			Mem_personNearby(CommonProvideEvents)
@@ -226,11 +229,11 @@ RCheck2_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
 		UAV::BatteryCritical.in <- BatteryCritical,UAV::BatteryCritical.out <- BatteryCritical,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
 		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
-		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby
+		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 [[				personNearby <- i_personNearby,
 				temperature <- i_temperature
