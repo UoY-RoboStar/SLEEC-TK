@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2023-2024 University of York and others
+ * Copyright (c) 2023 University of York and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -7,12 +7,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * SLEEC-TK assertions for verification of conformance of SLEEC rules in 'firefighterResolved.sleec'.
+ * Assertions used for conformance verification of SLEEC rules of the running
+ * example. These assertions can be loaded into SLEEC-TK to automatically 
+ * produce CSPM scripts suitable for verification using FDR.
+ * 
+ * To execute them, either:
+ * 
+ * 1. With the project loaded in SLEEC-TK, right-click on this file, and select `RoboTool` > `CSP` >  `Run...`.
+ * 2. Or load the file 'csp-gen/timed/jss_running_example-conformance_assertions.csp' in FDR.
+ *
  */
  
-package RConformance 
-import System       
-
+package JSSConformance 
+import System 
+   
 timed csp Instantiations associated to UAV csp-begin
 
 -- OPERATION BOUNDS
@@ -83,7 +91,8 @@ vt(x__,Time_seconds) = x__
 vt(x__,Time_minutes) = x__*60
 csp-end
             
-sleec assertion RCheck1 : UAV conforms to FRule2
-sleec assertion RCheck2 : UAV conforms to FRule7
-
+sleec assertion RCheck1 : UAV conforms to Rule1 
+sleec assertion RCheck2 : UAV conforms to Rule2 
+sleec assertion RCheck3 : UAV conforms to Rule3 
+sleec assertion RCheck4 : UAV conforms to Rule4  
                  

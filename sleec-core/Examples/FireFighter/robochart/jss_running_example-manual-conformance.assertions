@@ -14,6 +14,11 @@
  * the assertions in 'jss_conformance.assertions', taking into account the
  * automatic generation of the relevant CSPM artifacts by SLEEC-TK.
  *
+ * To execute them, either:
+ * 
+ * 1. With the project loaded in SLEEC-TK, right-click on this file, and select `RoboTool` > `CSP` >  `Run...`.
+ * 2. Or load the file 'csp-gen/timed/jss_running_example-manual-conformance_assertions.csp' in FDR.
+ *
  */
  
 package SystemAssertions 

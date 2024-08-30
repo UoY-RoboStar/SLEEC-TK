@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 11:34:33
+-- Automatically generated on 30-08-2024 11:48:33
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -11,7 +11,7 @@ include "defs/state_timed_defs.csp"
 include "defs/robochart_defs.csp"
 include "defs/core_defs.csp"
 include "defs/core_timed_defs.csp"
-include "../../src-gen/firefighterResolved.csp"
+include "../../src-gen/firefighter-valid.csp"
 include "defs/file_main_defs.csp"
 include "defs/UAV.csp"
 
@@ -140,8 +140,8 @@ RCheck1_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
+		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart
 		]])
 	within
 		timed_priority(
@@ -226,11 +226,11 @@ RCheck2_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
-		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
+		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
 		UAV::BatteryCritical.in <- BatteryCritical,UAV::BatteryCritical.out <- BatteryCritical,
-		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby
 		]])
 [[				personNearby <- i_personNearby,
 				temperature <- i_temperature

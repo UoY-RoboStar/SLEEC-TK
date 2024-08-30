@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 11:07:20
+-- Automatically generated on 30-08-2024 11:48:33
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -443,23 +443,23 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_person,setR_wind,setR_temp |} ]] 
-				  [[set_person <- setL_person,set_wind <- setL_wind,set_temp <- setL_temp]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_person,setR_temp,setR_wind |} ]] 
+				  [[set_person <- setL_person,set_temp <- setL_temp,set_wind <- setL_wind]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
 				 			,setL_person
-				 			,setL_wind
 				 			,setL_temp
+				 			,setL_wind
 				 			,setR_person
-				 			 			,setR_wind
 				 			 			,setR_temp
+				 			 			,setR_wind
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_person,setL_wind,setL_temp |} ]]
-				  [[set_person <- setR_person,set_wind <- setR_wind,set_temp <- setR_temp]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_person,setL_temp,setL_wind |} ]]
+				  [[set_person <- setR_person,set_temp <- setR_temp,set_wind <- setR_wind]]
 				 )
-				)[[setL_person <- set_person,setL_wind <- set_wind,setL_temp <- set_temp]]
-				 [[setR_person <- set_person,setR_wind <- set_wind,setR_temp <- set_temp]]
+				)[[setL_person <- set_person,setL_temp <- set_temp,setL_wind <- set_wind]]
+				 [[setR_person <- set_person,setR_temp <- set_temp,setR_wind <- set_wind]]
 				)\union(enteredSS,{terminate}) 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -542,23 +542,23 @@ exports
 				 	]]
 				 )
 				 )
-				  [[ share__ <- x__ | x__ <- {| share__,setR_person,setR_wind,setR_temp |} ]] 
-				  [[set_person <- setL_person,set_wind <- setL_wind,set_temp <- setL_temp]]
+				  [[ share__ <- x__ | x__ <- {| share__,setR_person,setR_temp,setR_wind |} ]] 
+				  [[set_person <- setL_person,set_temp <- setL_temp,set_wind <- setL_wind]]
 				 )
 				 [| union(union(enteredSS,{| interrupt, terminate |}),{|share__
 				 			,setL_person
-				 			,setL_wind
 				 			,setL_temp
+				 			,setL_wind
 				 			,setR_person
-				 			 			,setR_wind
 				 			 			,setR_temp
+				 			 			,setR_wind
 				 			|}) |]
 				 ((During)
-				  [[ share__ <- x__ | x__ <- {| share__,setL_person,setL_wind,setL_temp |} ]]
-				  [[set_person <- setR_person,set_wind <- setR_wind,set_temp <- setR_temp]]
+				  [[ share__ <- x__ | x__ <- {| share__,setL_person,setL_temp,setL_wind |} ]]
+				  [[set_person <- setR_person,set_temp <- setR_temp,set_wind <- setR_wind]]
 				 )
-				)[[setL_person <- set_person,setL_wind <- set_wind,setL_temp <- set_temp]]
-				 [[setR_person <- set_person,setR_wind <- set_wind,setR_temp <- set_temp]]
+				)[[setL_person <- set_person,setL_temp <- set_temp,setL_wind <- set_wind]]
+				 [[setR_person <- set_person,setR_temp <- set_temp,setR_wind <- set_wind]]
 				)\{terminate} 
 			)
 			During 		= share__choice(([] e__ : enteredSS @ e__ -> SKIP))
@@ -657,7 +657,7 @@ exports
 	
 	-- Transitions
 	Transitions(id__) = ((let
-		Trans = share__choice(get_wind?wind -> get_temp?temp -> (
+		Trans = share__choice(get_temp?temp -> get_wind?wind -> (
 			((share__ -> SKIP
 			 [] dbisim((true)&(internal__!NID_i0 -> SKIP ;  ((SKIP ; Init::enter -> SKIP))))
 			 	 [] dbisim((((wind!=windScale_strong) and (temp>35)))&(internal__!NID_Init -> SKIP ;  share__choice(exit -> SKIP) ; (share__choice(exited -> SKIP) ; SKIP ; Recording::enter -> SKIP)))
@@ -721,16 +721,16 @@ exports
 					 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_wind <- setL_wind,set_temp <- setL_temp]]
+					  [[set_temp <- setL_temp,set_wind <- setL_wind]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_wind
 					 			,setL_temp
+					 			,setL_wind
 					|}) |]
 					 ((i0::enter -> Transitions(id__))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_wind,setL_temp |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__,setL_temp,setL_wind |} ]]
 					 )
-					)[[setL_wind <- set_wind,setL_temp <- set_temp]]
+					)[[setL_temp <- set_temp,setL_wind <- set_wind]]
 					)
 				)
 				 \ hideSet)
@@ -829,16 +829,16 @@ exports
 					 [[i0::interrupt <- x__ | x__ <- {|internal__.NID_i0|}]]
 					 )
 					  [[ share__ <- x__ | x__ <- {| share__ |} ]] 
-					  [[set_wind <- setL_wind,set_temp <- setL_temp]]
+					  [[set_temp <- setL_temp,set_wind <- setL_wind]]
 					 )
 					 [| union(union(union(flowevts,transSync),{terminate}),{|share__
-					 			,setL_wind
 					 			,setL_temp
+					 			,setL_wind
 					|}) |]
 					 ((i0::enter -> Transitions(id__))
-					  [[ share__ <- x__ | x__ <- {| share__,setL_wind,setL_temp |} ]]
+					  [[ share__ <- x__ | x__ <- {| share__,setL_temp,setL_wind |} ]]
 					 )
-					)[[setL_wind <- set_wind,setL_temp <- set_temp]]
+					)[[setL_temp <- set_temp,setL_wind <- set_wind]]
 					)
 				)
 				 \ hideSet)

@@ -1,7 +1,7 @@
 -- ASSERTIONS --
 include "tick-tock.csp"
 include "instantiations.csp"
-include "firefighterResolved.csp"			
+include "firefighter-valid.csp"			
 Timed(OneStep) {
 
 -- Checking FRule1 with FRule2:
