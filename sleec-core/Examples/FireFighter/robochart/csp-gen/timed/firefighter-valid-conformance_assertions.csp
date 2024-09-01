@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 18:09:19
+-- Automatically generated on 01-09-2024 14:23:25
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -141,9 +141,9 @@ RCheck1_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
 		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
-		UAV::batteryCharged.in <- batteryCharged,UAV::batteryCharged.out <- batteryCharged
+		UAV::batteryCharged.in <- batteryCharged,UAV::batteryCharged.out <- batteryCharged,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
 		]])
 [[				batteryCharged <- i_batteryCharged
 ]]	within
@@ -229,11 +229,11 @@ RCheck2_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
 		UAV::BatteryCritical.in <- BatteryCritical,UAV::BatteryCritical.out <- BatteryCritical,
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
 		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
 		]])
 [[				personNearby <- i_personNearby,
 				temperature <- i_temperature

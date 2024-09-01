@@ -1,7 +1,7 @@
 
 --
 -- RoboChart generator version 3.0.0.202401231330
--- Automatically generated on 30-08-2024 18:09:19
+-- Automatically generated on 01-09-2024 15:20:19
 --
 -- Iterated compression status: true
 -- Assertions compression status: false
@@ -141,8 +141,8 @@ RCheck1_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
 		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
 		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 [[				personNearby <- i_personNearby
@@ -220,8 +220,8 @@ RCheck2_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
 		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
 		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
 		]])
 [[				personNearby <- i_personNearby
@@ -298,8 +298,8 @@ RCheck3_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
 		]])
 	within
 		timed_priority(
@@ -384,11 +384,11 @@ RCheck4_suv =
 			
 		within
 			UAV::D__(id__)\{|UAV::terminate|})[[
-		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
 		UAV::CameraStart.in <- CameraStart,UAV::CameraStart.out <- CameraStart,
-		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome,
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
 		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
-		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
 		]])
 [[				personNearby <- i_personNearby,
 				temperature <- i_temperature

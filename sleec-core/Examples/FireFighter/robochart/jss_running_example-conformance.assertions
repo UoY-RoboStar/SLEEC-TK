@@ -91,7 +91,7 @@ vt(x__,Time_seconds) = x__
 vt(x__,Time_minutes) = x__*60
 csp-end 
 
-timed sleec assertion RCheck1 : UAV conforms to Rule1 
+timed sleec assertion RCheck1 : UAV conforms to Rule1  
 timed sleec assertion RCheck2 : UAV conforms to Rule2 
 timed sleec assertion RCheck3 : UAV conforms to Rule3 
 timed sleec assertion RCheck4 : UAV conforms to Rule4  

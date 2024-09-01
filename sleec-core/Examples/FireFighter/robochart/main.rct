@@ -35,7 +35,8 @@ enumeration windScale { light moderate strong } enumeration Time { seconds minut
 			action  
 		
 		
-		personNearby ? person <{ 0 } ; wait ( 1 ) ; batteryCharged ? charged <{ 0 }
+		
+		personNearby ? person <{ 0 } ; batteryCharged ? charged <{ 0 }
 		}
 		transition t2 {
 			from j0
@@ -49,7 +50,9 @@ enumeration windScale { light moderate strong } enumeration Time { seconds minut
 		transition t3 {
 			from j0
 			to Monitoring
-			condition not person
+			condition 
+		not person
+			action wait ( 1 )
 		}
 	}
 	final f0
