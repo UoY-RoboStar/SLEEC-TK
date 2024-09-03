@@ -10,8 +10,9 @@
     <semanticResources>system.rct</semanticResources>
     <semanticResources>common.rct</semanticResources>
     <semanticResources>system.assertions</semanticResources>
-    <semanticResources>carebot.assertions</semanticResources>
-    <semanticResources>carebot-refined.assertions</semanticResources>
+    <semanticResources>CAREBOT-valid.sleec</semanticResources>
+    <semanticResources>carebot-conformance-all.assertions</semanticResources>
+    <semanticResources>carebot-conformance-verification.assertions</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" uid="_g6DxcHfMEe2I4-b3ZWmElA">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']"/>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_0svGQKMEEe2Oz68xJ2Ku6Q" name="common" repPath="#_0st4IKMEEe2Oz68xJ2Ku6Q" changeId="e8911939-5eb7-4bec-bcb4-ac365decb3f0">
