@@ -6,4 +6,5 @@ a RoboChart model and SLEEC rules, that can be analysed by importing into SLEEC-
 * `firefighter-initial.sleec`: initial elicited SLEEC rules.
 * `firefighter-valid.sleec`: valid set of SLEEC rules after analysis.
 * `robochart`: Eclipse project containing a RoboChart model and the relevant `.sleec` files for analysis,
-   including conformance verification as specified in `.assertions` files.
+   including conformance verification as specified in `.assertions` files.  In particular, conformance
+   verification is specified in file whose names contain the word `conformance`.
