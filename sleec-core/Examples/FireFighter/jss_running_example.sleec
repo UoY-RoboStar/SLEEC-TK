@@ -1,3 +1,15 @@
+/********************************************************************************
+ * Copyright (c) 2023 University of York and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * SLEEC rules of the running example presented in the paper.
+ */
+
 def_start
 	event BatteryCritical
 	event CameraStart
@@ -19,8 +31,28 @@ rule_start
 	//legal
 	Rule3 when SoundAlarm
 		then not GoHome within 5 minutes
-	//emphatatic
+	//emphatetic
 	Rule4 when CameraStart then SoundAlarm
 		unless personNearby then GoHome
 		unless temperature > 35	
+		
+	Rule2_a when CameraStart and personNearby 
+          then SoundAlarm within 2 seconds 
+          otherwise GoHome		
+          
+    Rule4_a when CameraStart then SoundAlarm 
+          unless personNearby then GoHome
+    
+    RuleA when BatteryCritical and temperature < 25 
+        then GoHome within 1 minutes
+        
+    RuleC when BatteryCritical 
+        then CameraStart
+        unless personNearby then GoHome 
+        unless temperature > 35 then SoundAlarm
+
+  	RuleD when BatteryCritical
+        then CameraStart
+        unless personNearby then SoundAlarm 
+        unless temperature > 35 then GoHome
 rule_end

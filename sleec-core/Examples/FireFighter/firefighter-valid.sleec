@@ -1,0 +1,68 @@
+/********************************************************************************
+ * Copyright (c) 2023 University of York and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Set of valid SLEEC rules for the Firefighting UAV example after analysis.
+ */
+ 
+def_start
+  event CameraStart
+  measure personNearby:boolean
+  event GoHome
+  measure temperature:numeric
+  event BatteryCritical
+  event SprayWater
+  measure detectPersonFallen:boolean
+  event SeekHelp
+  measure humanDetected:boolean
+  measure animalDetected:boolean
+  event RemainAnonymous
+  event ReportLocation
+  constant MAX_TEMPERATURE=30
+  event FullyCharged
+  event TestEfficiencyPreserved
+  event StartMission
+  event FinishMission
+  constant MAX_MISSION_TIME=60
+  event NotifyError
+  measure authorized:boolean
+  event OperatorInstruction
+  event SoundWarningMessage
+  measure distance:numeric
+  event SoundAlarm
+  measure batteryFull:boolean
+  event BatteryAlarmandGoHome
+def_end
+
+rule_start
+ 
+ Rule1 when SoundAlarm and batteryFull 
+      then not GoHome within 5 minutes 
+    
+ Rule2 when BatteryCritical 
+ then BatteryAlarmandGoHome within 5 minutes
+
+ Rule3 when StartMission and detectPersonFallen
+ then SeekHelp within 5 seconds
+
+ Rule4 when CameraStart and humanDetected then RemainAnonymous
+ Rule5 when CameraStart and animalDetected or humanDetected then ReportLocation
+ 
+ Rule6 when BatteryCritical then GoHome
+	unless personNearby and temperature >  MAX_TEMPERATURE 
+   	then SoundAlarm
+ Rule7 when FullyCharged then TestEfficiencyPreserved within 24 hours
+
+ Rule8 when StartMission then FinishMission within MAX_MISSION_TIME seconds
+ 	otherwise NotifyError within  1 hours
+	unless not authorized
+
+ Rule9 when OperatorInstruction then SoundWarningMessage within 1 seconds
+ unless personNearby and distance<1 then not SprayWater within 1 seconds 
+
+rule_end
