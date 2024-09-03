@@ -31,7 +31,7 @@ rule_start
 	//legal
 	Rule3 when SoundAlarm
 		then not GoHome within 5 minutes
-	//emphatatic
+	//emphatetic
 	Rule4 when CameraStart then SoundAlarm
 		unless personNearby then GoHome
 		unless temperature > 35	
