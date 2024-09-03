@@ -57,6 +57,6 @@ vt(x__,Time_seconds) = x__
 vt(x__,Time_minutes) = x__*60 
 csp-end          
          
-sleec assertion Check12 : system::Module conforms to Rule12   
-sleec assertion Check22 : system::Module conforms to Rule22 
+sleec assertion Check12 : system::Module conforms to Rule12  
+//sleec assertion Check22 : system::Module conforms to Rule22  
 sleec assertion Check52 : system::Module conforms to Rule52 

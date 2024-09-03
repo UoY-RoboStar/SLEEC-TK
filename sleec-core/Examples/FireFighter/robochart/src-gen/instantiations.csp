@@ -1,0 +1,4 @@
+-- This file contains user-adjustable parameters for model-checking.
+
+-- core_int : the domain of the numeric type.
+nametype core_int = { -2..36}

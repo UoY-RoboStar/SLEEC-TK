@@ -1,0 +1,97 @@
+/********************************************************************************
+ * Copyright (c) 2023 University of York and others
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Set of initial SLEEC rules elicited for the Firefighting UAV example.
+ */
+ 
+def_start
+  event CameraStart
+  measure personNearby:boolean
+  event SoundAlarm
+  event GoHome
+  measure temperature:numeric
+  event BatteryCritical
+  event A
+  event SprayWater
+  measure sprayPressure:numeric
+  event InformBystanderAndSprayWater
+  measure detectPersonFallen:boolean
+  event SeekHelp
+  measure humanDetected:boolean
+  measure animalDetected:boolean
+  event RemainAnonymous
+  event ReportLocation
+  constant MAX_TEMPERATURE=30
+  event FullyCharged
+  event TestEfficiencyPreserved
+  event StartMission
+  event FinishMission
+  constant MAX_MISSION_TIME=60
+  event NotifyError
+  measure authorized:boolean
+  event OperatorInstruction
+  event SoundWarning
+  measure distance:numeric
+def_end
+
+rule_start
+  //Expertise: Engineering, Law
+  Rule1 when CameraStart and personNearby 
+        then SoundAlarm
+  
+  Rule2 when CameraStart and personNearby 
+        then SoundAlarm within 2 seconds
+  
+  Rule3 when SoundAlarm
+        then not GoHome within 5 minutes 
+  
+  Rule4 when CameraStart then SoundAlarm 
+        unless personNearby then GoHome
+        unless temperature > 35 
+
+  //Expertise: Moral Psychology, Law
+  Rule5 when BatteryCritical then SoundAlarm unless personNearby then GoHome unless temperature > 50 then SoundAlarm
+  Rule6 when A and temperature > 50 and personNearby then not CameraStart within 5 minutes
+  	unless temperature > 60 
+  Rule7 when A and temperature > 60 then SprayWater unless personNearby and sprayPressure > 100 then InformBystanderAndSprayWater within 45 seconds
+	
+  //Expertise: Ethics
+  Rule8 when BatteryCritical 
+  then SoundAlarm within 10 seconds 
+  	unless personNearby 
+  then not SoundAlarm within 10 seconds
+
+  Rule9 when BatteryCritical 
+  then GoHome within 5 minutes
+  	unless personNearby and temperature > 40 
+  then SoundAlarm within 10 seconds
+
+  Rule10 when BatteryCritical 
+  then GoHome within 5 minutes
+  	unless detectPersonFallen
+  then SeekHelp within 5 seconds
+ 
+  //Expertise: Psychology and Ethics
+  Rule11 when CameraStart and humanDetected then RemainAnonymous
+  Rule12 when CameraStart and animalDetected or humanDetected then ReportLocation
+ 
+  //Expertise: Computer Science
+  Rule13 when BatteryCritical then GoHome
+	unless personNearby and temperature >  MAX_TEMPERATURE 
+  then SoundAlarm
+  Rule14 when FullyCharged then TestEfficiencyPreserved within 24 hours
+  Rule15 when StartMission then FinishMission within MAX_MISSION_TIME seconds
+  otherwise NotifyError within  1 hours
+  	unless not authorized 
+
+  //Expertise: Law and Ethics
+  Rule16 when OperatorInstruction and personNearby and distance<1 then not SprayWater within 3 seconds // no measure for within about meters : property stakeholders want to spesicy
+  Rule17 when OperatorInstruction then SoundWarning within 1 seconds
+
+rule_end

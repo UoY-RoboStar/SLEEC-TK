@@ -7,11 +7,13 @@ interface Capabilities {
 	event personNearby : boolean
 	event temperature : real
 	event windSpeed : windScale
+	event batteryCharged : boolean
 }
 
 enumeration windScale { light moderate strong } enumeration Time { seconds minutes } 
  stm UAV {
-	uses Capabilities var person : boolean, wind : windScale, temp:real
+	uses Capabilities 
+	var charged : boolean, person : boolean, wind : windScale, temp:real
 
 	initial i0
 	state Init {
@@ -31,7 +33,10 @@ enumeration windScale { light moderate strong } enumeration Time { seconds minut
 			from Monitoring
 			to j0
 			action  
-		personNearby ? person <{ 0 } ; wait ( 1 )
+		
+		
+		
+		personNearby ? person <{ 0 } ; batteryCharged ? charged <{ 0 }
 		}
 		transition t2 {
 			from j0
@@ -45,7 +50,9 @@ enumeration windScale { light moderate strong } enumeration Time { seconds minut
 		transition t3 {
 			from j0
 			to Monitoring
-			condition not person
+			condition 
+		not person
+			action wait ( 1 )
 		}
 	}
 	final f0
@@ -65,8 +72,10 @@ enumeration windScale { light moderate strong } enumeration Time { seconds minut
 		
 		
 		
+		
+		
 		BatteryCritical
-		condition sinceEntry ( Recording ) > 0
+		condition sinceEntry ( Recording ) > 0 /\ (not charged)
 		action GoHome
 	}
 	transition t3 {
@@ -74,7 +83,8 @@ enumeration windScale { light moderate strong } enumeration Time { seconds minut
 		to f0
 		trigger 
 		
-		BatteryCritical
+		
+	BatteryCritical
 	}
 }
 

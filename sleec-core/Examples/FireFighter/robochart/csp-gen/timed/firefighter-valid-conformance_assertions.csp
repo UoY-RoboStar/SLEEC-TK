@@ -1,0 +1,256 @@
+
+--
+-- RoboChart generator version 3.0.0.202401231330
+-- Automatically generated on 01-09-2024 14:23:25
+--
+-- Iterated compression status: true
+-- Assertions compression status: false
+--
+
+include "defs/state_timed_defs.csp"
+include "defs/robochart_defs.csp"
+include "defs/core_defs.csp"
+include "defs/core_timed_defs.csp"
+include "../../src-gen/firefighter-valid.csp"
+include "defs/file_main_defs.csp"
+include "defs/UAV.csp"
+
+channel r__
+
+-- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+-- generate nat
+nametype core_nat = { 0..2}
+-- generate int
+nametype core_int = { -2..36}
+-- generate string
+nametype core_string = LSeq(Char,2)
+-- generate boolean
+nametype core_boolean = Bool
+-- generate real
+nametype core_real = union({ -2..2},TemperatureRange) 
+
+-- Change the value below if needed.
+nametype TemperatureRange = { -2..36}
+-- VECTOR TYPES AND OPERATIONS
+ 
+
+-- CLOCKS
+-- generate core_clock_type
+nametype core_clock_type = {0..301}
+
+-- generate const_UAV_poll
+const_UAV_poll = 1
+
+-- generate const_UAV_goHomeDelay
+const_UAV_goHomeDelay = 2
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+
+-- generate const_UAV_init
+const_UAV_init = 1
+
+-- BASIC FUNCTIONS			
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+
+-- generate vt
+vt(x__,Time_seconds) = x__
+vt(x__,Time_minutes) = x__*60
+
+-- Datatype mappings
+
+-- Specification
+Timed(OneStep) {
+
+RCheck1_spec = 
+	let
+		-- The external 'm' channels for every measure of FRule1
+		MemoryExternalEvents = {|batteryCharged|}
+		-- The internal 'i_m' channels for every measure of FRule1
+		MemoryInternalEvents = {|i_batteryCharged|}
+		-- Events of FRule1 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule1,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = Mem_batteryCharged(CommonProvideEvents)
+		-- Ordered reading
+		MemoryInOrder = batteryCharged?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::batteryCharged|}
+		-- SLEEC rule renamed
+		Rule = SLEECFRule1
+[[					batteryCharged <- i_batteryCharged
+]]	within
+		timed_priority(
+			(
+				(Rule ||| TRUN(diff(CommonProvideEvents,AFRule1)))
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+RCheck1_suv =
+	let
+		-- The external 'm' channels for every measure of FRule1
+		MemoryExternalEvents = {|batteryCharged|}
+		-- The internal 'i_m' channels for every measure of FRule1
+		MemoryInternalEvents = {|i_batteryCharged|}
+		-- Events of FRule1 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule1,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = Mem_batteryCharged(CommonProvideEvents)
+		-- Ordered reading
+		MemoryInOrder = batteryCharged?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::batteryCharged|}
+		-- SUV renamed
+		SUV = ((let 
+			id__ = 0
+			
+			
+			
+		within
+			UAV::D__(id__)\{|UAV::terminate|})[[
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
+		UAV::batteryCharged.in <- batteryCharged,UAV::batteryCharged.out <- batteryCharged,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
+		]])
+[[				batteryCharged <- i_batteryCharged
+]]	within
+		timed_priority(
+			(
+				(SUV ; STOP)
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+}
+
+assert RCheck1_spec [T= RCheck1_suv
+
+-- Datatype mappings
+
+-- Specification
+Timed(OneStep) {
+
+RCheck2_spec = 
+	let
+		-- The external 'm' channels for every measure of FRule6
+		MemoryExternalEvents = {|personNearby,temperature|}
+		-- The internal 'i_m' channels for every measure of FRule6
+		MemoryInternalEvents = {|i_personNearby,i_temperature|}
+		-- Events of FRule6 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule6,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = (
+			Mem_personNearby(CommonProvideEvents)
+			[| CommonProvideEvents |] 
+			Mem_temperature(CommonProvideEvents)
+		)
+		-- Ordered reading
+		MemoryInOrder = personNearby?x__ -> temperature?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::temperature,UAV::BatteryCritical,UAV::personNearby|}
+		-- SLEEC rule renamed
+		Rule = SLEECFRule6
+[[					personNearby <- i_personNearby,
+					temperature <- i_temperature
+]]	within
+		timed_priority(
+			(
+				(Rule ||| TRUN(diff(CommonProvideEvents,AFRule6)))
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+RCheck2_suv =
+	let
+		-- The external 'm' channels for every measure of FRule6
+		MemoryExternalEvents = {|personNearby,temperature|}
+		-- The internal 'i_m' channels for every measure of FRule6
+		MemoryInternalEvents = {|i_personNearby,i_temperature|}
+		-- Events of FRule6 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(AFRule6,diff(UAV::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = (
+			Mem_personNearby(CommonProvideEvents)
+			[| CommonProvideEvents |] 
+			Mem_temperature(CommonProvideEvents)
+		)
+		-- Ordered reading
+		MemoryInOrder = personNearby?x__ -> temperature?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|UAV::SoundAlarm,UAV::GoHome,UAV::temperature,UAV::BatteryCritical,UAV::personNearby|}
+		-- SUV renamed
+		SUV = ((let 
+			id__ = 0
+			
+			
+			
+		within
+			UAV::D__(id__)\{|UAV::terminate|})[[
+		UAV::SoundAlarm.in <- SoundAlarm,UAV::SoundAlarm.out <- SoundAlarm,
+		UAV::BatteryCritical.in <- BatteryCritical,UAV::BatteryCritical.out <- BatteryCritical,
+		UAV::temperature.in <- temperature,UAV::temperature.out <- temperature,
+		UAV::personNearby.in <- personNearby,UAV::personNearby.out <- personNearby,
+		UAV::GoHome.in <- GoHome,UAV::GoHome.out <- GoHome
+		]])
+[[				personNearby <- i_personNearby,
+				temperature <- i_temperature
+]]	within
+		timed_priority(
+			(
+				(SUV ; STOP)
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+}
+
+assert RCheck2_spec [T= RCheck2_suv
+

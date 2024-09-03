@@ -1,0 +1,2987 @@
+-- ASSERTIONS --
+include "tick-tock.csp"
+include "instantiations.csp"
+include "jss_running_example.csp"			
+Timed(OneStep) {
+
+-- Checking Rule1 with Rule2:
+intersectionRule1Rule2 = 
+  let
+EnvRule1Rule2 = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, personNearby, SoundAlarm|}),{|personNearby|})|]Rule2)
+  [| {|personNearby|} |]
+  	EnvRule1Rule2
+  SLEECRule1Rule2 = timed_priority(intersectionRule1Rule2)
+					
+  assert SLEECRule1Rule2:[deadlock-free]					
+  			
+  SLEECRule1Rule2CF   = prioritise(
+  	timed_priority(intersectionRule1Rule2)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1Rule2CF  :[divergence-free]
+  
+Rule1_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (Rule1 or Rule2)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule1 or Rule2)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule1 and Rule2
+CommonEvents = union(ARule1,ARule2)
+-- Common events of Rule1 and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule1 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule2_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (Rule2 or Rule1)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2 or Rule1)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2 and Rule1
+CommonEvents = union(ARule2,ARule1)
+-- Common events of Rule2 and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule1_wrt_Rule2 [T= Rule2_wrt_Rule1 
+assert not Rule2_wrt_Rule1 [T= Rule1_wrt_Rule2 
+
+-- Checking Rule1 with Rule3:
+intersectionRule1Rule3 = 
+  let
+EnvRule1Rule3 = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|GoHome, SoundAlarm|}),{|personNearby|})|]Rule3)
+  [| {|personNearby|} |]
+  	EnvRule1Rule3
+  SLEECRule1Rule3 = timed_priority(intersectionRule1Rule3)
+					
+  assert SLEECRule1Rule3:[deadlock-free]					
+  			
+  SLEECRule1Rule3CF   = prioritise(
+  	timed_priority(intersectionRule1Rule3)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1Rule3CF  :[divergence-free]
+  
+Rule1_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (Rule1 or Rule3)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule1 or Rule3)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule1 and Rule3
+CommonEvents = union(ARule1,ARule3)
+-- Common events of Rule1 and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule1 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule3_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (Rule3 or Rule1)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule3 or Rule1)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule3 and Rule1
+CommonEvents = union(ARule3,ARule1)
+-- Common events of Rule3 and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule3 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule1_wrt_Rule3 [T= Rule3_wrt_Rule1 
+assert not Rule3_wrt_Rule1 [T= Rule1_wrt_Rule3 
+
+-- Checking Rule1 with Rule4:
+intersectionRule1Rule4 = 
+  let
+    EnvRule1Rule4 = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}),{|personNearby,temperature|})|]Rule4)
+  [| {|personNearby,temperature|} |]
+  	EnvRule1Rule4
+  SLEECRule1Rule4 = timed_priority(intersectionRule1Rule4)
+					
+  assert SLEECRule1Rule4:[deadlock-free]					
+  			
+  SLEECRule1Rule4CF   = prioritise(
+  	timed_priority(intersectionRule1Rule4)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1Rule4CF  :[divergence-free]
+  
+Rule1_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (Rule1 or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule1 or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule1 and Rule4
+CommonEvents = union(ARule1,ARule4)
+-- Common events of Rule1 and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule1[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+Rule4_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (Rule4 or Rule1)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or Rule1)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and Rule1
+CommonEvents = union(ARule4,ARule1)
+-- Common events of Rule4 and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule1_wrt_Rule4 [T= Rule4_wrt_Rule1 
+assert not Rule4_wrt_Rule1 [T= Rule1_wrt_Rule4 
+
+-- Checking Rule1 with Rule2_a:
+intersectionRule1Rule2_a = 
+  let
+EnvRule1Rule2_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule2_a)
+  [| {|personNearby|} |]
+  	EnvRule1Rule2_a
+  SLEECRule1Rule2_a = timed_priority(intersectionRule1Rule2_a)
+					
+  assert SLEECRule1Rule2_a:[deadlock-free]					
+  			
+  SLEECRule1Rule2_aCF   = prioritise(
+  	timed_priority(intersectionRule1Rule2_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1Rule2_aCF  :[divergence-free]
+  
+Rule1_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (Rule1 or Rule2_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule1 or Rule2_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule1 and Rule2_a
+CommonEvents = union(ARule1,ARule2_a)
+-- Common events of Rule1 and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule1 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule2_a_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (Rule2_a or Rule1)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2_a or Rule1)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2_a and Rule1
+CommonEvents = union(ARule2_a,ARule1)
+-- Common events of Rule2_a and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule1_wrt_Rule2_a [T= Rule2_a_wrt_Rule1 
+assert not Rule2_a_wrt_Rule1 [T= Rule1_wrt_Rule2_a 
+
+-- Checking Rule1 with Rule4_a:
+intersectionRule1Rule4_a = 
+  let
+EnvRule1Rule4_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule4_a)
+  [| {|personNearby|} |]
+  	EnvRule1Rule4_a
+  SLEECRule1Rule4_a = timed_priority(intersectionRule1Rule4_a)
+					
+  assert SLEECRule1Rule4_a:[deadlock-free]					
+  			
+  SLEECRule1Rule4_aCF   = prioritise(
+  	timed_priority(intersectionRule1Rule4_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1Rule4_aCF  :[divergence-free]
+  
+Rule1_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (Rule1 or Rule4_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule1 or Rule4_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule1 and Rule4_a
+CommonEvents = union(ARule1,ARule4_a)
+-- Common events of Rule1 and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule1 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule4_a_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (Rule4_a or Rule1)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule4_a or Rule1)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule4_a and Rule1
+CommonEvents = union(ARule4_a,ARule1)
+-- Common events of Rule4_a and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule4_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule1_wrt_Rule4_a [T= Rule4_a_wrt_Rule1 
+assert not Rule4_a_wrt_Rule1 [T= Rule1_wrt_Rule4_a 
+
+-- Checking Rule1 with RuleC:
+intersectionRule1RuleC = 
+  let
+    EnvRule1RuleC = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleC)
+  [| {|personNearby,temperature|} |]
+  	EnvRule1RuleC
+  SLEECRule1RuleC = timed_priority(intersectionRule1RuleC)
+					
+  assert SLEECRule1RuleC:[deadlock-free]					
+  			
+  SLEECRule1RuleCCF   = prioritise(
+  	timed_priority(intersectionRule1RuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1RuleCCF  :[divergence-free]
+  
+Rule1_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (Rule1 or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule1 or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule1 and RuleC
+CommonEvents = union(ARule1,ARuleC)
+-- Common events of Rule1 and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule1[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (RuleC or Rule1)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or Rule1)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and Rule1
+CommonEvents = union(ARuleC,ARule1)
+-- Common events of RuleC and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule1_wrt_RuleC [T= RuleC_wrt_Rule1 
+assert not RuleC_wrt_Rule1 [T= Rule1_wrt_RuleC 
+
+-- Checking Rule1 with RuleD:
+intersectionRule1RuleD = 
+  let
+    EnvRule1RuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule1[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRule1RuleD
+  SLEECRule1RuleD = timed_priority(intersectionRule1RuleD)
+					
+  assert SLEECRule1RuleD:[deadlock-free]					
+  			
+  SLEECRule1RuleDCF   = prioritise(
+  	timed_priority(intersectionRule1RuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule1RuleDCF  :[divergence-free]
+  
+Rule1_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (Rule1 or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule1 or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule1 and RuleD
+CommonEvents = union(ARule1,ARuleD)
+-- Common events of Rule1 and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule1[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule1,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_Rule1 =
+let
+-- The external 'm' channels for every measure of (RuleD or Rule1)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or Rule1)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and Rule1
+CommonEvents = union(ARuleD,ARule1)
+-- Common events of RuleD and Rule1, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule1_wrt_RuleD [T= RuleD_wrt_Rule1 
+assert not RuleD_wrt_Rule1 [T= Rule1_wrt_RuleD 
+
+-- Checking Rule2 with Rule3:
+intersectionRule2Rule3 = 
+  let
+EnvRule2Rule3 = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule2[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|GoHome, SoundAlarm|}),{|personNearby|})|]Rule3)
+  [| {|personNearby|} |]
+  	EnvRule2Rule3
+  SLEECRule2Rule3 = timed_priority(intersectionRule2Rule3)
+					
+  assert SLEECRule2Rule3:[deadlock-free]					
+  			
+  SLEECRule2Rule3CF   = prioritise(
+  	timed_priority(intersectionRule2Rule3)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2Rule3CF  :[divergence-free]
+  
+Rule2_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (Rule2 or Rule3)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2 or Rule3)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2 and Rule3
+CommonEvents = union(ARule2,ARule3)
+-- Common events of Rule2 and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule3_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (Rule3 or Rule2)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule3 or Rule2)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule3 and Rule2
+CommonEvents = union(ARule3,ARule2)
+-- Common events of Rule3 and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule3 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule2_wrt_Rule3 [T= Rule3_wrt_Rule2 
+assert not Rule3_wrt_Rule2 [T= Rule2_wrt_Rule3 
+
+-- Checking Rule2 with Rule4:
+intersectionRule2Rule4 = 
+  let
+    EnvRule2Rule4 = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule2[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}),{|personNearby,temperature|})|]Rule4)
+  [| {|personNearby,temperature|} |]
+  	EnvRule2Rule4
+  SLEECRule2Rule4 = timed_priority(intersectionRule2Rule4)
+					
+  assert SLEECRule2Rule4:[deadlock-free]					
+  			
+  SLEECRule2Rule4CF   = prioritise(
+  	timed_priority(intersectionRule2Rule4)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2Rule4CF  :[divergence-free]
+  
+Rule2_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (Rule2 or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2 or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2 and Rule4
+CommonEvents = union(ARule2,ARule4)
+-- Common events of Rule2 and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+Rule4_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (Rule4 or Rule2)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or Rule2)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and Rule2
+CommonEvents = union(ARule4,ARule2)
+-- Common events of Rule4 and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule2_wrt_Rule4 [T= Rule4_wrt_Rule2 
+assert not Rule4_wrt_Rule2 [T= Rule2_wrt_Rule4 
+
+-- Checking Rule2 with Rule2_a:
+intersectionRule2Rule2_a = 
+  let
+EnvRule2Rule2_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule2[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule2_a)
+  [| {|personNearby|} |]
+  	EnvRule2Rule2_a
+  SLEECRule2Rule2_a = timed_priority(intersectionRule2Rule2_a)
+					
+  assert SLEECRule2Rule2_a:[deadlock-free]					
+  			
+  SLEECRule2Rule2_aCF   = prioritise(
+  	timed_priority(intersectionRule2Rule2_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2Rule2_aCF  :[divergence-free]
+  
+Rule2_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (Rule2 or Rule2_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2 or Rule2_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2 and Rule2_a
+CommonEvents = union(ARule2,ARule2_a)
+-- Common events of Rule2 and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule2_a_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (Rule2_a or Rule2)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2_a or Rule2)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2_a and Rule2
+CommonEvents = union(ARule2_a,ARule2)
+-- Common events of Rule2_a and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule2_wrt_Rule2_a [T= Rule2_a_wrt_Rule2 
+assert not Rule2_a_wrt_Rule2 [T= Rule2_wrt_Rule2_a 
+
+-- Checking Rule2 with Rule4_a:
+intersectionRule2Rule4_a = 
+  let
+EnvRule2Rule4_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule2[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule4_a)
+  [| {|personNearby|} |]
+  	EnvRule2Rule4_a
+  SLEECRule2Rule4_a = timed_priority(intersectionRule2Rule4_a)
+					
+  assert SLEECRule2Rule4_a:[deadlock-free]					
+  			
+  SLEECRule2Rule4_aCF   = prioritise(
+  	timed_priority(intersectionRule2Rule4_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2Rule4_aCF  :[divergence-free]
+  
+Rule2_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (Rule2 or Rule4_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2 or Rule4_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2 and Rule4_a
+CommonEvents = union(ARule2,ARule4_a)
+-- Common events of Rule2 and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule4_a_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (Rule4_a or Rule2)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule4_a or Rule2)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule4_a and Rule2
+CommonEvents = union(ARule4_a,ARule2)
+-- Common events of Rule4_a and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule4_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule2_wrt_Rule4_a [T= Rule4_a_wrt_Rule2 
+assert not Rule4_a_wrt_Rule2 [T= Rule2_wrt_Rule4_a 
+
+-- Checking Rule2 with RuleC:
+intersectionRule2RuleC = 
+  let
+    EnvRule2RuleC = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule2[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleC)
+  [| {|personNearby,temperature|} |]
+  	EnvRule2RuleC
+  SLEECRule2RuleC = timed_priority(intersectionRule2RuleC)
+					
+  assert SLEECRule2RuleC:[deadlock-free]					
+  			
+  SLEECRule2RuleCCF   = prioritise(
+  	timed_priority(intersectionRule2RuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2RuleCCF  :[divergence-free]
+  
+Rule2_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (Rule2 or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2 or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2 and RuleC
+CommonEvents = union(ARule2,ARuleC)
+-- Common events of Rule2 and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (RuleC or Rule2)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or Rule2)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and Rule2
+CommonEvents = union(ARuleC,ARule2)
+-- Common events of RuleC and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule2_wrt_RuleC [T= RuleC_wrt_Rule2 
+assert not RuleC_wrt_Rule2 [T= Rule2_wrt_RuleC 
+
+-- Checking Rule2 with RuleD:
+intersectionRule2RuleD = 
+  let
+    EnvRule2RuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule2[|diff(inter({|CameraStart, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRule2RuleD
+  SLEECRule2RuleD = timed_priority(intersectionRule2RuleD)
+					
+  assert SLEECRule2RuleD:[deadlock-free]					
+  			
+  SLEECRule2RuleDCF   = prioritise(
+  	timed_priority(intersectionRule2RuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2RuleDCF  :[divergence-free]
+  
+Rule2_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (Rule2 or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2 or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2 and RuleD
+CommonEvents = union(ARule2,ARuleD)
+-- Common events of Rule2 and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_Rule2 =
+let
+-- The external 'm' channels for every measure of (RuleD or Rule2)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or Rule2)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and Rule2
+CommonEvents = union(ARuleD,ARule2)
+-- Common events of RuleD and Rule2, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule2_wrt_RuleD [T= RuleD_wrt_Rule2 
+assert not RuleD_wrt_Rule2 [T= Rule2_wrt_RuleD 
+
+-- Checking Rule3 with Rule4:
+intersectionRule3Rule4 = 
+  let
+    EnvRule3Rule4 = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule3[|diff(inter({|GoHome, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}),{|personNearby,temperature|})|]Rule4)
+  [| {|personNearby,temperature|} |]
+  	EnvRule3Rule4
+  SLEECRule3Rule4 = timed_priority(intersectionRule3Rule4)
+					
+  assert SLEECRule3Rule4:[deadlock-free]					
+  			
+  SLEECRule3Rule4CF   = prioritise(
+  	timed_priority(intersectionRule3Rule4)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule3Rule4CF  :[divergence-free]
+  
+Rule3_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (Rule3 or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule3 or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule3 and Rule4
+CommonEvents = union(ARule3,ARule4)
+-- Common events of Rule3 and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule3[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+Rule4_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (Rule4 or Rule3)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or Rule3)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and Rule3
+CommonEvents = union(ARule4,ARule3)
+-- Common events of Rule4 and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule3_wrt_Rule4 [T= Rule4_wrt_Rule3 
+assert not Rule4_wrt_Rule3 [T= Rule3_wrt_Rule4 
+
+-- Checking Rule3 with Rule2_a:
+intersectionRule3Rule2_a = 
+  let
+EnvRule3Rule2_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule3[|diff(inter({|GoHome, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule2_a)
+  [| {|personNearby|} |]
+  	EnvRule3Rule2_a
+  SLEECRule3Rule2_a = timed_priority(intersectionRule3Rule2_a)
+					
+  assert SLEECRule3Rule2_a:[deadlock-free]					
+  			
+  SLEECRule3Rule2_aCF   = prioritise(
+  	timed_priority(intersectionRule3Rule2_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule3Rule2_aCF  :[divergence-free]
+  
+Rule3_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (Rule3 or Rule2_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule3 or Rule2_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule3 and Rule2_a
+CommonEvents = union(ARule3,ARule2_a)
+-- Common events of Rule3 and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule3 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule2_a_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (Rule2_a or Rule3)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2_a or Rule3)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2_a and Rule3
+CommonEvents = union(ARule2_a,ARule3)
+-- Common events of Rule2_a and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule3_wrt_Rule2_a [T= Rule2_a_wrt_Rule3 
+assert not Rule2_a_wrt_Rule3 [T= Rule3_wrt_Rule2_a 
+
+-- Checking Rule3 with Rule4_a:
+intersectionRule3Rule4_a = 
+  let
+EnvRule3Rule4_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule3[|diff(inter({|GoHome, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule4_a)
+  [| {|personNearby|} |]
+  	EnvRule3Rule4_a
+  SLEECRule3Rule4_a = timed_priority(intersectionRule3Rule4_a)
+					
+  assert SLEECRule3Rule4_a:[deadlock-free]					
+  			
+  SLEECRule3Rule4_aCF   = prioritise(
+  	timed_priority(intersectionRule3Rule4_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule3Rule4_aCF  :[divergence-free]
+  
+Rule3_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (Rule3 or Rule4_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule3 or Rule4_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule3 and Rule4_a
+CommonEvents = union(ARule3,ARule4_a)
+-- Common events of Rule3 and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule3 [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule4_a_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (Rule4_a or Rule3)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule4_a or Rule3)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule4_a and Rule3
+CommonEvents = union(ARule4_a,ARule3)
+-- Common events of Rule4_a and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule4_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule3_wrt_Rule4_a [T= Rule4_a_wrt_Rule3 
+assert not Rule4_a_wrt_Rule3 [T= Rule3_wrt_Rule4_a 
+
+-- Checking Rule3 with RuleA:
+intersectionRule3RuleA = 
+  let
+EnvRule3RuleA = Envtemperature
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule3[|diff(inter({|GoHome, SoundAlarm|}, {|GoHome, temperature, BatteryCritical|}),{|temperature|})|]RuleA)
+  [| {|temperature|} |]
+  	EnvRule3RuleA
+  SLEECRule3RuleA = timed_priority(intersectionRule3RuleA)
+					
+  assert SLEECRule3RuleA:[deadlock-free]					
+  			
+  SLEECRule3RuleACF   = prioritise(
+  	timed_priority(intersectionRule3RuleA)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule3RuleACF  :[divergence-free]
+  
+Rule3_wrt_RuleA =
+let
+-- The external 'm' channels for every measure of (Rule3 or RuleA)
+MemoryExternalEvents = {|temperature|}
+-- The internal 'i_m' channels for every measure of (Rule3 or RuleA)
+MemoryInternalEvents = {|i_temperature|}
+-- Common events of Rule3 and RuleA
+CommonEvents = union(ARule3,ARuleA)
+-- Common events of Rule3 and RuleA, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_temperature(CommonProvideEvents)
+	     MemoryInOrder = temperature?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule3 [[
+				     temperature <- i_temperature
+				     ]]
+				    )
+				    [| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+RuleA_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (RuleA or Rule3)
+MemoryExternalEvents = {|temperature|}
+-- The internal 'i_m' channels for every measure of (RuleA or Rule3)
+MemoryInternalEvents = {|i_temperature|}
+-- Common events of RuleA and Rule3
+CommonEvents = union(ARuleA,ARule3)
+-- Common events of RuleA and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_temperature(CommonProvideEvents)
+	     MemoryInOrder = temperature?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRuleA [[
+				     temperature <- i_temperature
+				     ]]
+				    )
+				    [| union(diff(ARuleA,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule3_wrt_RuleA [T= RuleA_wrt_Rule3 
+assert not RuleA_wrt_Rule3 [T= Rule3_wrt_RuleA 
+
+-- Checking Rule3 with RuleC:
+intersectionRule3RuleC = 
+  let
+    EnvRule3RuleC = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule3[|diff(inter({|GoHome, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleC)
+  [| {|personNearby,temperature|} |]
+  	EnvRule3RuleC
+  SLEECRule3RuleC = timed_priority(intersectionRule3RuleC)
+					
+  assert SLEECRule3RuleC:[deadlock-free]					
+  			
+  SLEECRule3RuleCCF   = prioritise(
+  	timed_priority(intersectionRule3RuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule3RuleCCF  :[divergence-free]
+  
+Rule3_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (Rule3 or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule3 or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule3 and RuleC
+CommonEvents = union(ARule3,ARuleC)
+-- Common events of Rule3 and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule3[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (RuleC or Rule3)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or Rule3)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and Rule3
+CommonEvents = union(ARuleC,ARule3)
+-- Common events of RuleC and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule3_wrt_RuleC [T= RuleC_wrt_Rule3 
+assert not RuleC_wrt_Rule3 [T= Rule3_wrt_RuleC 
+
+-- Checking Rule3 with RuleD:
+intersectionRule3RuleD = 
+  let
+    EnvRule3RuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule3[|diff(inter({|GoHome, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRule3RuleD
+  SLEECRule3RuleD = timed_priority(intersectionRule3RuleD)
+					
+  assert SLEECRule3RuleD:[deadlock-free]					
+  			
+  SLEECRule3RuleDCF   = prioritise(
+  	timed_priority(intersectionRule3RuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule3RuleDCF  :[divergence-free]
+  
+Rule3_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (Rule3 or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule3 or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule3 and RuleD
+CommonEvents = union(ARule3,ARuleD)
+-- Common events of Rule3 and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule3[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule3,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_Rule3 =
+let
+-- The external 'm' channels for every measure of (RuleD or Rule3)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or Rule3)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and Rule3
+CommonEvents = union(ARuleD,ARule3)
+-- Common events of RuleD and Rule3, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule3_wrt_RuleD [T= RuleD_wrt_Rule3 
+assert not RuleD_wrt_Rule3 [T= Rule3_wrt_RuleD 
+
+-- Checking Rule4 with Rule2_a:
+intersectionRule4Rule2_a = 
+  let
+    EnvRule4Rule2_a = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4[|diff(inter({|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby,temperature|})|]Rule2_a)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4Rule2_a
+  SLEECRule4Rule2_a = timed_priority(intersectionRule4Rule2_a)
+					
+  assert SLEECRule4Rule2_a:[deadlock-free]					
+  			
+  SLEECRule4Rule2_aCF   = prioritise(
+  	timed_priority(intersectionRule4Rule2_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4Rule2_aCF  :[divergence-free]
+  
+Rule4_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (Rule4 or Rule2_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or Rule2_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and Rule2_a
+CommonEvents = union(ARule4,ARule2_a)
+-- Common events of Rule4 and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+Rule2_a_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (Rule2_a or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2_a or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2_a and Rule4
+CommonEvents = union(ARule2_a,ARule4)
+-- Common events of Rule2_a and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_wrt_Rule2_a [T= Rule2_a_wrt_Rule4 
+assert not Rule2_a_wrt_Rule4 [T= Rule4_wrt_Rule2_a 
+
+-- Checking Rule4 with Rule4_a:
+intersectionRule4Rule4_a = 
+  let
+    EnvRule4Rule4_a = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4[|diff(inter({|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby,temperature|})|]Rule4_a)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4Rule4_a
+  SLEECRule4Rule4_a = timed_priority(intersectionRule4Rule4_a)
+					
+  assert SLEECRule4Rule4_a:[deadlock-free]					
+  			
+  SLEECRule4Rule4_aCF   = prioritise(
+  	timed_priority(intersectionRule4Rule4_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4Rule4_aCF  :[divergence-free]
+  
+Rule4_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (Rule4 or Rule4_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or Rule4_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and Rule4_a
+CommonEvents = union(ARule4,ARule4_a)
+-- Common events of Rule4 and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+Rule4_a_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (Rule4_a or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4_a or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4_a and Rule4
+CommonEvents = union(ARule4_a,ARule4)
+-- Common events of Rule4_a and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_wrt_Rule4_a [T= Rule4_a_wrt_Rule4 
+assert not Rule4_a_wrt_Rule4 [T= Rule4_wrt_Rule4_a 
+
+-- Checking Rule4 with RuleA:
+intersectionRule4RuleA = 
+  let
+    EnvRule4RuleA = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4[|diff(inter({|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}, {|GoHome, temperature, BatteryCritical|}),{|personNearby,temperature|})|]RuleA)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4RuleA
+  SLEECRule4RuleA = timed_priority(intersectionRule4RuleA)
+					
+  assert SLEECRule4RuleA:[deadlock-free]					
+  			
+  SLEECRule4RuleACF   = prioritise(
+  	timed_priority(intersectionRule4RuleA)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4RuleACF  :[divergence-free]
+  
+Rule4_wrt_RuleA =
+let
+-- The external 'm' channels for every measure of (Rule4 or RuleA)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or RuleA)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and RuleA
+CommonEvents = union(ARule4,ARuleA)
+-- Common events of Rule4 and RuleA, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleA_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (RuleA or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleA or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleA and Rule4
+CommonEvents = union(ARuleA,ARule4)
+-- Common events of RuleA and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleA[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleA,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_wrt_RuleA [T= RuleA_wrt_Rule4 
+assert not RuleA_wrt_Rule4 [T= Rule4_wrt_RuleA 
+
+-- Checking Rule4 with RuleC:
+intersectionRule4RuleC = 
+  let
+    EnvRule4RuleC = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4[|diff(inter({|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleC)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4RuleC
+  SLEECRule4RuleC = timed_priority(intersectionRule4RuleC)
+					
+  assert SLEECRule4RuleC:[deadlock-free]					
+  			
+  SLEECRule4RuleCCF   = prioritise(
+  	timed_priority(intersectionRule4RuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4RuleCCF  :[divergence-free]
+  
+Rule4_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (Rule4 or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and RuleC
+CommonEvents = union(ARule4,ARuleC)
+-- Common events of Rule4 and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (RuleC or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and Rule4
+CommonEvents = union(ARuleC,ARule4)
+-- Common events of RuleC and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_wrt_RuleC [T= RuleC_wrt_Rule4 
+assert not RuleC_wrt_Rule4 [T= Rule4_wrt_RuleC 
+
+-- Checking Rule4 with RuleD:
+intersectionRule4RuleD = 
+  let
+    EnvRule4RuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4[|diff(inter({|CameraStart, GoHome, personNearby, temperature, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4RuleD
+  SLEECRule4RuleD = timed_priority(intersectionRule4RuleD)
+					
+  assert SLEECRule4RuleD:[deadlock-free]					
+  			
+  SLEECRule4RuleDCF   = prioritise(
+  	timed_priority(intersectionRule4RuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4RuleDCF  :[divergence-free]
+  
+Rule4_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (Rule4 or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4 or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4 and RuleD
+CommonEvents = union(ARule4,ARuleD)
+-- Common events of Rule4 and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_Rule4 =
+let
+-- The external 'm' channels for every measure of (RuleD or Rule4)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or Rule4)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and Rule4
+CommonEvents = union(ARuleD,ARule4)
+-- Common events of RuleD and Rule4, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_wrt_RuleD [T= RuleD_wrt_Rule4 
+assert not RuleD_wrt_Rule4 [T= Rule4_wrt_RuleD 
+
+-- Checking Rule2_a with Rule4_a:
+intersectionRule2_aRule4_a = 
+  let
+EnvRule2_aRule4_a = EnvpersonNearby
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (Rule2_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, SoundAlarm|}),{|personNearby|})|]Rule4_a)
+  [| {|personNearby|} |]
+  	EnvRule2_aRule4_a
+  SLEECRule2_aRule4_a = timed_priority(intersectionRule2_aRule4_a)
+					
+  assert SLEECRule2_aRule4_a:[deadlock-free]					
+  			
+  SLEECRule2_aRule4_aCF   = prioritise(
+  	timed_priority(intersectionRule2_aRule4_a)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2_aRule4_aCF  :[divergence-free]
+  
+Rule2_a_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (Rule2_a or Rule4_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule2_a or Rule4_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule2_a and Rule4_a
+CommonEvents = union(ARule2_a,ARule4_a)
+-- Common events of Rule2_a and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule2_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+Rule4_a_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (Rule4_a or Rule2_a)
+MemoryExternalEvents = {|personNearby|}
+-- The internal 'i_m' channels for every measure of (Rule4_a or Rule2_a)
+MemoryInternalEvents = {|i_personNearby|}
+-- Common events of Rule4_a and Rule2_a
+CommonEvents = union(ARule4_a,ARule2_a)
+-- Common events of Rule4_a and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+
+-- The memory process
+Memory = 
+		 Mem_personNearby(CommonProvideEvents)
+	     MemoryInOrder = personNearby?x__ -> MemoryInOrder
+	     within
+			timed_priority(
+				 (
+				 	(
+				     SLEECRule4_a [[
+				     personNearby <- i_personNearby
+				     ]]
+				    )
+				    [| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+				    (
+				    -- Generalised parallel composition of all measure processes
+				        Memory
+				        [| MemoryExternalEvents |]
+				        MemoryInOrder
+				    )
+				 ) \MemoryInternalEvents
+		     ) 
+assert not Rule2_a_wrt_Rule4_a [T= Rule4_a_wrt_Rule2_a 
+assert not Rule4_a_wrt_Rule2_a [T= Rule2_a_wrt_Rule4_a 
+
+-- Checking Rule2_a with RuleA:
+intersectionRule2_aRuleA = 
+  let
+    EnvRule2_aRuleA = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule2_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|GoHome, temperature, BatteryCritical|}),{|personNearby,temperature|})|]RuleA)
+  [| {|personNearby,temperature|} |]
+  	EnvRule2_aRuleA
+  SLEECRule2_aRuleA = timed_priority(intersectionRule2_aRuleA)
+					
+  assert SLEECRule2_aRuleA:[deadlock-free]					
+  			
+  SLEECRule2_aRuleACF   = prioritise(
+  	timed_priority(intersectionRule2_aRuleA)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2_aRuleACF  :[divergence-free]
+  
+Rule2_a_wrt_RuleA =
+let
+-- The external 'm' channels for every measure of (Rule2_a or RuleA)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2_a or RuleA)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2_a and RuleA
+CommonEvents = union(ARule2_a,ARuleA)
+-- Common events of Rule2_a and RuleA, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleA_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (RuleA or Rule2_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleA or Rule2_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleA and Rule2_a
+CommonEvents = union(ARuleA,ARule2_a)
+-- Common events of RuleA and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleA[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleA,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule2_a_wrt_RuleA [T= RuleA_wrt_Rule2_a 
+assert not RuleA_wrt_Rule2_a [T= Rule2_a_wrt_RuleA 
+
+-- Checking Rule2_a with RuleC:
+intersectionRule2_aRuleC = 
+  let
+    EnvRule2_aRuleC = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule2_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleC)
+  [| {|personNearby,temperature|} |]
+  	EnvRule2_aRuleC
+  SLEECRule2_aRuleC = timed_priority(intersectionRule2_aRuleC)
+					
+  assert SLEECRule2_aRuleC:[deadlock-free]					
+  			
+  SLEECRule2_aRuleCCF   = prioritise(
+  	timed_priority(intersectionRule2_aRuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2_aRuleCCF  :[divergence-free]
+  
+Rule2_a_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (Rule2_a or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2_a or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2_a and RuleC
+CommonEvents = union(ARule2_a,ARuleC)
+-- Common events of Rule2_a and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (RuleC or Rule2_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or Rule2_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and Rule2_a
+CommonEvents = union(ARuleC,ARule2_a)
+-- Common events of RuleC and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule2_a_wrt_RuleC [T= RuleC_wrt_Rule2_a 
+assert not RuleC_wrt_Rule2_a [T= Rule2_a_wrt_RuleC 
+
+-- Checking Rule2_a with RuleD:
+intersectionRule2_aRuleD = 
+  let
+    EnvRule2_aRuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule2_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRule2_aRuleD
+  SLEECRule2_aRuleD = timed_priority(intersectionRule2_aRuleD)
+					
+  assert SLEECRule2_aRuleD:[deadlock-free]					
+  			
+  SLEECRule2_aRuleDCF   = prioritise(
+  	timed_priority(intersectionRule2_aRuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule2_aRuleDCF  :[divergence-free]
+  
+Rule2_a_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (Rule2_a or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule2_a or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule2_a and RuleD
+CommonEvents = union(ARule2_a,ARuleD)
+-- Common events of Rule2_a and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule2_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule2_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_Rule2_a =
+let
+-- The external 'm' channels for every measure of (RuleD or Rule2_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or Rule2_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and Rule2_a
+CommonEvents = union(ARuleD,ARule2_a)
+-- Common events of RuleD and Rule2_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule2_a_wrt_RuleD [T= RuleD_wrt_Rule2_a 
+assert not RuleD_wrt_Rule2_a [T= Rule2_a_wrt_RuleD 
+
+-- Checking Rule4_a with RuleA:
+intersectionRule4_aRuleA = 
+  let
+    EnvRule4_aRuleA = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|GoHome, temperature, BatteryCritical|}),{|personNearby,temperature|})|]RuleA)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4_aRuleA
+  SLEECRule4_aRuleA = timed_priority(intersectionRule4_aRuleA)
+					
+  assert SLEECRule4_aRuleA:[deadlock-free]					
+  			
+  SLEECRule4_aRuleACF   = prioritise(
+  	timed_priority(intersectionRule4_aRuleA)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4_aRuleACF  :[divergence-free]
+  
+Rule4_a_wrt_RuleA =
+let
+-- The external 'm' channels for every measure of (Rule4_a or RuleA)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4_a or RuleA)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4_a and RuleA
+CommonEvents = union(ARule4_a,ARuleA)
+-- Common events of Rule4_a and RuleA, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleA_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (RuleA or Rule4_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleA or Rule4_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleA and Rule4_a
+CommonEvents = union(ARuleA,ARule4_a)
+-- Common events of RuleA and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleA[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleA,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_a_wrt_RuleA [T= RuleA_wrt_Rule4_a 
+assert not RuleA_wrt_Rule4_a [T= Rule4_a_wrt_RuleA 
+
+-- Checking Rule4_a with RuleC:
+intersectionRule4_aRuleC = 
+  let
+    EnvRule4_aRuleC = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleC)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4_aRuleC
+  SLEECRule4_aRuleC = timed_priority(intersectionRule4_aRuleC)
+					
+  assert SLEECRule4_aRuleC:[deadlock-free]					
+  			
+  SLEECRule4_aRuleCCF   = prioritise(
+  	timed_priority(intersectionRule4_aRuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4_aRuleCCF  :[divergence-free]
+  
+Rule4_a_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (Rule4_a or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4_a or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4_a and RuleC
+CommonEvents = union(ARule4_a,ARuleC)
+-- Common events of Rule4_a and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (RuleC or Rule4_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or Rule4_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and Rule4_a
+CommonEvents = union(ARuleC,ARule4_a)
+-- Common events of RuleC and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_a_wrt_RuleC [T= RuleC_wrt_Rule4_a 
+assert not RuleC_wrt_Rule4_a [T= Rule4_a_wrt_RuleC 
+
+-- Checking Rule4_a with RuleD:
+intersectionRule4_aRuleD = 
+  let
+    EnvRule4_aRuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (Rule4_a[|diff(inter({|CameraStart, GoHome, personNearby, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRule4_aRuleD
+  SLEECRule4_aRuleD = timed_priority(intersectionRule4_aRuleD)
+					
+  assert SLEECRule4_aRuleD:[deadlock-free]					
+  			
+  SLEECRule4_aRuleDCF   = prioritise(
+  	timed_priority(intersectionRule4_aRuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRule4_aRuleDCF  :[divergence-free]
+  
+Rule4_a_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (Rule4_a or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (Rule4_a or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of Rule4_a and RuleD
+CommonEvents = union(ARule4_a,ARuleD)
+-- Common events of Rule4_a and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRule4_a[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARule4_a,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_Rule4_a =
+let
+-- The external 'm' channels for every measure of (RuleD or Rule4_a)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or Rule4_a)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and Rule4_a
+CommonEvents = union(ARuleD,ARule4_a)
+-- Common events of RuleD and Rule4_a, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not Rule4_a_wrt_RuleD [T= RuleD_wrt_Rule4_a 
+assert not RuleD_wrt_Rule4_a [T= Rule4_a_wrt_RuleD 
+
+-- Checking RuleA with RuleC:
+intersectionRuleARuleC = 
+  let
+    EnvRuleARuleC = Envtemperature||| EnvpersonNearby
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (RuleA[|diff(inter({|GoHome, temperature, BatteryCritical|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|temperature,personNearby|})|]RuleC)
+  [| {|temperature,personNearby|} |]
+  	EnvRuleARuleC
+  SLEECRuleARuleC = timed_priority(intersectionRuleARuleC)
+					
+  assert SLEECRuleARuleC:[deadlock-free]					
+  			
+  SLEECRuleARuleCCF   = prioritise(
+  	timed_priority(intersectionRuleARuleC)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRuleARuleCCF  :[divergence-free]
+  
+RuleA_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (RuleA or RuleC)
+MemoryExternalEvents = {|temperature,personNearby|}-- The internal 'i_m' channels for every measure of (RuleA or RuleC)
+MemoryInternalEvents = {|i_temperature,i_personNearby|}-- Common events of RuleA and RuleC
+CommonEvents = union(ARuleA,ARuleC)
+-- Common events of RuleA and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_temperature(CommonProvideEvents) [| CommonProvideEvents |] Mem_personNearby(CommonProvideEvents)
+)
+MemoryInOrder = temperature?x__-> personNearby?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleA[[ temperature <- i_temperature,
+personNearby <- i_personNearby
+]]
+		)
+		[| union(diff(ARuleA,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleC_wrt_RuleA =
+let
+-- The external 'm' channels for every measure of (RuleC or RuleA)
+MemoryExternalEvents = {|temperature,personNearby|}-- The internal 'i_m' channels for every measure of (RuleC or RuleA)
+MemoryInternalEvents = {|i_temperature,i_personNearby|}-- Common events of RuleC and RuleA
+CommonEvents = union(ARuleC,ARuleA)
+-- Common events of RuleC and RuleA, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_temperature(CommonProvideEvents) [| CommonProvideEvents |] Mem_personNearby(CommonProvideEvents)
+)
+MemoryInOrder = temperature?x__-> personNearby?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ temperature <- i_temperature,
+personNearby <- i_personNearby
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not RuleA_wrt_RuleC [T= RuleC_wrt_RuleA 
+assert not RuleC_wrt_RuleA [T= RuleA_wrt_RuleC 
+
+-- Checking RuleA with RuleD:
+intersectionRuleARuleD = 
+  let
+    EnvRuleARuleD = Envtemperature||| EnvpersonNearby
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+  within
+  
+  (RuleA[|diff(inter({|GoHome, temperature, BatteryCritical|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|temperature,personNearby|})|]RuleD)
+  [| {|temperature,personNearby|} |]
+  	EnvRuleARuleD
+  SLEECRuleARuleD = timed_priority(intersectionRuleARuleD)
+					
+  assert SLEECRuleARuleD:[deadlock-free]					
+  			
+  SLEECRuleARuleDCF   = prioritise(
+  	timed_priority(intersectionRuleARuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRuleARuleDCF  :[divergence-free]
+  
+RuleA_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (RuleA or RuleD)
+MemoryExternalEvents = {|temperature,personNearby|}-- The internal 'i_m' channels for every measure of (RuleA or RuleD)
+MemoryInternalEvents = {|i_temperature,i_personNearby|}-- Common events of RuleA and RuleD
+CommonEvents = union(ARuleA,ARuleD)
+-- Common events of RuleA and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_temperature(CommonProvideEvents) [| CommonProvideEvents |] Mem_personNearby(CommonProvideEvents)
+)
+MemoryInOrder = temperature?x__-> personNearby?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleA[[ temperature <- i_temperature,
+personNearby <- i_personNearby
+]]
+		)
+		[| union(diff(ARuleA,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_RuleA =
+let
+-- The external 'm' channels for every measure of (RuleD or RuleA)
+MemoryExternalEvents = {|temperature,personNearby|}-- The internal 'i_m' channels for every measure of (RuleD or RuleA)
+MemoryInternalEvents = {|i_temperature,i_personNearby|}-- Common events of RuleD and RuleA
+CommonEvents = union(ARuleD,ARuleA)
+-- Common events of RuleD and RuleA, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_temperature(CommonProvideEvents) [| CommonProvideEvents |] Mem_personNearby(CommonProvideEvents)
+)
+MemoryInOrder = temperature?x__-> personNearby?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ temperature <- i_temperature,
+personNearby <- i_personNearby
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not RuleA_wrt_RuleD [T= RuleD_wrt_RuleA 
+assert not RuleD_wrt_RuleA [T= RuleA_wrt_RuleD 
+
+-- Checking RuleC with RuleD:
+intersectionRuleCRuleD = 
+  let
+    EnvRuleCRuleD = EnvpersonNearby||| Envtemperature
+    EnvpersonNearby = personNearby?x__ -> VEnvpersonNearby(x__)
+    VEnvpersonNearby(x__) = personNearby!x__ -> VEnvpersonNearby(x__) 
+    Envtemperature = temperature?x__ -> VEnvtemperature(x__)
+    VEnvtemperature(x__) = temperature!x__ -> VEnvtemperature(x__) 
+  within
+  
+  (RuleC[|diff(inter({|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}, {|CameraStart, GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}),{|personNearby,temperature|})|]RuleD)
+  [| {|personNearby,temperature|} |]
+  	EnvRuleCRuleD
+  SLEECRuleCRuleD = timed_priority(intersectionRuleCRuleD)
+					
+  assert SLEECRuleCRuleD:[deadlock-free]					
+  			
+  SLEECRuleCRuleDCF   = prioritise(
+  	timed_priority(intersectionRuleCRuleD)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+										
+  assert SLEECRuleCRuleDCF  :[divergence-free]
+  
+RuleC_wrt_RuleD =
+let
+-- The external 'm' channels for every measure of (RuleC or RuleD)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleC or RuleD)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleC and RuleD
+CommonEvents = union(ARuleC,ARuleD)
+-- Common events of RuleC and RuleD, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleC[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleC,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+RuleD_wrt_RuleC =
+let
+-- The external 'm' channels for every measure of (RuleD or RuleC)
+MemoryExternalEvents = {|personNearby,temperature|}-- The internal 'i_m' channels for every measure of (RuleD or RuleC)
+MemoryInternalEvents = {|i_personNearby,i_temperature|}-- Common events of RuleD and RuleC
+CommonEvents = union(ARuleD,ARuleC)
+-- Common events of RuleD and RuleC, except for those of measures:
+CommonProvideEvents = diff(CommonEvents,MemoryExternalEvents)
+ -- The memory process
+Memory = (Mem_personNearby(CommonProvideEvents) [| CommonProvideEvents |] Mem_temperature(CommonProvideEvents)
+)
+MemoryInOrder = personNearby?x__-> temperature?x__ 
+-> MemoryInOrder
+within
+timed_priority(
+				 (
+					(
+					SLEECRuleD[[ personNearby <- i_personNearby,
+temperature <- i_temperature
+]]
+		)
+		[| union(diff(ARuleD,MemoryExternalEvents),MemoryInternalEvents) |]
+		(
+		-- Generalised parallel composition of all measure processes
+		Memory
+		[| MemoryExternalEvents |]
+		MemoryInOrder
+	    )
+	 ) \MemoryInternalEvents
+) 
+assert not RuleC_wrt_RuleD [T= RuleD_wrt_RuleC 
+assert not RuleD_wrt_RuleC [T= RuleC_wrt_RuleD 
+
+}

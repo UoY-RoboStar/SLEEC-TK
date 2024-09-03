@@ -1,0 +1,293 @@
+
+--Specify the integer intervals for type Int e.g. {0..30}. 
+
+channel CameraStart
+channel personNearby, i_personNearby : Bool
+Mem_personNearby(o__) =
+	let
+		Mem =  personNearby?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_personNearby.x__|},o__))
+	within
+		Mem
+channel GoHome
+channel temperature, i_temperature : core_int
+Mem_temperature(o__) =
+	let
+		Mem =  temperature?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_temperature.x__|},o__))
+	within
+		Mem
+channel BatteryCritical
+channel SprayWater
+channel detectPersonFallen, i_detectPersonFallen : Bool
+Mem_detectPersonFallen(o__) =
+	let
+		Mem =  detectPersonFallen?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_detectPersonFallen.x__|},o__))
+	within
+		Mem
+channel SeekHelp
+channel humanDetected, i_humanDetected : Bool
+Mem_humanDetected(o__) =
+	let
+		Mem =  humanDetected?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_humanDetected.x__|},o__))
+	within
+		Mem
+channel animalDetected, i_animalDetected : Bool
+Mem_animalDetected(o__) =
+	let
+		Mem =  animalDetected?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_animalDetected.x__|},o__))
+	within
+		Mem
+channel RemainAnonymous
+channel ReportLocation
+MAX_TEMPERATURE = 35
+channel FullyCharged
+channel TestEfficiencyPreserved
+channel StartMission
+channel FinishMission
+MAX_MISSION_TIME = 60
+channel NotifyError
+channel authorized, i_authorized : Bool
+Mem_authorized(o__) =
+	let
+		Mem =  authorized?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_authorized.x__|},o__))
+	within
+		Mem
+channel OperatorInstruction
+channel SoundWarningMessage
+channel distance, i_distance : core_int
+Mem_distance(o__) =
+	let
+		Mem =  distance?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_distance.x__|},o__))
+	within
+		Mem
+channel SoundAlarm
+channel batteryCharged, i_batteryCharged : Bool
+Mem_batteryCharged(o__) =
+	let
+		Mem =  batteryCharged?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_batteryCharged.x__|},o__))
+	within
+		Mem
+channel BatteryAlarmandGoHome
+	
+Capabilities = 
+  {| CameraStart,
+     GoHome,
+     BatteryCritical,
+     SprayWater,
+     SeekHelp,
+     RemainAnonymous,
+     ReportLocation,
+     FullyCharged,
+     TestEfficiencyPreserved,
+     StartMission,
+     FinishMission,
+     NotifyError,
+     OperatorInstruction,
+     SoundWarningMessage,
+     SoundAlarm,
+     BatteryAlarmandGoHome,
+  	 personNearby,
+  	 temperature,
+  	 detectPersonFallen,
+  	 humanDetected,
+  	 animalDetected,
+  	 authorized,
+  	 distance,
+  	 batteryCharged
+  |}
+Measures =
+  {| personNearby,
+     temperature,
+     detectPersonFallen,
+     humanDetected,
+     animalDetected,
+     authorized,
+     distance,
+     batteryCharged
+  |}
+	
+
+Timed(OneStep) {
+
+-- FRule1 when SoundAlarm and (batteryCharged) then not GoHome within 5 minutes 
+
+FRule1 = TriggerFRule1; MonitoringFRule1; FRule1
+
+TriggerFRule1 = let
+	MTrigger = StartBy(batteryCharged?vbatteryCharged ->
+		if (vbatteryCharged) then SKIP else TriggerFRule1
+	,0)
+within SoundAlarm -> MTrigger 
+	[] GoHome -> TriggerFRule1
+
+MonitoringFRule1 = WAIT((5 * 60))
+
+-- alphabet for FRule1 
+AFRule1 = {|batteryCharged, GoHome, SoundAlarm|}
+SLEECFRule1 = timed_priority(FRule1)
+
+
+-- FRule2 when BatteryCritical then BatteryAlarmandGoHome within 5 minutes 
+
+FRule2 = TriggerFRule2; MonitoringFRule2; FRule2
+
+TriggerFRule2 = BatteryCritical -> SKIP	[] BatteryAlarmandGoHome -> TriggerFRule2
+
+
+MonitoringFRule2 = StartBy(BatteryAlarmandGoHome -> SKIP,(5 * 60))
+
+-- alphabet for FRule2 
+AFRule2 = {|BatteryCritical, BatteryAlarmandGoHome|}
+SLEECFRule2 = timed_priority(FRule2)
+
+
+-- FRule3 when StartMission and (detectPersonFallen) then SeekHelp within 5 seconds 
+
+FRule3 = TriggerFRule3; MonitoringFRule3; FRule3
+
+TriggerFRule3 = let
+	MTrigger = StartBy(detectPersonFallen?vdetectPersonFallen ->
+		if (vdetectPersonFallen) then SKIP else TriggerFRule3
+	,0)
+within StartMission -> MTrigger 
+	[] SeekHelp -> TriggerFRule3
+
+MonitoringFRule3 = StartBy(SeekHelp -> SKIP,(5 * 1))
+
+-- alphabet for FRule3 
+AFRule3 = {|detectPersonFallen, StartMission, SeekHelp|}
+SLEECFRule3 = timed_priority(FRule3)
+
+
+-- FRule4 when CameraStart and (humanDetected) then RemainAnonymous 
+
+FRule4 = TriggerFRule4; MonitoringFRule4; FRule4
+
+TriggerFRule4 = let
+	MTrigger = StartBy(humanDetected?vhumanDetected ->
+		if (vhumanDetected) then SKIP else TriggerFRule4
+	,0)
+within CameraStart -> MTrigger 
+	[] RemainAnonymous -> TriggerFRule4
+
+MonitoringFRule4 = RemainAnonymous -> SKIP
+
+-- alphabet for FRule4 
+AFRule4 = {|CameraStart, humanDetected, RemainAnonymous|}
+SLEECFRule4 = timed_priority(FRule4)
+
+
+-- FRule5 when CameraStart and ((animalDetected) or (humanDetected)) then ReportLocation 
+
+FRule5 = TriggerFRule5; MonitoringFRule5; FRule5
+
+TriggerFRule5 = let
+	MTrigger = StartBy(animalDetected?vanimalDetected ->
+		StartBy(humanDetected?vhumanDetected ->
+			if ((vanimalDetected) or (vhumanDetected)) then SKIP else TriggerFRule5
+		,0)
+	,0)
+within CameraStart -> MTrigger 
+	[] ReportLocation -> TriggerFRule5
+
+MonitoringFRule5 = ReportLocation -> SKIP
+
+-- alphabet for FRule5 
+AFRule5 = {|CameraStart, humanDetected, animalDetected, ReportLocation|}
+SLEECFRule5 = timed_priority(FRule5)
+
+
+-- FRule6 when BatteryCritical then GoHome 
+-- unless ((personNearby) and ((temperature) > (MAX_TEMPERATURE))) then SoundAlarm
+
+FRule6 = TriggerFRule6; MonitoringFRule6; FRule6
+
+TriggerFRule6 = BatteryCritical -> SKIP	[] GoHome -> TriggerFRule6
+	[] SoundAlarm -> TriggerFRule6
+
+
+MonitoringFRule6 = let
+	Monitoring1 = GoHome -> SKIP
+	Monitoring2 = SoundAlarm -> SKIP
+within StartBy(personNearby?vpersonNearby ->
+	StartBy(temperature?vtemperature ->
+		if ((vpersonNearby) and ((vtemperature) > (MAX_TEMPERATURE))) then Monitoring2
+		else (Monitoring1)
+	,0)
+,0)
+
+-- alphabet for FRule6 
+AFRule6 = {|GoHome, personNearby, temperature, BatteryCritical, SoundAlarm|}
+SLEECFRule6 = timed_priority(FRule6)
+
+
+-- FRule7 when FullyCharged then TestEfficiencyPreserved within 24 hours 
+
+FRule7 = TriggerFRule7; MonitoringFRule7; FRule7
+
+TriggerFRule7 = FullyCharged -> SKIP	[] TestEfficiencyPreserved -> TriggerFRule7
+
+
+MonitoringFRule7 = StartBy(TestEfficiencyPreserved -> SKIP,(24 * 3600))
+
+-- alphabet for FRule7 
+AFRule7 = {|FullyCharged, TestEfficiencyPreserved|}
+SLEECFRule7 = timed_priority(FRule7)
+
+
+-- FRule8 when StartMission then FinishMission within 60 seconds
+-- otherwise NotifyError within 1 hours 
+-- unless (not (authorized))
+
+FRule8 = TriggerFRule8; MonitoringFRule8; FRule8
+
+TriggerFRule8 = StartMission -> SKIP	[] FinishMission -> TriggerFRule8
+	[] NotifyError -> TriggerFRule8
+
+
+MonitoringFRule8 = let
+	Monitoring1 = TimedInterruptSeq(FinishMission,(60 * 1),StartBy(NotifyError -> SKIP,(1 * 3600)))
+	Monitoring2 = SKIP
+within StartBy(authorized?vauthorized ->
+	if (not (vauthorized)) then Monitoring2
+	else (Monitoring1)
+,0)
+
+-- alphabet for FRule8 
+AFRule8 = {|NotifyError, authorized, StartMission, FinishMission|}
+SLEECFRule8 = timed_priority(FRule8)
+
+
+-- FRule9 when OperatorInstruction then SoundWarningMessage within 1 seconds 
+-- unless ((personNearby) and ((distance) < (1))) then not SprayWater within 1 seconds
+
+FRule9 = TriggerFRule9; MonitoringFRule9; FRule9
+
+TriggerFRule9 = OperatorInstruction -> SKIP	[] SoundWarningMessage -> TriggerFRule9
+	[] SprayWater -> TriggerFRule9
+
+
+MonitoringFRule9 = let
+	Monitoring1 = StartBy(SoundWarningMessage -> SKIP,(1 * 1))
+	Monitoring2 = WAIT((1 * 1))
+within StartBy(personNearby?vpersonNearby ->
+	StartBy(distance?vdistance ->
+		if ((vpersonNearby) and ((vdistance) < (1))) then Monitoring2
+		else (Monitoring1)
+	,0)
+,0)
+
+-- alphabet for FRule9 
+AFRule9 = {|distance, SoundWarningMessage, personNearby, OperatorInstruction, SprayWater|}
+SLEECFRule9 = timed_priority(FRule9)
+
+
+	
+}

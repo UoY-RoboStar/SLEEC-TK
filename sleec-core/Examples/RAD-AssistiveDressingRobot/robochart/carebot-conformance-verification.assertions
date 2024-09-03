@@ -1,22 +1,7 @@
+package ConformanceVerification
+import common::*
 
---
--- RoboChart generator version 3.0.0.202306261132
--- Automatically generated on 02-11-2023 11:14:05
---
--- Iterated compression status: true
--- Assertions compression status: false
---
-
-include "defs/Dressing.csp"
-include "defs/file_common_defs.csp"
-include "defs/state_timed_defs.csp"
-include "defs/robochart_defs.csp"
-include "defs/core_defs.csp"
-include "defs/core_timed_defs.csp"
-include "defs/system_defs.csp"
-include "defs/system.csp"
-
-channel r__
+timed csp Instantiations associated to system::Module csp-begin 
 
 -- OPERATION BOUNDS
 
@@ -1173,6 +1158,9 @@ ARule73 = {|OpenCurtainsRequested, CurtainsOpened|}
 SLEECRule73 = timed_priority(Rule73)
 }
 
+csp-end
+
+timed csp RCSpec2 associated to Dressing csp-begin
 Timed(et) {
 	RCSpec2 = timed_priority(
 			let
@@ -1186,7 +1174,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC2 csp-begin
 Timed(et) {
 	RC2 = timed_priority(
 		let
@@ -1200,7 +1190,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec3 csp-begin
 Timed(et) {
 	RCSpec3 = timed_priority(
 			let
@@ -1214,7 +1206,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC3 csp-begin
 Timed(et) {
 	RC3 = timed_priority(
 		let
@@ -1228,7 +1222,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec4 csp-begin
 Timed(et) {
 	RCSpec4 = timed_priority(
 			let
@@ -1242,7 +1238,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC4 csp-begin
 Timed(et) {
 	RC4 = timed_priority(
 		let
@@ -1256,7 +1254,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec5 csp-begin
 Timed(et) {
 	RCSpec5 = timed_priority(
 			let
@@ -1270,7 +1270,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC5 csp-begin
 Timed(et) {
 	RC5 = timed_priority(
 		let
@@ -1284,7 +1286,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec6 csp-begin
 Timed(et) {
 	RCSpec6 = timed_priority(
 			let
@@ -1298,7 +1302,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC6 csp-begin
 Timed(et) {
 	RC6 = timed_priority(
 		let
@@ -1312,7 +1318,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec7 csp-begin
 Timed(et) {
 	RCSpec7 = timed_priority(
 			let
@@ -1326,7 +1334,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC7 csp-begin
 Timed(et) {
 	RC7 = timed_priority(
 		let
@@ -1340,7 +1350,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec8 csp-begin
 Timed(et) {
 	RCSpec8 = timed_priority(
 			let
@@ -1354,7 +1366,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC8 csp-begin
 Timed(et) {
 	RC8 = timed_priority(
 		let
@@ -1368,7 +1382,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec12 csp-begin
 Timed(et) {
 	RCSpec12 = timed_priority(
 			let
@@ -1382,7 +1398,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC12 csp-begin
 Timed(et) {
 	RC12 = timed_priority(
 		let
@@ -1396,7 +1414,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec22 csp-begin
 Timed(et) {
 	RCSpec22 = timed_priority(
 			let
@@ -1410,7 +1430,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC22 csp-begin
 Timed(et) {
 	RC22 = timed_priority(
 		let
@@ -1424,7 +1446,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec32 csp-begin
 Timed(et) {
 	RCSpec32 = timed_priority(
 			let
@@ -1438,7 +1462,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC32 csp-begin
 Timed(et) {
 	RC32 = timed_priority(
 		let
@@ -1452,7 +1478,10 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+
+timed csp RCSpec42 csp-begin
 Timed(et) {
 	RCSpec42 = timed_priority(
 			let
@@ -1466,7 +1495,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC42 csp-begin
 Timed(et) {
 	RC42 = timed_priority(
 		let
@@ -1480,7 +1511,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec52 csp-begin
 Timed(et) {
 	RCSpec52 = timed_priority(
 			let
@@ -1494,7 +1527,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC52 csp-begin
 Timed(et) {
 	RC52 = timed_priority(
 		let
@@ -1508,7 +1543,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec13 csp-begin
 Timed(et) {
 	RCSpec13 = timed_priority(
 			let
@@ -1522,7 +1559,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC13 csp-begin
 Timed(et) {
 	RC13 = timed_priority(
 		let
@@ -1536,7 +1575,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec23 csp-begin
 Timed(et) {
 	RCSpec23 = timed_priority(
 			let
@@ -1550,7 +1591,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC23 csp-begin
 Timed(et) {
 	RC23 = timed_priority(
 		let
@@ -1564,7 +1607,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec63 csp-begin
 Timed(et) {
 	RCSpec63 = timed_priority(
 			let
@@ -1578,7 +1623,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC63 csp-begin
 Timed(et) {
 	RC63 = timed_priority(
 		let
@@ -1592,7 +1639,9 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RCSpec73 csp-begin
 Timed(et) {
 	RCSpec73 = timed_priority(
 			let
@@ -1606,7 +1655,9 @@ Timed(et) {
 				) \GMemoryInternalEvents(Measures)
 	)
 }
+csp-end
 
+timed csp RC73 csp-begin
 Timed(et) {
 	RC73 = timed_priority(
 		let
@@ -1620,19 +1671,10 @@ Timed(et) {
 			) \GMemoryInternalEvents(Measures)
 	)
 }
-
--- Check12 - refinement
-assert RCSpec12 [T= RC12
-
--- Check22 - refinement
-assert RCSpec22 [T= RC22
-
--- Check32 - refinement
-assert RCSpec32 [T= RC32
-
--- Check42 - refinement
-assert RCSpec42 [T= RC42
-
--- Check52 - refinement
-assert RCSpec52 [T= RC52
-
+csp-end
+ 
+timed assertion Check12 : RC12 refines RCSpec12 in the traces model
+timed assertion Check22 : RC22 refines RCSpec22 in the traces model
+timed assertion Check32 : RC32 refines RCSpec32 in the traces model
+timed assertion Check42 : RC42 refines RCSpec42 in the traces model
+timed assertion Check52 : RC52 refines RCSpec52 in the traces model
