@@ -7,15 +7,15 @@ robotic platform RAD {
 	uses IDressing 
 	uses ICurtains
 	uses ISupport
-	uses PlatformSupport
 	provides PlatformOp
+	uses PlatformSupport
 }controller ctrl0 {
-	requires PlatformSupport
 	requires PlatformOp
 	sref stm_ref0 = DressingService
 	sref stm_ref1 = MonitoringService
 	uses IUserFall uses IUserParam uses IRoomTemp uses IDressing uses ICurtains
 	uses ISupportP
+	requires PlatformSupport
 	opref op_ref0 = CallSupportDecision
 	opref op_ref1 = OpenCurtains
 	opref op_ref2 = Dress
@@ -52,8 +52,10 @@ stm DressingService {
 	var temp : int
 
 	var retry : boolean , completed : boolean
-	requires ISupportCall
+
+	requires PlatformOp
 	requires PlatformSupport
+	requires ISupportCall
 	initial i0
 	state Idle {
 	}
@@ -127,8 +129,10 @@ stm MonitoringService {
 	var underDressed : boolean  
 	var assent : boolean
 	uses ICurtains uses IUserParam uses IUserFall requires ICurtainOp
-	uses ISupport requires ISupportCall 
+	uses ISupport
 	requires PlatformSupport
+	requires PlatformOp
+	requires ISupportCall
 	initial i0
 	state Idle {
 	}
@@ -184,6 +188,7 @@ var distress : Distress
 
 operation CallSupportDecision ( ) {
 	uses ISupport
+	requires ISupportCall
 	requires PlatformOp
 	requires PlatformSupport
 	var assent : boolean
@@ -197,7 +202,7 @@ operation CallSupportDecision ( ) {
 	assentToSupportCalls ? assent <{ 0 }
 	}
 state CallSupport {
-		entry CallSupport ( ) ; support = true
+		entry CallSupportDecision ( ) ; support = true
 	}
 	junction j0
 	transition t1 {
@@ -238,9 +243,9 @@ initial i0
 		to f0
 		action 
 	
-	wait ( [ 0 , vt ( 159 , Time :: seconds ) ] ) ; retry = true
+	wait ( [ 0 , vt ( 159 , Time :: seconds ) ] ) ; support = true
 	}
-requires IRetry }
+requires PlatformSupport }
 
 operation Dress ( temp : nat
 ) {
@@ -255,22 +260,22 @@ initial i0
 		from j0
 		to f0
 		condition temp < 17
-		action wait ( [ 0 , vt ( 60 , Time :: seconds ) ] ) ; completed = true
+		action wait ( [ 0 , vt ( 60 , Time :: seconds ) ] ) ; retry = true
 	}
 	transition t2 {
 		from j0
 		to f0
 		condition temp >= 17 /\ temp < 19
-		action wait ( [ 0 , vt ( 90 , Time :: seconds ) ] ) ; completed = true
+		action wait ( [ 0 , vt ( 90 , Time :: seconds ) ] ) ; retry = true
 	}
 	transition t3 {
 		from j0
 		to f0
 		condition temp >= 19
-		action wait ( [ 0 , vt ( 2 , Time :: minutes ) ] ) ; completed = true
+		action wait ( [ 0 , vt ( 2 , Time :: minutes ) ] ) ; retry = true
 	}
-requires IComplete }
-
+requires IRetry }
+ 
 module Module {
 	connection rp_ref0 on DressingStarted to ctrl_ref0 on DressingStarted ( _async )
 	connection ctrl_ref0 on DressingComplete to rp_ref0 on DressingComplete ( _async )
@@ -323,15 +328,43 @@ module Module {
 	}
 
 connection rp_ref0 on SupportCalled to ctrl0 on SupportCalled ( _async )
+connection rp_ref0 on assentToSupportCalls to ctrl1 on assentToSupportCalls ( _async )
+	connection ctrl1 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1
+	connection ctrl1 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2
+	controller ctrl1 {
+		uses IAssents event assentToSupportCalls : boolean
+		stm stm0 {
+			uses IAssents var assent : boolean
+			event assentToSupportCalls : boolean
+			initial i0
+			state Idle {
+			}
+			transition t0 {
+				from i0
+				to Idle
+			}
+			transition t1 {
+				from Idle
+				to Idle
+				trigger assentToSupportCalls ? assent
+				action assentToSupportCalls1 ! assent ; assentToSupportCalls2 ! assent
+			}
+		}
+
+	connection ctrl1 on assentToSupportCalls to stm0 on assentToSupportCalls
+		connection stm0 on assentToSupportCalls1 to ctrl1 on assentToSupportCalls1
+		connection stm0 on assentToSupportCalls2 to ctrl1 on assentToSupportCalls2
+	}
+
 } 
 
 operation Clear ( ) {
-	requires IRetry requires IComplete initial i0
+	requires PlatformSupport requires IRetry initial i0
 	final f0
 	transition t0 {
 		from i0
 		to f0
-		action completed = false ; retry = false
+		action retry = false ; support = false
 	}
 }
 

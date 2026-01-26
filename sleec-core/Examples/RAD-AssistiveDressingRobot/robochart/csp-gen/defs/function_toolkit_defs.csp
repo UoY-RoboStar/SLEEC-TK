@@ -18,6 +18,7 @@
 -- sets in our encoding in CSPM are always finite
 
 -- include "relation_toolkit.csp"
+
 function_toolkit_isFinite(s) = true
 
 function_toolkit_isFiniteFunction(f) = function_toolkit_isFinite(f)

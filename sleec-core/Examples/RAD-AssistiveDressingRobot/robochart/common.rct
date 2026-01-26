@@ -42,6 +42,10 @@ interface ISupport {
 
 	event SupportCalled
 }
+interface IAssents {
+	event assentToSupportCalls1 : boolean
+	event assentToSupportCalls2 : boolean
+}
 interface ISupportP {
 	event assentToSupportCalls1 : boolean
 	event assentToSupportCalls2 : boolean

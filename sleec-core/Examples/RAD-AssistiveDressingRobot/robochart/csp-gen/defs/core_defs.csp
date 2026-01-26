@@ -17,6 +17,15 @@ LSeq(X,n) = let s = LSeq(X,n-1) within union(s,{<x>^xs|x<-X,xs<-s})
 ILSeq(X,0) = {<>}
 ILSeq(X,n) = let s = ILSeq(X,n-1) within union(s,{<x>^xs|x<-X,xs<-s,not elem(x,xs)})
 
+-- set of all relations s1 <-> s2
+Relation(s1, s2) = Set({ (x,y) | x <- s1, y <- s2 })
+
+-- set of all functions s1 -> s2
+Function(s1, s2) = { r | r <- Relation(s1, s2), set(mapToList(mapFromList(seq(r)))) == r, {x | (x, y) <- r} == s1}
+
+funcToSet(f, s) = { (x, f(x)) | x <- s}
+callFunc(f, x) = mapLookup(mapFromList(seq(f)), x)
+
 calc_type_max(S) = calc_type_seq_max(seq(S),0)
 calc_type_seq_max(<>,x__) = x__
 calc_type_seq_max(<elem__>^xs,x__) = (if elem__ > x__ then calc_type_seq_max(xs,elem__) else calc_type_seq_max(xs,x__))
