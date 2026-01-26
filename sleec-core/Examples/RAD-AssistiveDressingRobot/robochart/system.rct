@@ -1,10 +1,16 @@
 package system 
 
 robotic platform RAD {
-	uses IUserFall uses IUserParam uses IRoomTemp uses IDressing uses ICurtains
-	uses ISupportP
+	uses IUserFall 
+	uses IUserParam 
+	uses IRoomTemp 
+	uses IDressing 
+	uses ICurtains
+	uses ISupport
+	uses PlatformSupport
 	provides PlatformOp
 }controller ctrl0 {
+	requires PlatformSupport
 	requires PlatformOp
 	sref stm_ref0 = DressingService
 	sref stm_ref1 = MonitoringService
@@ -22,7 +28,7 @@ robotic platform RAD {
 	connection ctrl0 on DressingAbandoned to stm_ref0 on DressingAbandoned
 	connection ctrl0 on userUnderDressed to stm_ref1 on userUnderDressed
 	connection stm_ref1 on CurtainsOpened to ctrl0 on CurtainsOpened
-	connection stm_ref1 on refuseRequest to ctrl0 on refuseRequest
+	connection stm_ref1 on RefuseRequest to ctrl0 on RefuseRequest
 	connection ctrl0 on CurtainOpenRqt to stm_ref1 on CurtainOpenRqt
 connection ctrl0 on assentToSupportCalls1 to stm_ref0 on assentToSupportCalls
 	connection ctrl0 on userDistressed to stm_ref1 on userDistressed
@@ -47,6 +53,7 @@ stm DressingService {
 
 	var retry : boolean , completed : boolean
 	requires ISupportCall
+	requires PlatformSupport
 	initial i0
 	state Idle {
 	}
@@ -121,6 +128,7 @@ stm MonitoringService {
 	var assent : boolean
 	uses ICurtains uses IUserParam uses IUserFall requires ICurtainOp
 	uses ISupport requires ISupportCall 
+	requires PlatformSupport
 	initial i0
 	state Idle {
 	}
@@ -142,7 +150,7 @@ stm MonitoringService {
 		from j0
 		to Idle
 		condition underDressed /\ distress != Distress :: high
-		action refuseRequest <{ 0 }
+		action RefuseRequest <{ 0 }
 	}
 	transition t3 {
 		from j0
@@ -177,6 +185,7 @@ var distress : Distress
 operation CallSupportDecision ( ) {
 	uses ISupport
 	requires PlatformOp
+	requires PlatformSupport
 	var assent : boolean
 	initial i0
 	final f0
@@ -188,7 +197,7 @@ operation CallSupportDecision ( ) {
 	assentToSupportCalls ? assent <{ 0 }
 	}
 state CallSupport {
-		entry CallSupport ( )
+		entry CallSupport ( ) ; support = true
 	}
 	junction j0
 	transition t1 {
@@ -270,14 +279,14 @@ module Module {
 	connection ctrl_ref0 on CurtainsOpened to rp_ref0 on CurtainsOpened ( _async )
 	connection rp_ref0 on roomTemperature to ctrl_ref0 on roomTemperature ( _async )
 	connection rp_ref0 on userUnderDressed to ctrl_ref0 on userUnderDressed ( _async )
-	connection rp_ref0 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1 ( _async )
+	//connection rp_ref0 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1 ( _async )
 	connection rp_ref0 on userDistressed to ctrl_ref0 on userDistressed ( _async )
 	connection rp_ref0 on UserFallen to ctrl_ref0 on UserFallen ( _async )
 	connection ctrl_ref0 on retryAgreed to rp_ref0 on retryAgreed ( _async )
-	connection ctrl_ref0 on refuseRequest to rp_ref0 on refuseRequest ( _async )
+	connection ctrl_ref0 on RefuseRequest to rp_ref0 on RefuseRequest ( _async )
 	rref rp_ref0 = RAD
 	cref ctrl_ref0 = system::ctrl0
-connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
+	//connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
 
 	connection ctrl0 on supportCalled1 to ctrl_ref0 on supportCalled1 ( _async )
 
@@ -286,6 +295,7 @@ connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls
 		event SupportCalled
 		event supportCalled1
 		event supportCalled2
+		requires PlatformSupport
 		stm stm0 {
 			event SupportCalled
 			event supportCalled1
@@ -300,16 +310,19 @@ connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls
 			transition t1 {
 				from Idle
 				to Idle
-				trigger SupportCalled
-				action supportCalled1 ; supportCalled2
+				trigger 
+				SupportCalled
+				condition support
+				action support = false ; supportCalled1 ; supportCalled2
 			}
-		}
+		requires PlatformSupport }
 
 		connection stm0 on supportCalled1 to ctrl0 on supportCalled1
 		connection stm0 on supportCalled2 to ctrl0 on supportCalled2
 		connection ctrl0 on SupportCalled to stm0 on SupportCalled
 	}
 
+connection rp_ref0 on SupportCalled to ctrl0 on SupportCalled ( _async )
 } 
 
 operation Clear ( ) {

@@ -21,7 +21,7 @@ interface IUserFall {
 interface ICurtains {
 	event CurtainOpenRqt
 	event CurtainsOpened
-	event refuseRequest
+	event RefuseRequest
 }
 
 interface IRoomTemp {
@@ -53,6 +53,9 @@ interface ISupportCall {
 }
 interface PlatformOp {
 	CallSupport()
+}
+interface PlatformSupport {
+	var support : boolean = false
 }
 interface IRetry {
 	var retry:boolean
