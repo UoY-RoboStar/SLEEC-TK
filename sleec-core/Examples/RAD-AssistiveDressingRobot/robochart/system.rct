@@ -328,8 +328,8 @@ module Software {
 
 connection rp_ref0 on SupportCalled to ctrl0 on SupportCalled ( _async )
 connection rp_ref0 on assentToSupportCalls to ctrl1 on assentToSupportCalls ( _async )
-	connection ctrl1 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1
-	connection ctrl1 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2
+	connection ctrl1 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1 ( _async )
+	connection ctrl1 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
 	controller ctrl1 {
 		uses IAssents event assentToSupportCalls : boolean
 		stm stm0 {
