@@ -276,10 +276,40 @@ module Module {
 	connection ctrl_ref0 on retryAgreed to rp_ref0 on retryAgreed ( _async )
 	connection ctrl_ref0 on refuseRequest to rp_ref0 on refuseRequest ( _async )
 	rref rp_ref0 = RAD
-	cref ctrl_ref0 = ctrl0
+	cref ctrl_ref0 = system::ctrl0
 connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
-	connection rp_ref0 on supportCalled1 to ctrl_ref0 on supportCalled1 ( _async )
-	connection rp_ref0 on supportCalled2 to ctrl_ref0 on supportCalled2 ( _async )
+
+	connection ctrl0 on supportCalled1 to ctrl_ref0 on supportCalled1 ( _async )
+
+	connection ctrl0 on supportCalled2 to ctrl_ref0 on supportCalled2 ( _async )
+	controller ctrl0 {
+		event SupportCalled
+		event supportCalled1
+		event supportCalled2
+		stm stm0 {
+			event SupportCalled
+			event supportCalled1
+			event supportCalled2
+			initial i0
+			state Idle {
+			}
+			transition t0 {
+				from i0
+				to Idle
+			}
+			transition t1 {
+				from Idle
+				to Idle
+				trigger SupportCalled
+				action supportCalled1 ; supportCalled2
+			}
+		}
+
+		connection stm0 on supportCalled1 to ctrl0 on supportCalled1
+		connection stm0 on supportCalled2 to ctrl0 on supportCalled2
+		connection ctrl0 on SupportCalled to stm0 on SupportCalled
+	}
+
 } 
 
 operation Clear ( ) {
