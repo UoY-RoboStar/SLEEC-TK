@@ -1,5 +1,5 @@
 
-timed csp Instantiations associated to system::Module csp-begin
+timed csp Instantiations associated to RAD::Module csp-begin
 
 -- OPERATION BOUNDS
 
@@ -58,9 +58,9 @@ vt(x__,Time_minutes) = x__*60
 csp-end 
 
 
-timed sleec assertion Check1 : system::Module conforms to Rule1
-timed sleec assertion Check2 : system::Module conforms to Rule2 
+timed sleec assertion Check1 : RAD::Module conforms to Rule1
+timed sleec assertion Check2 : RAD::Module conforms to Rule2 
 //timed sleec assertion Check3 : system::Module conforms to Rule3
-timed sleec assertion Check4 : system::Module conforms to Rule4
+timed sleec assertion Check4 : RAD::Module conforms to Rule4
 
 

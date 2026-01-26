@@ -31,7 +31,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_lfPlUM_bEe29ML-8iIxLiw" name="Module" repPath="#_lfJesM_bEe29ML-8iIxLiw" changeId="a5f174ab-ad1b-4736-8ff7-97552a6131e8">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_lfPlUM_bEe29ML-8iIxLiw" name="Module" repPath="#_lfJesM_bEe29ML-8iIxLiw" changeId="c6480af7-27f5-4b11-b46e-ab583620d5dc">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
@@ -23049,7 +23049,7 @@
     <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_lfMiAM_bEe29ML-8iIxLiw" source="DANNOTATION_CUSTOMIZATION_KEY">
       <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_lfMiAc_bEe29ML-8iIxLiw"/>
     </ownedAnnotationEntries>
-    <ownedDiagramElements xmi:type="diagram:DNode" uid="_lfMiAs_bEe29ML-8iIxLiw" name="package system" visible="false" width="20" height="4" resizeKind="NSEW">
+    <ownedDiagramElements xmi:type="diagram:DNode" uid="_lfMiAs_bEe29ML-8iIxLiw" name="package RAD" visible="false" width="20" height="4" resizeKind="NSEW">
       <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       <semanticElements xmi:type="robochart:RCPackage" href="system.rct#/"/>
       <graphicalFilters xmi:type="diagram:HideFilter" uid="_qtX3Ec_bEe29ML-8iIxLiw"/>
@@ -24794,7 +24794,7 @@
           <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ModuleID']/@subContainerMappings[name='ModuleNodes']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ModuleID']/@subContainerMappings[name='ModuleNodes']"/>
-        <ownedDiagramElements xmi:type="diagram:DNode" uid="_lfNwZs_bEe29ML-8iIxLiw" name="ref system::ctrl0" width="10" height="5" resizeKind="NSEW">
+        <ownedDiagramElements xmi:type="diagram:DNode" uid="_lfNwZs_bEe29ML-8iIxLiw" name="ref RAD::ctrl0" width="10" height="5" resizeKind="NSEW">
           <target xmi:type="robochart:ControllerRef" href="system.rct#//@modules.0/@nodes.1"/>
           <semanticElements xmi:type="robochart:ControllerRef" href="system.rct#//@modules.0/@nodes.1"/>
           <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwZ8_bEe29ML-8iIxLiw" name="DressingStarted" incomingEdges="_lfNwms_bEe29ML-8iIxLiw" width="3" height="3">
@@ -24971,7 +24971,7 @@
           </ownedStyle>
           <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='ControllerRefID']"/>
         </ownedDiagramElements>
-        <ownedDiagramElements xmi:type="diagram:DNode" uid="_lfNwgM_bEe29ML-8iIxLiw" name="ref system::RAD" width="10" height="5" resizeKind="NSEW">
+        <ownedDiagramElements xmi:type="diagram:DNode" uid="_lfNwgM_bEe29ML-8iIxLiw" name="ref RAD::RAD" width="10" height="5" resizeKind="NSEW">
           <target xmi:type="robochart:RoboticPlatformRef" href="system.rct#//@modules.0/@nodes.0"/>
           <semanticElements xmi:type="robochart:RoboticPlatformRef" href="system.rct#//@modules.0/@nodes.0"/>
           <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwgc_bEe29ML-8iIxLiw" name="DressingStarted" outgoingEdges="_lfNwms_bEe29ML-8iIxLiw" width="3" height="3">

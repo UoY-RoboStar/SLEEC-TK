@@ -1,4 +1,4 @@
-package system 
+package RAD 
 
 robotic platform RAD {
 	uses IUserFall 
@@ -290,7 +290,7 @@ module Module {
 	connection ctrl_ref0 on RetryAgreed to rp_ref0 on RetryAgreed ( _async )
 	connection ctrl_ref0 on RefuseRequest to rp_ref0 on RefuseRequest ( _async )
 	rref rp_ref0 = RAD
-	cref ctrl_ref0 = system::ctrl0
+	cref ctrl_ref0 = RAD::ctrl0
 	//connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
 
 	connection ctrl0 on supportCalled1 to ctrl_ref0 on supportCalled1 ( _async )
