@@ -276,7 +276,7 @@ initial i0
 	}
 requires IRetry }
  
-module Module {
+module Software {
 	connection rp_ref0 on DressingStarted to ctrl_ref0 on DressingStarted ( _async )
 	connection ctrl_ref0 on DressingComplete to rp_ref0 on DressingComplete ( _async )
 	connection rp_ref0 on DressingAbandoned to ctrl_ref0 on DressingAbandoned ( _async )

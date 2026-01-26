@@ -31,7 +31,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_lfPlUM_bEe29ML-8iIxLiw" name="Module" repPath="#_lfJesM_bEe29ML-8iIxLiw" changeId="c6480af7-27f5-4b11-b46e-ab583620d5dc">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_lfPlUM_bEe29ML-8iIxLiw" name="Module" repPath="#_lfJesM_bEe29ML-8iIxLiw" changeId="cfc00c19-7afa-41e2-b406-90aa10229fbc">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
@@ -24776,7 +24776,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@edgeMappings[name='TransitionID']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_lfNwYc_bEe29ML-8iIxLiw" name="Module" childrenPresentation="HorizontalStack">
+    <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_lfNwYc_bEe29ML-8iIxLiw" name="Software" childrenPresentation="HorizontalStack">
       <target xmi:type="robochart:RCModule" href="system.rct#//@modules.0"/>
       <semanticElements xmi:type="robochart:RCModule" href="system.rct#//@modules.0"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -24786,7 +24786,7 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ModuleID']/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ModuleID']"/>
-      <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_lfNwY8_bEe29ML-8iIxLiw" name="Module">
+      <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_lfNwY8_bEe29ML-8iIxLiw" name="Software">
         <target xmi:type="robochart:RCModule" href="system.rct#//@modules.0"/>
         <semanticElements xmi:type="robochart:RCModule" href="system.rct#//@modules.0"/>
         <graphicalFilters xmi:type="diagram:HideLabelFilter" uid="_lfNwZM_bEe29ML-8iIxLiw"/>
