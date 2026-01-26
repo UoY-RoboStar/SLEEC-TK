@@ -1,6 +1,6 @@
 package RAD 
 
-robotic platform RAD {
+robotic platform RADRobot {
 	uses IUserFall 
 	uses IUserParam 
 	uses IRoomTemp 
@@ -188,7 +188,6 @@ var distress : Distress
 
 operation CallSupportDecision ( ) {
 	uses ISupport
-	requires ISupportCall
 	requires PlatformOp
 	requires PlatformSupport
 	var assent : boolean
@@ -202,7 +201,7 @@ operation CallSupportDecision ( ) {
 	assentToSupportCalls ? assent <{ 0 }
 	}
 state CallSupport {
-		entry CallSupportDecision ( ) ; support = true
+		entry CallSupport ( ) ; support = true
 	}
 	junction j0
 	transition t1 {
@@ -243,9 +242,9 @@ initial i0
 		to f0
 		action 
 	
-	wait ( [ 0 , vt ( 159 , Time :: seconds ) ] ) ; support = true
+	wait ( [ 0 , vt ( 159 , Time :: seconds ) ] ) ; retry = true
 	}
-requires PlatformSupport }
+requires IRetry }
 
 operation Dress ( temp : nat
 ) {
@@ -289,7 +288,7 @@ module Software {
 	connection rp_ref0 on UserFallen to ctrl_ref0 on UserFallen ( _async )
 	connection ctrl_ref0 on RetryAgreed to rp_ref0 on RetryAgreed ( _async )
 	connection ctrl_ref0 on RefuseRequest to rp_ref0 on RefuseRequest ( _async )
-	rref rp_ref0 = RAD
+	rref rp_ref0 = RADRobot
 	cref ctrl_ref0 = RAD::ctrl0
 	//connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
 
@@ -359,12 +358,12 @@ connection rp_ref0 on assentToSupportCalls to ctrl1 on assentToSupportCalls ( _a
 } 
 
 operation Clear ( ) {
-	requires PlatformSupport requires IRetry initial i0
+	requires IComplete requires IRetry initial i0
 	final f0
 	transition t0 {
 		from i0
 		to f0
-		action retry = false ; support = false
+		action completed = true; retry = false
 	}
 }
 
