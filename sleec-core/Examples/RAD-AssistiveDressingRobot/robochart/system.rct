@@ -21,7 +21,7 @@ robotic platform RAD {
 	opref op_ref2 = Dress
 	opref op_ref3 = Retry
 
-	connection stm_ref0 on retryAgreed to ctrl0 on retryAgreed
+	connection stm_ref0 on RetryAgreed to ctrl0 on RetryAgreed
 	connection stm_ref0 on DressingComplete to ctrl0 on DressingComplete
 	connection ctrl0 on DressingStarted to stm_ref0 on DressingStarted
 	connection ctrl0 on roomTemperature to stm_ref0 on roomTemperature
@@ -95,7 +95,7 @@ stm DressingService {
 		from Abandoned
 		to Dressing
 		condition retry
-		action retryAgreed <{ 0 }
+		action RetryAgreed <{ 0 }
 	}
 	transition t5 {
 		from Abandoned
@@ -282,7 +282,7 @@ module Module {
 	//connection rp_ref0 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1 ( _async )
 	connection rp_ref0 on userDistressed to ctrl_ref0 on userDistressed ( _async )
 	connection rp_ref0 on UserFallen to ctrl_ref0 on UserFallen ( _async )
-	connection ctrl_ref0 on retryAgreed to rp_ref0 on retryAgreed ( _async )
+	connection ctrl_ref0 on RetryAgreed to rp_ref0 on RetryAgreed ( _async )
 	connection ctrl_ref0 on RefuseRequest to rp_ref0 on RefuseRequest ( _async )
 	rref rp_ref0 = RAD
 	cref ctrl_ref0 = system::ctrl0

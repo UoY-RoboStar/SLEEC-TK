@@ -6,7 +6,7 @@ interface IDressing {
 	event DressingStarted
 	event DressingComplete
 	event DressingAbandoned
-	event retryAgreed
+	event RetryAgreed
 }
 
 interface IUserParam {

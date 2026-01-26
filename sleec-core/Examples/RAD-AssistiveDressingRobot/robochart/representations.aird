@@ -31,11 +31,11 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_lfPlUM_bEe29ML-8iIxLiw" name="Module" repPath="#_lfJesM_bEe29ML-8iIxLiw" changeId="5fc72b9f-e886-4f55-91e7-b5ec8add358f">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_lfPlUM_bEe29ML-8iIxLiw" name="Module" repPath="#_lfJesM_bEe29ML-8iIxLiw" changeId="22d8c452-23f7-44c6-8a66-50e086682446">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_E9CckPS1Ee2VEZU_dklN_w" name="CallSupportDecision" repPath="#_E87u4PS1Ee2VEZU_dklN_w" changeId="7855e9dd-fc39-4938-a4c1-c61af1eb9559">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_E9CckPS1Ee2VEZU_dklN_w" name="CallSupportDecision" repPath="#_E87u4PS1Ee2VEZU_dklN_w" changeId="ad9e1453-edbe-4e7c-a75b-db71dd8d6cfe">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="system.rct#/"/>
       </ownedRepresentationDescriptors>
@@ -20784,7 +20784,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
       </ownedBorderedNodes>
-      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfMiC8_bEe29ML-8iIxLiw" name="retryAgreed" visible="false" width="3" height="3">
+      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfMiC8_bEe29ML-8iIxLiw" name="RetryAgreed" visible="false" width="3" height="3">
         <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -21396,7 +21396,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@edgeMappings[name='TransitionID']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_lfNJkM_bEe29ML-8iIxLiw" name="[retry]/retryAgreed &lt;{0}" visible="false" sourceNode="_lfMiPs_bEe29ML-8iIxLiw" targetNode="_lfMiMM_bEe29ML-8iIxLiw">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_lfNJkM_bEe29ML-8iIxLiw" name="[retry]/RetryAgreed &lt;{0}" visible="false" sourceNode="_lfMiPs_bEe29ML-8iIxLiw" targetNode="_lfMiMM_bEe29ML-8iIxLiw">
       <target xmi:type="robochart:Transition" href="system.rct#//@machines.0/@transitions.4"/>
       <semanticElements xmi:type="robochart:Transition" href="system.rct#//@machines.0/@transitions.4"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_lfNJkc_bEe29ML-8iIxLiw" size="2" routingStyle="manhattan">
@@ -21652,7 +21652,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
       </ownedBorderedNodes>
-      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNJws_bEe29ML-8iIxLiw" name="retryAgreed" visible="false" incomingEdges="_lfNwNM_bEe29ML-8iIxLiw" width="3" height="3">
+      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNJws_bEe29ML-8iIxLiw" name="RetryAgreed" visible="false" incomingEdges="_lfNwNM_bEe29ML-8iIxLiw" width="3" height="3">
         <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -21779,7 +21779,7 @@
             </ownedStyle>
             <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
           </ownedBorderedNodes>
-          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNJ18_bEe29ML-8iIxLiw" name="retryAgreed" visible="false" outgoingEdges="_lfNwNM_bEe29ML-8iIxLiw" width="3" height="3">
+          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNJ18_bEe29ML-8iIxLiw" name="RetryAgreed" visible="false" outgoingEdges="_lfNwNM_bEe29ML-8iIxLiw" width="3" height="3">
             <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -22490,7 +22490,7 @@
             </ownedStyle>
             <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
           </ownedBorderedNodes>
-          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwbc_bEe29ML-8iIxLiw" name="retryAgreed" outgoingEdges="_bP8lgvrEEfCIeOugf6GWxA" width="3" height="3">
+          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwbc_bEe29ML-8iIxLiw" name="RetryAgreed" outgoingEdges="_bP8lgvrEEfCIeOugf6GWxA" width="3" height="3">
             <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -22664,7 +22664,7 @@
             </ownedStyle>
             <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
           </ownedBorderedNodes>
-          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwh8_bEe29ML-8iIxLiw" name="retryAgreed" incomingEdges="_bP8lgvrEEfCIeOugf6GWxA" width="3" height="3">
+          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwh8_bEe29ML-8iIxLiw" name="RetryAgreed" incomingEdges="_bP8lgvrEEfCIeOugf6GWxA" width="3" height="3">
             <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -23080,7 +23080,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
       </ownedBorderedNodes>
-      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwss_bEe29ML-8iIxLiw" name="retryAgreed" visible="false" width="3" height="3">
+      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_lfNwss_bEe29ML-8iIxLiw" name="RetryAgreed" visible="false" width="3" height="3">
         <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -26676,7 +26676,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
       </ownedBorderedNodes>
-      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8-yOfS1Ee2VEZU_dklN_w" name="retryAgreed" visible="false" width="3" height="3">
+      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8-yOfS1Ee2VEZU_dklN_w" name="RetryAgreed" visible="false" width="3" height="3">
         <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -27291,7 +27291,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@edgeMappings[name='TransitionID']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_E8-y9_S1Ee2VEZU_dklN_w" name="[retry]/retryAgreed &lt;{0}" visible="false" sourceNode="_E8-ybvS1Ee2VEZU_dklN_w" targetNode="_E8-yYPS1Ee2VEZU_dklN_w">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_E8-y9_S1Ee2VEZU_dklN_w" name="[retry]/RetryAgreed &lt;{0}" visible="false" sourceNode="_E8-ybvS1Ee2VEZU_dklN_w" targetNode="_E8-yYPS1Ee2VEZU_dklN_w">
       <target xmi:type="robochart:Transition" href="system.rct#//@machines.0/@transitions.4"/>
       <semanticElements xmi:type="robochart:Transition" href="system.rct#//@machines.0/@transitions.4"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_E8-y-PS1Ee2VEZU_dklN_w" size="2" routingStyle="manhattan">
@@ -27564,7 +27564,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
       </ownedBorderedNodes>
-      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_ZS_S1Ee2VEZU_dklN_w" name="retryAgreed" visible="false" incomingEdges="_E8_Z0vS1Ee2VEZU_dklN_w" width="3" height="3">
+      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_ZS_S1Ee2VEZU_dklN_w" name="RetryAgreed" visible="false" incomingEdges="_E8_Z0vS1Ee2VEZU_dklN_w" width="3" height="3">
         <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -27703,7 +27703,7 @@
             </ownedStyle>
             <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
           </ownedBorderedNodes>
-          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_ZZvS1Ee2VEZU_dklN_w" name="retryAgreed" visible="false" outgoingEdges="_E8_Z0vS1Ee2VEZU_dklN_w" width="3" height="3">
+          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_ZZvS1Ee2VEZU_dklN_w" name="RetryAgreed" visible="false" outgoingEdges="_E8_Z0vS1Ee2VEZU_dklN_w" width="3" height="3">
             <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -28421,7 +28421,7 @@
             </ownedStyle>
             <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
           </ownedBorderedNodes>
-          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_aC_S1Ee2VEZU_dklN_w" name="retryAgreed" visible="false" outgoingEdges="_Q96fl_rFEfCIeOugf6GWxA" width="3" height="3">
+          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_aC_S1Ee2VEZU_dklN_w" name="RetryAgreed" visible="false" outgoingEdges="_Q96fl_rFEfCIeOugf6GWxA" width="3" height="3">
             <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -28595,7 +28595,7 @@
             </ownedStyle>
             <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
           </ownedBorderedNodes>
-          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_aK_S1Ee2VEZU_dklN_w" name="retryAgreed" visible="false" incomingEdges="_Q96fl_rFEfCIeOugf6GWxA" width="3" height="3">
+          <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_aK_S1Ee2VEZU_dklN_w" name="RetryAgreed" visible="false" incomingEdges="_Q96fl_rFEfCIeOugf6GWxA" width="3" height="3">
             <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
             <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -28975,7 +28975,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@nodeMappings[name='BorderedEventID']"/>
       </ownedBorderedNodes>
-      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_aXPS1Ee2VEZU_dklN_w" name="retryAgreed" visible="false" width="3" height="3">
+      <ownedBorderedNodes xmi:type="diagram:DNode" uid="_E8_aXPS1Ee2VEZU_dklN_w" name="RetryAgreed" visible="false" width="3" height="3">
         <target xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <semanticElements xmi:type="robochart:Event" href="common.rct#//@interfaces.0/@events.3"/>
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>

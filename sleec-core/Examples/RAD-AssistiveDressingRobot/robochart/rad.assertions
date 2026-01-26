@@ -61,6 +61,6 @@ csp-end
 timed sleec assertion Check1 : system::Module conforms to Rule1
 timed sleec assertion Check2 : system::Module conforms to Rule2 
 //timed sleec assertion Check3 : system::Module conforms to Rule3
-timed sleec assertion Check4 : system::Module conforms to Rule4 
+timed sleec assertion Check4 : system::Module conforms to Rule4
 
 
