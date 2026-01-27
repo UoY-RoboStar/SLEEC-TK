@@ -39,7 +39,7 @@ interface ICurtainOp {
 
 interface ISupport {
 	event assentToSupportCalls : boolean
-
+	event CallSupport
 	event SupportCalled
 }
 interface IAssents {

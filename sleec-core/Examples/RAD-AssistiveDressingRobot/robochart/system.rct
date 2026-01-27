@@ -6,16 +6,23 @@ robotic platform RADRobot {
 	uses IRoomTemp 
 	uses IDressing 
 	uses ICurtains
-	uses ISupport
-	provides PlatformOp
-	uses PlatformSupport
+	//uses ISupport
+	event assentToSupportCalls : boolean
+	event SupportCalled
+	//provides PlatformOp
+	//uses PlatformSupport
 }controller ctrl0 {
-	requires PlatformOp
+	//requires PlatformOp
 	sref stm_ref0 = DressingService
 	sref stm_ref1 = MonitoringService
-	uses IUserFall uses IUserParam uses IRoomTemp uses IDressing uses ICurtains
+	uses IUserFall 
+	uses IUserParam 
+	uses IRoomTemp 
+	uses IDressing 
+	uses ICurtains
 	uses ISupportP
-	requires PlatformSupport
+	event CallSupport1
+	event CallSupport2
 	opref op_ref0 = CallSupportDecision
 	opref op_ref1 = OpenCurtains
 	opref op_ref2 = Dress
@@ -41,6 +48,8 @@ opref op_ref4 = Clear
 	connection ctrl0 on supportCalled2 to stm_ref1 on SupportCalled
 
 	connection ctrl0 on supportCalled1 to stm_ref0 on SupportCalled
+connection stm_ref0 on CallSupport to ctrl0 on CallSupport1
+	connection stm_ref1 on CallSupport to ctrl0 on CallSupport2
 } 
 
 
@@ -53,9 +62,9 @@ stm DressingService {
 
 	var retry : boolean , completed : boolean
 
-	requires PlatformOp
-	requires PlatformSupport
+	//requires PlatformOp
 	requires ISupportCall
+	requires IDressingOp
 	initial i0
 	state Idle {
 	}
@@ -87,8 +96,8 @@ stm DressingService {
 		condition completed
 	}
 
-	requires IDressingOp 
-	state Abandoned {
+	var assent : boolean
+state Abandoned {
 		during 
 	Retry ( )
 		exit Clear ( )
@@ -105,7 +114,6 @@ stm DressingService {
 	condition not retry /\ sinceEntry ( Abandoned ) >= 120
 		action CallSupportDecision ( )
 	}
-var assent : boolean
 }
 
 //stm FallMonitor {
@@ -130,10 +138,10 @@ stm MonitoringService {
 	var assent : boolean
 	uses ICurtains uses IUserParam uses IUserFall requires ICurtainOp
 	uses ISupport
-	requires PlatformSupport
-	requires PlatformOp
 	requires ISupportCall
-	initial i0
+	//requires PlatformOp
+	var distress : Distress
+initial i0
 	state Idle {
 	}
 	junction j0 
@@ -183,13 +191,10 @@ stm MonitoringService {
 	
 	CallSupportDecision ( )
 	}
-var distress : Distress
 }
 
 operation CallSupportDecision ( ) {
 	uses ISupport
-	requires PlatformOp
-	requires PlatformSupport
 	var assent : boolean
 	initial i0
 	final f0
@@ -200,20 +205,21 @@ operation CallSupportDecision ( ) {
 	
 	assentToSupportCalls ? assent <{ 0 }
 	}
-state CallSupport {
-		entry CallSupport ( )
+state CallSupportState {
+		entry CallSupport <{ 0 }
 	}
 	junction j0
 	transition t1 {
-		from CallSupport
+		from CallSupportState
 		to f0
-		trigger SupportCalled
+		trigger 
+		SupportCalled
 		<{ 60
 	}
 	}
 	transition t2 {
 		from j0
-		to CallSupport
+		to CallSupportState
 		condition assent
 	}
 	transition t3 {
@@ -296,7 +302,8 @@ module Software {
 		event SupportCalled
 		event supportCalled1
 		event supportCalled2
-		requires PlatformSupport
+		event CallSupport1
+		event CallSupport2
 		stm stm0 {
 			event SupportCalled
 			event supportCalled1
@@ -309,33 +316,55 @@ module Software {
 				to Idle
 			}
 			transition t1 {
-				from Idle
+				from Triggered
 				to Relay
 				trigger 
 				
 				SupportCalled
 			}
-		requires PlatformSupport state Relay {
+		var done : boolean
+			event CallSupport1
+			event CallSupport2 state Relay {
 				initial i0
 				state Relay2 {
-					during supportCalled2
+					during supportCalled2 ; done = true
 				}
 				transition t0 {
 					from i0
 					to Relay2
 				}
-				during supportCalled1
+				during supportCalled1 ; done = true
 			}
 			transition t2 {
 				from Relay
 				to Relay
 				trigger SupportCalled
 			}
+		state Triggered {
+				entry done = false
+			}
+			transition t3 {
+				from Idle
+				to Triggered
+				trigger CallSupport1
+			}
+			transition t4 {
+				from Idle
+				to Triggered
+				trigger CallSupport2
+			}
+			transition t5 {
+				from Relay
+				to Triggered
+				condition done
+			}
 		}
 
 		connection stm0 on supportCalled1 to ctrl0 on supportCalled1
 		connection stm0 on supportCalled2 to ctrl0 on supportCalled2
 		connection ctrl0 on SupportCalled to stm0 on SupportCalled
+	connection ctrl0 on CallSupport1 to stm0 on CallSupport1
+		connection ctrl0 on CallSupport2 to stm0 on CallSupport2
 	}
 
 connection rp_ref0 on SupportCalled to ctrl0 on SupportCalled ( _async )
@@ -383,6 +412,8 @@ connection rp_ref0 on assentToSupportCalls to ctrl1 on assentToSupportCalls ( _a
 		connection stm0 on assentToSupportCalls2 to ctrl1 on assentToSupportCalls2
 	}
 
+connection ctrl_ref0 on CallSupport1 to ctrl0 on CallSupport1
+	connection ctrl_ref0 on CallSupport2 to ctrl0 on CallSupport2
 } 
 
 operation Clear ( ) {
