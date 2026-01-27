@@ -292,10 +292,7 @@ module Software {
 	cref ctrl_ref0 = RAD::ctrl0
 	//connection rp_ref0 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
 
-	connection ctrl0 on supportCalled1 to ctrl_ref0 on supportCalled1 ( _async )
-
-	connection ctrl0 on supportCalled2 to ctrl_ref0 on supportCalled2 ( _async )
-	controller ctrl0 {
+	connection ctrl0 on supportCalled1 to ctrl_ref0 on supportCalled1 connection ctrl0 on supportCalled2 to ctrl_ref0 on supportCalled2 controller ctrl0 {
 		event SupportCalled
 		event supportCalled1
 		event supportCalled2
@@ -313,13 +310,31 @@ module Software {
 			}
 			transition t1 {
 				from Idle
-				to Idle
+				to Relay
 				trigger 
+				
 				SupportCalled
 				condition support
-				action support = false ; supportCalled1 ; supportCalled2
 			}
-		requires PlatformSupport }
+		requires PlatformSupport state Relay {
+				initial i0
+				state Relay2 {
+					during supportCalled2
+				}
+				transition t0 {
+					from i0
+					to Relay2
+				}
+				entry support = false
+				during supportCalled1
+			}
+			transition t2 {
+				from Relay
+				to Relay
+				trigger SupportCalled
+				condition support
+			}
+		}
 
 		connection stm0 on supportCalled1 to ctrl0 on supportCalled1
 		connection stm0 on supportCalled2 to ctrl0 on supportCalled2
@@ -328,8 +343,8 @@ module Software {
 
 connection rp_ref0 on SupportCalled to ctrl0 on SupportCalled ( _async )
 connection rp_ref0 on assentToSupportCalls to ctrl1 on assentToSupportCalls ( _async )
-	connection ctrl1 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1 ( _async )
-	connection ctrl1 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2 ( _async )
+	connection ctrl1 on assentToSupportCalls1 to ctrl_ref0 on assentToSupportCalls1
+	connection ctrl1 on assentToSupportCalls2 to ctrl_ref0 on assentToSupportCalls2
 	controller ctrl1 {
 		uses IAssents event assentToSupportCalls : boolean
 		stm stm0 {
@@ -344,9 +359,25 @@ connection rp_ref0 on assentToSupportCalls to ctrl1 on assentToSupportCalls ( _a
 			}
 			transition t1 {
 				from Idle
-				to Idle
+				to Relay
+				trigger 
+				assentToSupportCalls ? assent
+			}
+			state Relay {
+				initial i0
+				state Relay2 {
+					during assentToSupportCalls2 ! assent
+				}
+				transition t0 {
+					from i0
+					to Relay2
+				}
+				during assentToSupportCalls1 ! assent
+			}
+			transition t2 {
+				from Relay
+				to Relay
 				trigger assentToSupportCalls ? assent
-				action assentToSupportCalls1 ! assent ; assentToSupportCalls2 ! assent
 			}
 		}
 
