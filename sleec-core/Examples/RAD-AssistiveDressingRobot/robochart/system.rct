@@ -201,7 +201,7 @@ operation CallSupportDecision ( ) {
 	assentToSupportCalls ? assent <{ 0 }
 	}
 state CallSupport {
-		entry CallSupport ( ) ; support = true
+		entry CallSupport ( )
 	}
 	junction j0
 	transition t1 {
@@ -314,7 +314,6 @@ module Software {
 				trigger 
 				
 				SupportCalled
-				condition support
 			}
 		requires PlatformSupport state Relay {
 				initial i0
@@ -325,14 +324,12 @@ module Software {
 					from i0
 					to Relay2
 				}
-				entry support = false
 				during supportCalled1
 			}
 			transition t2 {
 				from Relay
 				to Relay
 				trigger SupportCalled
-				condition support
 			}
 		}
 
