@@ -273,13 +273,13 @@
                 <path d="M-1 -1 L639 -1 L639 461 L-1 461 L-1 -1 Z"/>
             </clipPath>
             <clipPath clipPathUnits="userSpaceOnUse" id="clipPath62">
-                <path d="M46 283 L58 283 L58 294 L46 294 L46 283 Z"/>
-            </clipPath>
-            <clipPath clipPathUnits="userSpaceOnUse" id="clipPath63">
                 <path d="M100 285 L396 285 L396 326 L100 326 L100 285 Z"/>
             </clipPath>
-            <clipPath clipPathUnits="userSpaceOnUse" id="clipPath64">
+            <clipPath clipPathUnits="userSpaceOnUse" id="clipPath63">
                 <path d="M161 333 L172 333 L172 345 L161 345 L161 333 Z"/>
+            </clipPath>
+            <clipPath clipPathUnits="userSpaceOnUse" id="clipPath64">
+                <path d="M46 283 L58 283 L58 294 L46 294 L46 283 Z"/>
             </clipPath>
             <clipPath clipPathUnits="userSpaceOnUse" id="clipPath65">
                 <path d="M177 356 L454 356 L454 374 L177 374 L177 356 Z"/>
@@ -294,13 +294,13 @@
                 <path d="M466 277 L478 277 L478 288 L466 288 L466 277 Z"/>
             </clipPath>
             <clipPath clipPathUnits="userSpaceOnUse" id="clipPath69">
-                <path d="M73 386 L441 386 L441 404 L73 404 L73 386 Z"/>
+                <path d="M60 355 L71 355 L71 367 L60 367 L60 355 Z"/>
             </clipPath>
             <clipPath clipPathUnits="userSpaceOnUse" id="clipPath70">
-                <path d="M72 355 L83 355 L83 367 L72 367 L72 355 Z"/>
+                <path d="M73 386 L441 386 L441 404 L73 404 L73 386 Z"/>
             </clipPath>
             <clipPath clipPathUnits="userSpaceOnUse" id="clipPath71">
-                <path d="M60 355 L71 355 L71 367 L60 367 L60 355 Z"/>
+                <path d="M72 355 L83 355 L83 367 L72 367 L72 355 Z"/>
             </clipPath>
         </defs>
         <g font-size="13" fill="rgb(131,122,133)"
@@ -874,24 +874,24 @@ KaaYYoop1lmud1JKKKVUW2+PNJL1/wFao35fMOlvt8mfkkHzaPsBPYYXxb/orc0AAAAASUVORK5CYII=
                    font-size="12" xlink:actuate="onLoad"/>
             <text x="500" xml:space="preserve" y="30"
                   clip-path="url(#clipPath60)" stroke="none">SupportCalled</text>
-            <line clip-path="url(#clipPath61)" fill="none" x1="43" x2="55"
-                  y1="288" y2="288" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath62)" fill="none" x1="48" x2="55"
-                  y1="291" y2="288" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath62)" fill="none" x1="55" x2="48"
-                  y1="288" y2="285" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="97" x2="166"
                   y1="325" y2="325" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="166" x2="166"
                   y1="325" y2="342" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <text x="136" y="302" clip-path="url(#clipPath63)" stroke="none"
+            <text x="136" y="302" clip-path="url(#clipPath62)" stroke="none"
                   stroke-width="2.1" xml:space="preserve">CurtainOpenRqt/userUnderDressed?</text>
-            <text x="104" y="318" clip-path="url(#clipPath63)" stroke="none"
+            <text x="104" y="318" clip-path="url(#clipPath62)" stroke="none"
                   stroke-width="2.1" xml:space="preserve">underDressed &lt;{0}; userDistressed?distress &lt;{0}</text>
-            <line clip-path="url(#clipPath64)" fill="none" x1="163" x2="166"
+            <line clip-path="url(#clipPath63)" fill="none" x1="163" x2="166"
                   y1="335" y2="342" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath64)" fill="none" x1="166" x2="169"
+            <line clip-path="url(#clipPath63)" fill="none" x1="166" x2="169"
                   y1="342" y2="335" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath61)" fill="none" x1="43" x2="55"
+                  y1="288" y2="288" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath64)" fill="none" x1="48" x2="55"
+                  y1="291" y2="288" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath64)" fill="none" x1="55" x2="48"
+                  y1="288" y2="285" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="178" x2="475"
                   y1="349" y2="349" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <text x="178" y="370" clip-path="url(#clipPath65)" stroke="none"
@@ -908,45 +908,45 @@ KaaYYoop1lmud1JKKKVUW2+PNJL1/wFao35fMOlvt8mfkkHzaPsBPYYXxb/orc0AAAAASUVORK5CYII=
                   y1="285" y2="282" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath68)" fill="none" x1="475" x2="468"
                   y1="282" y2="279" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath61)" fill="none" x1="167" x2="167"
-                  y1="365" y2="383" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath61)" fill="none" x1="167" x2="77"
-                  y1="383" y2="383" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath61)" fill="none" x1="77" x2="77"
-                  y1="383" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <text x="74" y="400" clip-path="url(#clipPath69)" stroke="none"
-                  stroke-width="2.1" xml:space="preserve">[underDressed/\distress!=Distress::high]/RefuseRequest &lt;{0}</text>
-            <line clip-path="url(#clipPath70)" fill="none" x1="80" x2="77"
-                  y1="364" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath70)" fill="none" x1="77" x2="74"
-                  y1="357" y2="364" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="544" x2="544"
                   y1="359" y2="417" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="544" x2="65"
                   y1="417" y2="417" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="65" x2="65"
                   y1="417" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath71)" fill="none" x1="68" x2="65"
+            <line clip-path="url(#clipPath69)" fill="none" x1="68" x2="65"
                   y1="364" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath71)" fill="none" x1="65" x2="62"
+            <line clip-path="url(#clipPath69)" fill="none" x1="65" x2="62"
+                  y1="357" y2="364" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath61)" fill="none" x1="167" x2="167"
+                  y1="365" y2="383" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath61)" fill="none" x1="167" x2="77"
+                  y1="383" y2="383" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath61)" fill="none" x1="77" x2="77"
+                  y1="383" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <text x="74" y="400" clip-path="url(#clipPath70)" stroke="none"
+                  stroke-width="2.1" xml:space="preserve">[underDressed/\distress!=Distress::high]/RefuseRequest &lt;{0}</text>
+            <line clip-path="url(#clipPath71)" fill="none" x1="80" x2="77"
+                  y1="364" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
+            <line clip-path="url(#clipPath71)" fill="none" x1="77" x2="74"
                   y1="357" y2="364" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="43" x2="55"
                   y1="288" y2="288" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath62)" fill="none" x1="48" x2="55"
+            <line clip-path="url(#clipPath64)" fill="none" x1="48" x2="55"
                   y1="291" y2="288" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath62)" fill="none" x1="55" x2="48"
+            <line clip-path="url(#clipPath64)" fill="none" x1="55" x2="48"
                   y1="288" y2="285" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="97" x2="166"
                   y1="325" y2="325" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="166" x2="166"
                   y1="325" y2="342" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <text x="136" y="302" clip-path="url(#clipPath63)" stroke="none"
+            <text x="136" y="302" clip-path="url(#clipPath62)" stroke="none"
                   stroke-width="2.1" xml:space="preserve">CurtainOpenRqt/userUnderDressed?</text>
-            <text x="104" y="318" clip-path="url(#clipPath63)" stroke="none"
+            <text x="104" y="318" clip-path="url(#clipPath62)" stroke="none"
                   stroke-width="2.1" xml:space="preserve">underDressed &lt;{0}; userDistressed?distress &lt;{0}</text>
-            <line clip-path="url(#clipPath64)" fill="none" x1="163" x2="166"
+            <line clip-path="url(#clipPath63)" fill="none" x1="163" x2="166"
                   y1="335" y2="342" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath64)" fill="none" x1="166" x2="169"
+            <line clip-path="url(#clipPath63)" fill="none" x1="166" x2="169"
                   y1="342" y2="335" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="167" x2="167"
                   y1="365" y2="383" stroke="rgb(136,136,136)" stroke-width="2.1"/>
@@ -954,11 +954,11 @@ KaaYYoop1lmud1JKKKVUW2+PNJL1/wFao35fMOlvt8mfkkHzaPsBPYYXxb/orc0AAAAASUVORK5CYII=
                   y1="383" y2="383" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="77" x2="77"
                   y1="383" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <text x="74" y="400" clip-path="url(#clipPath69)" stroke="none"
+            <text x="74" y="400" clip-path="url(#clipPath70)" stroke="none"
                   stroke-width="2.1" xml:space="preserve">[underDressed/\distress!=Distress::high]/RefuseRequest &lt;{0}</text>
-            <line clip-path="url(#clipPath70)" fill="none" x1="80" x2="77"
+            <line clip-path="url(#clipPath71)" fill="none" x1="80" x2="77"
                   y1="364" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath70)" fill="none" x1="77" x2="74"
+            <line clip-path="url(#clipPath71)" fill="none" x1="77" x2="74"
                   y1="357" y2="364" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="178" x2="475"
                   y1="349" y2="349" stroke="rgb(136,136,136)" stroke-width="2.1"/>
@@ -974,9 +974,9 @@ KaaYYoop1lmud1JKKKVUW2+PNJL1/wFao35fMOlvt8mfkkHzaPsBPYYXxb/orc0AAAAASUVORK5CYII=
                   y1="417" y2="417" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="65" x2="65"
                   y1="417" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath71)" fill="none" x1="68" x2="65"
+            <line clip-path="url(#clipPath69)" fill="none" x1="68" x2="65"
                   y1="364" y2="357" stroke="rgb(136,136,136)" stroke-width="2.1"/>
-            <line clip-path="url(#clipPath71)" fill="none" x1="65" x2="62"
+            <line clip-path="url(#clipPath69)" fill="none" x1="65" x2="62"
                   y1="357" y2="364" stroke="rgb(136,136,136)" stroke-width="2.1"/>
             <line clip-path="url(#clipPath61)" fill="none" x1="97" x2="475"
                   y1="282" y2="282" stroke="rgb(136,136,136)" stroke-width="2.1"/>
