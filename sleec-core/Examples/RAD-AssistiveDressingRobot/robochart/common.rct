@@ -29,7 +29,7 @@ interface IRoomTemp {
 }
 
 interface IDressingOp {
-	Dress(temp:int)
+	Dress( )
 	Retry()
 	Clear()
 }
@@ -71,40 +71,14 @@ operation Dressing (temp : int) {
 	
 	initial i0
 
-	junction j0
-	junction j1
-
-	transition t1 {
+	final f0
+transition t3 {
 		from i0
-		to j0
-		}
-	transition t2 {
-		from j0
-		to j1
-		condition temp < 19
-	}
-	transition t3 {
-		from j1
 		to f0
-		condition temp < 17
 		action 
-	wait (  [ 0 , vt ( 60 , Time :: seconds ) ] )
+	 
+	wait (   [ 0 , vt ( 60 , Time :: seconds ) ] )
 	}
-	transition t4 {
-		from j0
-		to f0
-		condition temp >= 19
-		action 
-	wait (  [ 0 , vt ( 2 , Time :: minutes ) ] )
-	}
-	transition t5 {
-		from j1
-		to f0
-		condition temp >= 17
-		action 
-	wait (  [ 0 , vt ( 90 , Time :: seconds ) ] )
-	}
-final f0
 } 
 
 function vt ( t : nat , ut : Time ) : nat { }

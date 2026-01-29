@@ -58,7 +58,7 @@ stm DressingService {
 	uses IRoomTemp
 	uses ISupport
 	  
-	var temp : int
+	
 
 	var retry : boolean , completed : boolean
 
@@ -69,9 +69,7 @@ stm DressingService {
 	state Idle {
 	}
 	state Dressing {
-		entry roomTemperature ? temp <{ 0 }
-
-		during Dress ( temp )
+		during Dress ( )
 
 		exit 
 	Clear ( ) ; DressingComplete <{ 0 }
@@ -252,34 +250,17 @@ initial i0
 	}
 requires IRetry }
 
-operation Dress ( temp : nat
+operation Dress ( 
 ) {
-initial i0
+	requires IRetry initial i0
 	final f0
-	junction j0
-	transition t0 {
-		from i0
-		to j0
-	}
+
 	transition t1 {
-		from j0
+		from i0
 		to f0
-		condition temp < 17
 		action wait ( [ 0 , vt ( 60 , Time :: seconds ) ] ) ; retry = true
 	}
-	transition t2 {
-		from j0
-		to f0
-		condition temp >= 17 /\ temp < 19
-		action wait ( [ 0 , vt ( 90 , Time :: seconds ) ] ) ; retry = true
-	}
-	transition t3 {
-		from j0
-		to f0
-		condition temp >= 19
-		action wait ( [ 0 , vt ( 2 , Time :: minutes ) ] ) ; retry = true
-	}
-requires IRetry }
+}
  
 module Software {
 	connection rp_ref0 on DressingStarted to ctrl_ref0 on DressingStarted ( _async )

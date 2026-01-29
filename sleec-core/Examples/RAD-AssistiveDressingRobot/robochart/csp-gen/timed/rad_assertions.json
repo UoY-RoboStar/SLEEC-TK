@@ -1,0 +1,14 @@
+[
+{ "name": "Software conforms to Rule1 [traces]",
+  "type": "conforms",
+  "negated": false 
+},
+{ "name": "Software conforms to Rule2 [traces]",
+  "type": "conforms",
+  "negated": false 
+},
+{ "name": "Software conforms to Rule4 [traces]",
+  "type": "conforms",
+  "negated": false 
+}
+			]

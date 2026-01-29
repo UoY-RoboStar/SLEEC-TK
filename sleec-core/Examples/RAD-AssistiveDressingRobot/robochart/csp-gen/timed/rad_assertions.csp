@@ -1,0 +1,341 @@
+
+--
+-- RoboChart generator version 3.0.0.202601080915
+-- Automatically generated on 29-01-2026 15:08:24
+--
+-- Iterated compression status: true
+-- Assertions compression status: true
+--
+
+include "defs/RAD_defs.csp"
+include "defs/file_common_defs.csp"
+include "defs/state_timed_defs.csp"
+include "defs/robochart_defs.csp"
+include "../../src-gen/tutorial.csp"
+include "defs/core_defs.csp"
+include "defs/RAD.csp"
+include "defs/core_timed_defs.csp"
+
+channel r__
+
+-- OPERATION BOUNDS
+
+-- MODULE CONSTANTS
+
+-- CONTROLLER CONSTANTS
+
+-- STATEMACHINE CONSTANTS
+
+-- OPERATION CONSTANTS
+
+-- BASIC TYPES
+-- generate nat
+nametype core_nat = { 0..2}
+-- generate int
+nametype core_int = {0,16,18,20}
+-- generate string
+nametype core_string = LSeq(Char,2)
+-- generate boolean
+nametype core_boolean = Bool
+-- generate real
+nametype core_real = { -2..2} 
+
+-- VECTOR TYPES AND OPERATIONS
+
+
+-- CLOCKS
+-- generate core_clock_type
+nametype core_clock_type = {0..121}
+
+-- BASIC FUNCTIONS			
+-- generate Plus
+Plus(e1,e2,T) = if member(e1+e2,T) then e1+e2 else e1
+
+-- generate Minus
+Minus(e1,e2,T) = if member(e1-e2,T) then e1-e2 else e1
+
+-- generate Mult
+Mult(e1,e2,T) = if member(e1*e2,T) then e1*e2 else e1
+
+-- generate Div
+Div(e1,e2,T) = if member(e1/e2,T) then e1/e2 else e1
+
+-- generate Modulus
+Modulus(e1,e2,T) = if member(e1%e2,T) then e1%e2 else e1
+
+-- generate Neg
+Neg(e1,T) = if member(-e1,T) then -e1 else e1
+
+-- generate gt
+gt(Distress_high,x__) = true
+gt(Distress_medium,Distress_low) = true
+-- generate vt
+vt(x__,Time_seconds) = x__
+vt(x__,Time_minutes) = x__*60
+
+-- Datatype mappings
+
+-- Specification
+Timed(OneStep) {
+
+A1_spec = 
+	let
+		-- The external 'm' channels for every measure of Rule1
+		MemoryExternalEvents = {|userUnderDressed,userDistressed|}
+		-- The internal 'i_m' channels for every measure of Rule1
+		MemoryInternalEvents = {|i_userUnderDressed,i_userDistressed|}
+		-- Events of Rule1 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(ARule1,diff(RAD::Software::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = (
+			Mem_userUnderDressed(CommonProvideEvents)
+			[| CommonProvideEvents |] 
+			Mem_userDistressed(CommonProvideEvents)
+		)
+		-- Ordered reading
+		MemoryInOrder = userUnderDressed?x__ -> userDistressed?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|RAD::Software::CurtainOpenRqt,RAD::Software::userUnderDressed,RAD::Software::userDistressed,RAD::Software::RefuseRequest,RAD::Software::CurtainsOpened|}
+		-- SLEEC rule renamed
+		Rule = SLEECRule1
+[[					userUnderDressed <- i_userUnderDressed,
+					userDistressed <- i_userDistressed
+]]	within
+		timed_priority(
+			(
+				(Rule ||| TRUN(diff(CommonProvideEvents,ARule1)))
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+A1_suv =
+	let
+		-- The external 'm' channels for every measure of Rule1
+		MemoryExternalEvents = {|userUnderDressed,userDistressed|}
+		-- The internal 'i_m' channels for every measure of Rule1
+		MemoryInternalEvents = {|i_userUnderDressed,i_userDistressed|}
+		-- Events of Rule1 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(ARule1,diff(RAD::Software::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = (
+			Mem_userUnderDressed(CommonProvideEvents)
+			[| CommonProvideEvents |] 
+			Mem_userDistressed(CommonProvideEvents)
+		)
+		-- Ordered reading
+		MemoryInOrder = userUnderDressed?x__ -> userDistressed?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|RAD::Software::CurtainOpenRqt,RAD::Software::userUnderDressed,RAD::Software::userDistressed,RAD::Software::RefuseRequest,RAD::Software::CurtainsOpened|}
+		-- SUV renamed
+		SUV = (let 
+			id__ = 0
+			
+			
+			
+				
+		within
+			RAD::Software::O__(id__)[[
+		RAD::Software::userUnderDressed.in <- userUnderDressed,RAD::Software::userUnderDressed.out <- userUnderDressed,
+		RAD::Software::userDistressed.in.Distress_low <- userDistressed.low,RAD::Software::userDistressed.out.Distress_low <- userDistressed.low,
+		RAD::Software::userDistressed.in.Distress_medium <- userDistressed.medium,RAD::Software::userDistressed.out.Distress_medium <- userDistressed.medium,
+		RAD::Software::userDistressed.in.Distress_high <- userDistressed.high,RAD::Software::userDistressed.out.Distress_high <- userDistressed.high,
+		RAD::Software::CurtainOpenRqt.in <- CurtainOpenRqt,RAD::Software::CurtainOpenRqt.out <- CurtainOpenRqt,
+		RAD::Software::CurtainsOpened.in <- CurtainsOpened,RAD::Software::CurtainsOpened.out <- CurtainsOpened,
+		RAD::Software::RefuseRequest.in <- RefuseRequest,RAD::Software::RefuseRequest.out <- RefuseRequest
+		]])
+[[				userUnderDressed <- i_userUnderDressed,
+				userDistressed <- i_userDistressed
+]]	within
+		timed_priority(
+			(
+				(SUV ; STOP)
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+}
+
+assert A1_spec [T= A1_suv
+
+-- Datatype mappings
+
+-- Specification
+Timed(OneStep) {
+
+A2_spec = 
+	let
+		-- The external 'm' channels for every measure of Rule2
+		MemoryExternalEvents = {|roomTemperature,userUnderDressed|}
+		-- The internal 'i_m' channels for every measure of Rule2
+		MemoryInternalEvents = {|i_roomTemperature,i_userUnderDressed|}
+		-- Events of Rule2 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(ARule2,diff(RAD::Software::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = (
+			Mem_roomTemperature(CommonProvideEvents)
+			[| CommonProvideEvents |] 
+			Mem_userUnderDressed(CommonProvideEvents)
+		)
+		-- Ordered reading
+		MemoryInOrder = roomTemperature?x__ -> userUnderDressed?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|RAD::Software::userUnderDressed,RAD::Software::roomTemperature,RAD::Software::DressingStarted,RAD::Software::DressingComplete|}
+		-- SLEEC rule renamed
+		Rule = SLEECRule2
+[[					roomTemperature <- i_roomTemperature,
+					userUnderDressed <- i_userUnderDressed
+]]	within
+		timed_priority(
+			(
+				(Rule ||| TRUN(diff(CommonProvideEvents,ARule2)))
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+A2_suv =
+	let
+		-- The external 'm' channels for every measure of Rule2
+		MemoryExternalEvents = {|roomTemperature,userUnderDressed|}
+		-- The internal 'i_m' channels for every measure of Rule2
+		MemoryInternalEvents = {|i_roomTemperature,i_userUnderDressed|}
+		-- Events of Rule2 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(ARule2,diff(RAD::Software::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = (
+			Mem_roomTemperature(CommonProvideEvents)
+			[| CommonProvideEvents |] 
+			Mem_userUnderDressed(CommonProvideEvents)
+		)
+		-- Ordered reading
+		MemoryInOrder = roomTemperature?x__ -> userUnderDressed?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|RAD::Software::userUnderDressed,RAD::Software::roomTemperature,RAD::Software::DressingStarted,RAD::Software::DressingComplete|}
+		-- SUV renamed
+		SUV = (let 
+			id__ = 0
+			
+			
+			
+				
+		within
+			RAD::Software::O__(id__)[[
+		RAD::Software::userUnderDressed.in <- userUnderDressed,RAD::Software::userUnderDressed.out <- userUnderDressed,
+		RAD::Software::roomTemperature.in <- roomTemperature,RAD::Software::roomTemperature.out <- roomTemperature,
+		RAD::Software::DressingStarted.in <- DressingStarted,RAD::Software::DressingStarted.out <- DressingStarted,
+		RAD::Software::DressingComplete.in <- DressingComplete,RAD::Software::DressingComplete.out <- DressingComplete
+		]])
+[[				roomTemperature <- i_roomTemperature,
+				userUnderDressed <- i_userUnderDressed
+]]	within
+		timed_priority(
+			(
+				(SUV ; STOP)
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+}
+
+assert A2_spec [T= A2_suv
+
+-- Datatype mappings
+
+-- Specification
+Timed(OneStep) {
+
+A4_spec = 
+	let
+		-- The external 'm' channels for every measure of Rule4
+		MemoryExternalEvents = {|assentToSupportCalls|}
+		-- The internal 'i_m' channels for every measure of Rule4
+		MemoryInternalEvents = {|i_assentToSupportCalls|}
+		-- Events of Rule4 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(ARule4,diff(RAD::Software::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = Mem_assentToSupportCalls(CommonProvideEvents)
+		-- Ordered reading
+		MemoryInOrder = assentToSupportCalls?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|RAD::Software::RetryAgreed,RAD::Software::DressingAbandoned,RAD::Software::SupportCalled,RAD::Software::assentToSupportCalls|}
+		-- SLEEC rule renamed
+		Rule = SLEECRule4
+[[					assentToSupportCalls <- i_assentToSupportCalls
+]]	within
+		timed_priority(
+			(
+				(Rule ||| TRUN(diff(CommonProvideEvents,ARule4)))
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+A4_suv =
+	let
+		-- The external 'm' channels for every measure of Rule4
+		MemoryExternalEvents = {|assentToSupportCalls|}
+		-- The internal 'i_m' channels for every measure of Rule4
+		MemoryInternalEvents = {|i_assentToSupportCalls|}
+		-- Events of Rule4 except for those of measures, and any unmapped SUV events:
+		CommonProvideEvents = diff(union(ARule4,diff(RAD::Software::sem__events,MappedRCEvents)),MemoryExternalEvents)
+		-- The memory process
+		Memory = Mem_assentToSupportCalls(CommonProvideEvents)
+		-- Ordered reading
+		MemoryInOrder = assentToSupportCalls?x__ -> MemoryInOrder
+		-- Mapped events
+		MappedRCEvents = {|RAD::Software::RetryAgreed,RAD::Software::DressingAbandoned,RAD::Software::SupportCalled,RAD::Software::assentToSupportCalls|}
+		-- SUV renamed
+		SUV = (let 
+			id__ = 0
+			
+			
+			
+				
+		within
+			RAD::Software::O__(id__)[[
+		RAD::Software::DressingAbandoned.in <- DressingAbandoned,RAD::Software::DressingAbandoned.out <- DressingAbandoned,
+		RAD::Software::RetryAgreed.in <- RetryAgreed,RAD::Software::RetryAgreed.out <- RetryAgreed,
+		RAD::Software::assentToSupportCalls.in <- assentToSupportCalls,RAD::Software::assentToSupportCalls.out <- assentToSupportCalls,
+		RAD::Software::SupportCalled.in <- SupportCalled,RAD::Software::SupportCalled.out <- SupportCalled
+		]])
+[[				assentToSupportCalls <- i_assentToSupportCalls
+]]	within
+		timed_priority(
+			(
+				(SUV ; STOP)
+				[| union(CommonProvideEvents,MemoryInternalEvents) |]
+				(
+					Memory
+					[| MemoryExternalEvents |]
+					MemoryInOrder
+				)
+			) \ MemoryInternalEvents
+		)
+
+}
+
+assert A4_spec [T= A4_suv
+
