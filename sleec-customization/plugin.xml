@@ -40,7 +40,7 @@
          </property>
          <property
                name="windowImages"
-               value="eclipse16.png,eclipse32.png,eclipse48.png,eclipse256.png">
+               value="logo-sleec16.png,logo-sleec32.png,logo-sleec48.png,logo-sleec128.png,logo-sleec256.png">
          </property>
          <property
               name="introBrandingImage"

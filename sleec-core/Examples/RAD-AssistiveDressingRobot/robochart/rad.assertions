@@ -1,5 +1,5 @@
 
-timed csp Instantiations associated to system::Module csp-begin
+timed csp Instantiations associated to RAD::Software csp-begin
 
 -- OPERATION BOUNDS
 
@@ -15,7 +15,7 @@ timed csp Instantiations associated to system::Module csp-begin
 -- generate nat
 nametype core_nat = { 0..2}
 -- generate int
-nametype core_int = union({0},{ 5..25})
+nametype core_int = {0,16,18,20}
 -- generate string
 nametype core_string = LSeq(Char,2)
 -- generate boolean
@@ -28,7 +28,7 @@ nametype core_real = { -2..2}
 
 -- CLOCKS
 -- generate core_clock_type
-nametype core_clock_type = {0..1801}
+nametype core_clock_type = {0..121}
 
 -- BASIC FUNCTIONS			
 -- generate Plus
@@ -55,8 +55,9 @@ gt(Distress_medium,Distress_low) = true
 -- generate vt
 vt(x__,Time_seconds) = x__
 vt(x__,Time_minutes) = x__*60 
-csp-end          
-         
-sleec assertion Check12 : system::Module conforms to Rule12  
-//sleec assertion Check22 : system::Module conforms to Rule22  
-sleec assertion Check52 : system::Module conforms to Rule52 
+csp-end 
+
+
+timed sleec assertion A1 : RAD::Software conforms to Rule1
+timed sleec assertion A2 : RAD::Software conforms to Rule2 
+timed sleec assertion A4 : RAD::Software conforms to Rule4

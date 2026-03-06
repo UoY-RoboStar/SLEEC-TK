@@ -6,7 +6,7 @@ interface IDressing {
 	event DressingStarted
 	event DressingComplete
 	event DressingAbandoned
-	event retryAgreed
+	event RetryAgreed
 }
 
 interface IUserParam {
@@ -21,7 +21,7 @@ interface IUserFall {
 interface ICurtains {
 	event CurtainOpenRqt
 	event CurtainsOpened
-	event refuseRequest
+	event RefuseRequest
 }
 
 interface IRoomTemp {
@@ -42,6 +42,10 @@ interface ISupport {
 
 	event SupportCalled
 }
+interface IAssents {
+	event assentToSupportCalls1 : boolean
+	event assentToSupportCalls2 : boolean
+}
 interface ISupportP {
 	event assentToSupportCalls1 : boolean
 	event assentToSupportCalls2 : boolean
@@ -53,6 +57,9 @@ interface ISupportCall {
 }
 interface PlatformOp {
 	CallSupport()
+}
+interface PlatformSupport {
+	var support : boolean = false
 }
 interface IRetry {
 	var retry:boolean
