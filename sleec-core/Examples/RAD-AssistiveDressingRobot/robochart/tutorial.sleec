@@ -1,20 +1,20 @@
 def_start // Capabilities
-  event CurtainOpenRqt // Triggers and responses
-  event CurtainsOpened
-  event DressingAbandoned
-  event DressingComplete
-  event DressingStarted
-  event HealthChecked
-  event RefuseRequest
-  event RetryAgreed
-  event SupportCalled
-  event UserFallen 
-  measure assentToSupportCalls : boolean // Measures
-  measure emergency : boolean
-  measure roomTemperature : numeric
-  measure userUnderDressed : boolean
-  measure userDistressed : scale(low, medium, high)
-  constant MAX_RESPONSE_TIME = 60 // Constants
+	event CurtainOpenRqt // Triggers and responses
+	event CurtainsOpened
+	event DressingAbandoned
+	event DressingComplete
+	event DressingStarted
+	event HealthChecked
+	event RefuseRequest
+	event RetryAgreed
+	event SupportCalled
+	event UserFallen
+	measure assentToSupportCalls : boolean // Measures
+	measure emergency : boolean
+	measure roomTemperature : numeric
+	measure userUnderDressed : boolean
+	measure userDistressed : scale(low, medium, high)
+	constant MAX_RESPONSE_TIME = 60 // Constants
 def_end
 rule_start
  Rule1 when CurtainOpenRqt then CurtainsOpened within 60 seconds 
@@ -29,6 +29,16 @@ rule_start
  Rule3 when UserFallen then HealthChecked within 30 seconds
        otherwise SupportCalled within MAX_RESPONSE_TIME seconds
 
- Rule4 when DressingAbandoned then {RetryAgreed within 2 minutes
-       otherwise {SupportCalled unless not assentToSupportCalls}}
+ Rule4 when DressingAbandoned then RetryAgreed within 2 minutes
+       otherwise {SupportCalled unless not assentToSupportCalls}
+       
+ RuleA when CurtainOpenRqt then CurtainsOpened within 2 minutes
+ 		unless userUnderDressed then RefuseRequest within 3 seconds
+		unless userDistressed > medium then CurtainsOpened within 6 seconds
+		
+ RuleB when CurtainOpenRqt and userUnderDressed then 
+ 		not CurtainsOpened within 60 seconds
+ 		
+ RuleC when CurtainOpenRqt and userUnderDressed then
+		not CurtainsOpened within 120 seconds
 rule_end
