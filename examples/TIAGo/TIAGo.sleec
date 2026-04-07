@@ -1,0 +1,28 @@
+
+def_start
+    event CurtainOpenRqt
+    event CurtainsOpened
+    event RefuseRequest
+    event UserFallen
+    event CallSupport
+    event SmokeDetected
+    measure userUnderDressed: boolean
+    measure userDistressed: scale(low, medium, high)
+    measure assentToSupportCalls: boolean
+    measure alarmOn: boolean
+def_end
+
+rule_start
+Rule1 when CurtainOpenRqt then CurtainsOpened within 60 seconds
+        otherwise CurtainsOpened within 120 seconds
+        unless userUnderDressed then RefuseRequest within 30 seconds
+        unless (userDistressed > medium) then CurtainsOpened within 60 seconds
+
+Rule3 when UserFallen and not assentToSupportCalls then not CallSupport within 10 minutes
+Rule21 when SmokeDetected and alarmOn then CallSupport within 5 minutes
+
+Rule31 when UserFallen and (not assentToSupportCalls) then
+            not CallSupport within 10 minutes
+        unless alarmOn then CallSupport within 5 minutes
+rule_end
+

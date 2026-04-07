@@ -1,0 +1,292 @@
+--
+-- @author: Pedro Ribeiro
+-- @date: 07/04/2026
+--
+-- Extension of the SLEEC semantics to encompass phases, via events, triggered, resolved, and cancel.
+
+external prioritisepo
+
+-- To facilitate the definitions, we define a datatype Rule that contains an identifier for each rule.
+datatype Rule = R21 | R3 | R31
+
+-- The events themselves.
+channel triggered, resolved : Rule
+channel cancel : Rule
+
+-- Functions mapping between Rule identifiers and their new SLEEC semantics incorporating phases.
+Rule2P(R21) = Rule21A
+Rule2P(R3) 	= Rule3A
+Rule2P(R31) = Rule31A
+
+Rule2Alpha(R21) = ARule21
+Rule2Alpha(R3) 	= ARule3
+Rule2Alpha(R31) = ARule31
+
+-- Auxiliary functions that define the set intersection: \alpha_E(_) \cap \alpha_E(_)
+RuleAlphaInter(R3,R21) = diff(inter(ARule3, ARule21),{|assentToSupportCalls,alarmOn|})
+RuleAlphaInter(R21,R3) = RuleAlphaInter(R3,R21)
+
+RuleAlphaInter(R21,R31) = diff(inter(ARule21, ARule31),{|assentToSupportCalls,alarmOn|})
+RuleAlphaInter(R31,R21) = RuleAlphaInter(R21,R31)
+
+-- And also the set set unions: \alpha_E(_) \cup \alpha_E(_)
+RuleAlphaUnion(R3,R21) = diff(union(ARule3, ARule21),{|assentToSupportCalls,alarmOn|})
+RuleAlphaUnion(R21,R3) = RuleAlphaUnion(R3,R21)
+
+RuleAlphaUnion(R21,R31) = diff(union(ARule21, ARule31),{|assentToSupportCalls,alarmOn|})
+RuleAlphaUnion(R31,R21) = RuleAlphaUnion(R21,R31)
+
+-- Adapted from the automatically calculated semantics by SLEEC-TK.
+-- Observe that we map tock to minutes here, given the use of minutes in the example,
+-- therefore minimising the number of tock events required.
+
+channel UserFallen
+channel CallSupport
+channel SmokeDetectorAlarm
+channel SmokeDetected
+channel assentToSupportCalls, i_assentToSupportCalls : Bool
+
+-- The following two processes are modified in comparison with those
+-- automatically calculated by SLEEC-TK, so that the values of measures
+-- can change whenever a tock elapses. 
+-- 
+-- This change modelled using the construction with the interrupt by tock:
+-- e.g. Provide(x__) /\ tock -> Mem
+--
+-- This can alternatively also be specified within a Timed Section, but
+-- requires use of another tock-CSP operator. Therefore, for simplicity
+-- we define this directly using the operators of CSP.
+--
+Mem_assentToSupportCalls(o__) =
+	let
+		Mem =  assentToSupportCalls?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_assentToSupportCalls.x__|},o__))
+	within
+		Mem
+
+-- Similar construction applies to the alarm measure too.
+channel alarmOn, i_alarmOn : Bool
+Mem_alarmOn(o__) =
+	let
+		Mem =  alarmOn?x__ -> (Provide(x__) /\ tock -> Mem)
+		Provide(x__) = RUN(union({|i_alarmOn.x__|},o__))
+	within
+		Mem
+	
+-- Here we only consider explicitly the subset of capabilities relevant to Rule3 and Rule21,
+-- whereas the example in the paper has more capabilities and measures used to illustrate
+-- the use of SLEEC.
+
+Capabilities = 
+  {| UserFallen,
+     CallSupport,
+     SmokeDetectorAlarm,
+     SmokeDetected,
+  	 assentToSupportCalls,
+  	 alarmOn
+  |}
+Measures =
+  {| assentToSupportCalls,
+     alarmOn
+  |}
+	
+-- A timed section, where the syntax of 'CSP' is used to write tock-CSP processes, that is,
+-- the passage of time is 'implicitly' added. For example, in a prefixing a -> P, FDR
+-- rewrites the prefixing to also allow passage of tock.
+Timed(OneStep) {
+
+-- Rule3 when UserFallen and (not (assentToSupportCalls)) then not CallSupport within 10 minutes 
+
+-- The process Rule3 below is the original semantics calculated by SLEEC-TK, whereas
+-- Rule3A is the augmented semantics that includes events to capture the phases of a rule.
+Rule3A = (
+	TriggerRule3; 
+	triggered.R3 -> (MonitoringRule3 /\ cancel.R3 -> SKIP); 
+	resolved.R3 -> Rule3A)
+
+Rule3 = TriggerRule3; MonitoringRule3; Rule3
+
+TriggerRule3 = let
+	MTrigger = StartBy(assentToSupportCalls?vassentToSupportCalls ->
+		if (not (vassentToSupportCalls)) then SKIP else TriggerRule3
+	,0)
+within UserFallen -> MTrigger 
+	[] CallSupport -> TriggerRule3
+
+-- Note that we use 1 tock = 1 minute here.
+MonitoringRule3 = WAIT((10 * 1))
+
+-- alphabet for Rule3 
+ARule3 = {|CallSupport, assentToSupportCalls, UserFallen|}
+SLEECRule3 = timed_priority(Rule3)
+
+
+-- Rule21 when SmokeDetected and (alarmOn) then CallSupport within 5 minutes 
+
+Rule21A = (
+	TriggerRule21; 
+	triggered.R21 -> (MonitoringRule21 /\ cancel.R21 -> SKIP); 
+	resolved.R21 -> Rule21A)
+
+Rule21 = TriggerRule21; MonitoringRule21; Rule21
+
+TriggerRule21 = let
+	MTrigger = StartBy(alarmOn?valarmOn ->
+		if (valarmOn) then SKIP else TriggerRule21
+	,0)
+within SmokeDetected -> MTrigger 
+	[] CallSupport -> TriggerRule21
+
+MonitoringRule21 = StartBy(CallSupport -> SKIP,(5 * 1))
+
+-- alphabet for Rule21 
+ARule21 = {|CallSupport, alarmOn, SmokeDetected|}
+SLEECRule21 = timed_priority(Rule21)
+
+
+-- Rule31 when UserFallen and (not (assentToSupportCalls)) then not CallSupport within 10 minutes 
+-- unless (alarmOn) then CallSupport within 5 minutes
+
+Rule31A = (
+	TriggerRule31; 
+	triggered.R31 -> (MonitoringRule31 /\ cancel.R31 -> SKIP); 
+	resolved.R31 -> Rule31A)
+
+Rule31 = TriggerRule31; MonitoringRule31; Rule31
+
+TriggerRule31 = let
+	MTrigger = StartBy(assentToSupportCalls?vassentToSupportCalls ->
+		if (not (vassentToSupportCalls)) then SKIP else TriggerRule31
+	,0)
+within UserFallen -> MTrigger 
+	[] CallSupport -> TriggerRule31
+	[] CallSupport -> TriggerRule31
+
+MonitoringRule31 = let
+	Monitoring1 = WAIT((10 * 1))
+	Monitoring2 = StartBy(CallSupport -> SKIP,(5 * 1))
+within StartBy(alarmOn?valarmOn ->
+	if (valarmOn) then Monitoring2
+	else (Monitoring1)
+,0)
+
+-- alphabet for Rule31 
+ARule31 = {|CallSupport, alarmOn, assentToSupportCalls, UserFallen|}
+SLEECRule31 = timed_priority(Rule31)
+
+-----------------------------------------------------------------------------------------------
+-- Prioritised SLEEC
+-----------------------------------------------------------------------------------------------
+
+-- Composition of rules, CP, defined below:
+CP(r1,r2) = (Rule2P(r1) [| RuleAlphaInter(r1,r2) |] Rule2P(r2)) 
+
+-- Function that defines the phase events for a pair of rules:
+cphase(r1,r2) = {| triggered.r1, triggered.r2, cancel.r1, cancel.r2, resolved.r1, resolved.r2 |}
+
+-- For prioritisation, we define the Controller process below.
+Controller(H,L) = 
+	let
+		-- Rule H is OFF and Rule L is OFF
+		H_OFF_L_OFF = triggered.H -> H_ON_L_OFF
+					  []
+					  triggered.L -> H_OFF_L_ON
+					  []
+					  resolved.H -> H_OFF_L_OFF
+					  []
+					  resolved.L -> H_OFF_L_OFF
+
+		-- Rule H is ON and Rule L is OFF
+		H_ON_L_OFF = triggered.H -> H_ON_L_OFF
+					 [] -- not only does the controller ask, but also the rule could have resolved itself?
+					 triggered.L -> (
+						cancel.L -> H_ON_L_OFF 
+						[] 
+						resolved.L -> H_ON_L_OFF
+						[]
+						resolved.H -> H_OFF_L_ON
+						)
+					 []
+					 resolved.H -> H_OFF_L_OFF
+					 []
+					 resolved.L -> H_ON_L_OFF
+
+		-- Rule H is OFF and Rule L is ON
+		H_OFF_L_ON = triggered.H -> (
+						cancel.L -> H_ON_L_OFF 
+						[] 
+						resolved.L -> H_ON_L_OFF
+						[]
+						resolved.H -> H_OFF_L_ON
+						)
+					 []
+					 triggered.L -> H_OFF_L_ON
+					 []
+					 resolved.H -> H_OFF_L_ON
+					 []
+					 resolved.L -> H_OFF_L_OFF
+	within
+		H_OFF_L_OFF
+
+-- Cancellation-based prioritisation, where L < H, that is, H has higher priority than L.
+PriCB(H,L) = 
+	-- This outside use of CSP prioritisation is needed to ensure that the hiding operator
+	-- is applied correctly, that is, maximal progress is enforced, by giving \tau priority
+	-- over 'tock'. FDR provides a built-in definition 'timed_priority' that is equivalent
+	-- to writing: prioritise(P,<{},{tock}>).
+	timed_priority(
+		-- The function prioritisepo allows expressing the Pri(_) operator. It is
+		-- documented here (https://cocotec.io/fdr/manual/cspm/prelude.html?highlight=prioritisepo#function_prioritisepo) 
+		-- and takes four arguments, as described in the comments below.
+		prioritisepo(
+			-- process being prioritised
+			(
+				CP(H,L)
+				[| cphase(H,L) |]
+				Controller(H,L)
+			),
+			-- set of events that are affected by prioritisation
+			union(RuleAlphaUnion(H,L),{|cancel.L,tock,triggered,resolved|}),
+			-- partial order: 
+			-- 	events 'triggered','resolved' for both H and L have higher priority than RuleAlphaUnion(H,L)
+			{(triggered.H,x__),(resolved.H,x__),(triggered.L,x__),(resolved.H,x__) | x__ <- RuleAlphaUnion(H,L)},
+			-- set of events with same priority as tau and tick
+			{triggered.H,triggered.L,resolved.H,resolved.L}
+		)\cphase(H,L) --{|triggered,resolved,cancel|}
+	)	
+
+-- This is a version of PriCB, that instead does not use Pri(_)
+PriCB_Broken(H,L) = 
+	timed_priority(
+		(
+			(
+				CP(H,L)
+				[| cphase(H,L) |]
+				Controller(H,L)
+			)
+		)\cphase(H,L) --{|triggered,resolved,cancel|}
+	)
+	
+-- Conflict-aware prioritisation, where L < H, that is, H has higher priority than L.
+PriCA(H,L) = 
+	timed_priority(
+		prioritisepo(
+			-- process being prioritised
+			(
+				CP(H,L)
+				[| {| triggered.H, triggered.L, cancel.H, cancel.L, resolved.L, resolved.H |} |]
+				Controller(H,L)
+			),
+			-- set of events that are affected by prioritisation
+			union(RuleAlphaUnion(H,L),{|cancel.L,tock,triggered,resolved|}),
+			-- partial order: events in RuleAlphaInter(H,L) have higher priority than cancel.L, as does tock?
+			union(
+				union({(x__,cancel.L) | x__ <- RuleAlphaUnion(H,L)}, {(tock,cancel.L)}),
+				{(triggered.H,x__),(resolved.H,x__),(triggered.L,x__),(resolved.H,x__) | x__ <- RuleAlphaUnion(H,L)}
+			),
+			-- set of events with same priority as tau and tick
+			{triggered.H,triggered.L,resolved.H,resolved.L,tock}
+			-- {}--RuleAlphaInter(H,L)
+		)\cphase(H,L) -- {|triggered,resolved,cancel|}
+	)		
+}

@@ -1,0 +1,48 @@
+--
+-- @author: Pedro Ribeiro
+-- @date: 07/04/2026
+--
+-- Assertions related to the extension of SLEEC with priorities.
+
+include "tick-tock.csp"
+include "instantiations.csp"
+include "TIAGo.csp"		
+
+-- Below assertions are specified to test whether certain traces can be observed of the different prioritisations.
+
+-- For cancellation-based priority (CB), where PriCB(R21,R3) is [[Rule3 <_CB Rule21]]_P.
+-- For conflict-aware priority (CA), where PriCA(R21,R3) is [[Rule3 <_CA Rule21]]_P.
+
+-- Trace 4 can be observed
+assert PriCB(R21,R3) :[has trace [T]]:<UserFallen, assentToSupportCalls.false, tock, tock, SmokeDetected, alarmOn.true, CallSupport>
+-- but not of PriCA (conflict-aware priority (CA))
+assert not PriCA(R21,R3) :[has trace [T]]:<UserFallen, assentToSupportCalls.false, tock, tock, SmokeDetected, alarmOn.true, CallSupport>
+
+-- Trace 5 can be observed for both.
+assert PriCB(R21,R3) :[has trace [T]]:<UserFallen, assentToSupportCalls.false, tock, tock, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock, CallSupport>
+-- but not of PriCA (conflict-aware priority (CA))
+assert PriCA(R21,R3) :[has trace [T]]:<UserFallen, assentToSupportCalls.false, tock, tock, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock, CallSupport>
+
+-- Up to 5 tocks observed after Rule21 is triggered, when Rule3 <_CB Rule21.
+assert PriCB(R21,R3) :[has trace [T]]:<UserFallen,assentToSupportCalls.false,SmokeDetected,alarmOn.true,tock,tock,tock,tock,tock>
+
+-- No more than 5 tocks observable after Rule21 is triggered.
+assert not PriCB(R21,R3) :[has trace [T]]:<UserFallen,assentToSupportCalls.false,SmokeDetected,alarmOn.true,tock,tock,tock,tock,tock,tock>
+
+-- CallSupport can happen immediately after Rule21 is triggered, so, then more than 5 tocks can elapse afterwards.
+assert PriCB(R21,R3) :[has trace [T]]:<UserFallen,assentToSupportCalls.false,tock,tock,tock,tock,tock,tock,tock,SmokeDetected,alarmOn.true,CallSupport,tock,tock,tock,tock,tock,tock>
+
+-- To see why Pri(_) is required in the definition of PriCB, consider the following check for refinement over traces:
+-- This works:
+assert PriCB_Broken(R21,R3) [T= PriCB(R21,R3)
+-- But the following refinement fails, indicating that PriCB_Broken has more behaviours than that allowed by PriCB.
+-- With FDR it is possible to debug the counter-example trace to see that internally, PriCB_Broken can perform the
+-- trace <UserFallen, assentToSupportCalls.false, alarmOn.false, tock, tock, tock, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock>,
+-- which is not acceptable.
+assert PriCB(R21,R3) [T= PriCB_Broken(R21,R3)
+
+-- So this means that when looking at PriCB_Broken, we can observe the following trace.
+assert not PriCB_Broken(R21,R3) :[has trace [T]]:<SmokeDetected,alarmOn.true,CallSupport,UserFallen,assentToSupportCalls.false,UserFallen>
+-- which should not be (correctly) not accepted by PriCB:
+assert not PriCB(R21,R3) :[has trace [T]]:<SmokeDetected,alarmOn.true,CallSupport,UserFallen,assentToSupportCalls.false,UserFallen>
+

@@ -1,0 +1,88 @@
+--
+-- @author: Pedro Ribeiro
+-- @date: 07/04/2026
+--
+-- Verification of conflicts and redundancies using semantics adapted from that automatically generated from SLEEC-TK.
+-- The changes here are to allow measures to change at most once per time unit, therefore
+-- allowing conflict checking to consider changes to measures through time.
+
+-- Assertions not relevant to the discussion in the paper have been commented out.
+
+-- To reproduce the exact counter-examples as reported in the paper FDR must be configured to 
+-- be able to produce more counter-examples than the default setting of 1.
+--
+-- To do this, open FDR's GUI and type in the console (eg. at most 12 counter-examples):
+-- :options set refinement.desired_counterexample_count 12
+--
+-- then, close and re-open FDR.
+
+-- ASSERTIONS --
+include "tick-tock.csp"
+include "instantiations.csp"
+include "TIAGo.csp"
+
+Timed(OneStep) {
+
+-- Checking Rule3 with Rule21:
+intersectionRule3Rule21 = 
+  let
+    EnvRule3Rule21 = EnvassentToSupportCalls||| EnvalarmOn
+    EnvassentToSupportCalls = assentToSupportCalls?x__ -> TimeOut_1(VEnvassentToSupportCalls(x__),EnvassentToSupportCalls)
+    VEnvassentToSupportCalls(x__) = assentToSupportCalls!x__ -> VEnvassentToSupportCalls(x__) 
+    EnvalarmOn = alarmOn?x__ -> TimeOut_1(VEnvalarmOn(x__),EnvalarmOn)
+    VEnvalarmOn(x__) = alarmOn!x__ -> VEnvalarmOn(x__) 
+  within
+  
+  (Rule3[|diff(inter({|CallSupport, assentToSupportCalls, UserFallen|}, {|CallSupport, alarmOn, SmokeDetected|}),{|assentToSupportCalls,alarmOn|})|]Rule21)
+  [| {|assentToSupportCalls,alarmOn|} |]
+  	EnvRule3Rule21
+  SLEECRule3Rule21 = timed_priority(intersectionRule3Rule21)
+					
+  
+
+-- Checking Rule21 with Rule31:
+intersectionRule21Rule31 = 
+  let
+    EnvRule21Rule31 = EnvalarmOn||| EnvassentToSupportCalls
+    EnvassentToSupportCalls = assentToSupportCalls?x__ -> TimeOut_1(VEnvassentToSupportCalls(x__),EnvassentToSupportCalls)
+    VEnvassentToSupportCalls(x__) = assentToSupportCalls!x__ -> VEnvassentToSupportCalls(x__) 
+    EnvalarmOn = alarmOn?x__ -> TimeOut_1(VEnvalarmOn(x__),EnvalarmOn)
+    VEnvalarmOn(x__) = alarmOn!x__ -> VEnvalarmOn(x__) 
+  within
+  
+  (Rule21[|diff(inter({|CallSupport, alarmOn, SmokeDetected|}, {|CallSupport, alarmOn, assentToSupportCalls, UserFallen|}),{|alarmOn,assentToSupportCalls|})|]Rule31)
+  [| {|alarmOn,assentToSupportCalls|} |]
+  	EnvRule21Rule31
+  SLEECRule21Rule31 = timed_priority(intersectionRule21Rule31)
+					
+				
+  			
+  SLEECRule21Rule31CF   = prioritise(
+  	timed_priority(intersectionRule21Rule31)
+  	[[ tock <- tock, tock <- tock' ]],
+  	<diff(Events,{|tock',tock|}),{|tock|}>)\{|tock|}
+
+  -- Checks whether there is a deadlock, that is, a conflict between the rules.
+  -- NOTE: negated assertion will pass, indicating a deadlock exists.
+  assert not SLEECRule3Rule21:[deadlock-free]		
+
+  -- Trace 2 reported in the paper is a valid counter-example.			
+  assert SLEECRule3Rule21 :[has trace[T]]:<UserFallen, assentToSupportCalls.false, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock>
+
+  -- Checks whether there is a deadlock, that is, a conflict between the rules.
+  -- NOTE: negated assertion will pass, indicating a deadlock exists.
+  assert not SLEECRule21Rule31:[deadlock-free]	
+
+  -- Trace 2 is not a valid conflict for the pair Rule3/Rule21 because of the added defeater:
+  assert not SLEECRule3Rule21 :[has trace[T]]:<UserFallen, assentToSupportCalls.false, alarmOn.false, tock, tock, tock, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock>
+  -- However, Trace 3 reported in the paper, is yet another conflict, even when considering the new pair Rule31/Rule21, where Rule31 is Rule3 with a new defeater.
+  assert SLEECRule21Rule31 :[has trace[T]]:<UserFallen, assentToSupportCalls.false, alarmOn.false, tock, tock, tock, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock>
+
+
+  -- Moreover, it is also not possible to observe the following traces when considering the pair Rule3/Rule21:
+  -- Trace 4 (for cancellation-based prioritisation [CB])
+  assert not SLEECRule3Rule21 :[has trace[T]] <UserFallen, assentToSupportCalls.false, tock, tock, SmokeDetected, alarmOn.true, CallSupport>
+
+  -- Trace 5 (for cancellation-based prioritisation [CB])
+  assert not SLEECRule3Rule21 :[has trace[T]] <UserFallen, assentToSupportCalls.false, tock, tock, SmokeDetected, alarmOn.true, tock, tock, tock, tock, tock, CallSupport>
+}
