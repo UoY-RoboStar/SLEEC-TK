@@ -125,7 +125,7 @@ sudo apt-get update
 sudo apt-get install libpng12-0
 ```
 
-On Ubuntu 26.04 the above method will not work, so instead you should download the file [libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb](http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb) and install it using apt:
+On Ubuntu 26.04 the above method will not work, so instead you should download the file [libpng12-0_1.2.54-1ubuntu1.1+1-ppa0-jammy0_amd64.deb](http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb) and install it using apt:
 ```
 wget http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb
 sudo apt install ./libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb
