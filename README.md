@@ -105,24 +105,30 @@ the SLEEC file `ALMI-demo.sleec`.
 
 ## FDR4 Installation
 General instructions for installation are avaiable from [https://cocotec.io/fdr/](https://cocotec.io/fdr/).
-Below we include specific instructions useful for installation on recent versions of Ubuntu LTS (22.04).
-Root privileges are necessary to install FDR4 using its debian package.
+Below we include specific instructions useful for installation on recent versions of Ubuntu LTS (22.04 and 26.04).
+Root privileges are necessary to install FDR4 using its deb package.
 
 ### Installing FDR4 via apt-get
 Under Ubuntu, installation can be achieved by using `apt-get` using the following commands:
 ```
-sudo sh -c 'echo "deb http://dl.cocotec.io/fdr/debian/ fdr release\n" > /etc/apt/sources.list.d/fdr.list'
-wget -qO - http://dl.cocotec.io/fdr/linux_deploy.key | sudo apt-key add -
+wget -O- http://dl.cocotec.io/fdr/linux_deploy.key | gpg --dearmor | sudo tee /etc/apt/keyrings/fdr.gpg > /dev/null
+sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/fdr.gpg] http://dl.cocotec.io/fdr/debian/ fdr release\n" > /etc/apt/sources.list.d/fdr.list'
 sudo apt-get update
 sudo apt-get install fdr
 ```
 The apt-get install may fail due to a missing dependency on `libpng12`, which is no longer included in
-recent Linux distributions. To workaround this problem, the [following commands](https://www.linuxuprising.com/2018/05/fix-libpng12-0-missing-in-ubuntu-1804.html) can be used to install
+recent Linux distributions. To workaround this problem on Ubuntu 22.10, 22.04, 21.10 or 20.04, the [following commands](https://www.linuxuprising.com/2018/05/fix-libpng12-0-missing-in-ubuntu-1804.html) can be used to install
 the missing dependency:
 ```
 sudo add-apt-repository ppa:linuxuprising/libpng12
 sudo apt-get update
 sudo apt-get install libpng12-0
+```
+
+On Ubuntu 26.04 the above method will not work, so instead you should download the file [libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb](http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb) and install it using apt:
+```
+wget http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb
+sudo apt install ./libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb
 ```
 
 ### Configuring TLS CA certificates for FDR4 activation
