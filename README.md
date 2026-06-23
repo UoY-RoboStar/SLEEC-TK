@@ -131,6 +131,13 @@ wget http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpn
 sudo apt install ./libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~jammy0_amd64.deb
 ```
 
+If there is a problem with a missing dependency on libtinfo5 you may need to install it separately,
+using commands similar to those below:
+```
+wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+sudo apt install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
+```
+
 ### Configuring TLS CA certificates for FDR4 activation
 Recent Linux distributions have changed the path where TLS Certificate Authority (CA) certificates are stored.
 FDR looks for this under `/etc/pki/tls/certs/ca-bundle.crt`, however Ubuntu LTS 22.04 has such certificates
